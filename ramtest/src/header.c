@@ -39,8 +39,9 @@ const VERSION_HEADER_T tVersionHeader =
 	.pulParameterStart = parameter_start_address,
 	.pulParameterEnd = parameter_end_address,
 
-	.ulVersionMaj = VERSION_MAJ,
-	.ulVersionMin = VERSION_MIN,
+	.ulVersionMajor = VERSION_MAJOR,
+	.ulVersionMinor = VERSION_MINOR,
+	.ulVersionMicro = VERSION_MICRO,
 	.acVersionVcs = VERSION_VCS
 };
 

@@ -35,8 +35,9 @@ typedef struct VERSION_HEADER_STRUCT
 	unsigned long *pulParameterStart;
 	unsigned long *pulParameterEnd;
 
-	unsigned long ulVersionMaj;
-	unsigned long ulVersionMin;
+	unsigned long ulVersionMajor;
+	unsigned long ulVersionMinor;
+	unsigned long ulVersionMicro;
 	const char    acVersionVcs[16];
 } VERSION_HEADER_T;
 
