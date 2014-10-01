@@ -549,7 +549,8 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	tTestParams.ulSize = sdram_get_size(ulSdramGeneralCtrl);
 
 	/* Run all test cases. */
-	tTestParams.ulCases = RAMTESTCASE_08BIT | RAMTESTCASE_16BIT | RAMTESTCASE_32BIT | RAMTESTCASE_BURST;
+	tTestParams.ulCases = RAMTESTCASE_08BIT | RAMTESTCASE_16BIT | RAMTESTCASE_32BIT | RAMTESTCASE_BURST
+							| RAMTESTCASE_DATABUS | RAMTESTCASE_MARCHC | RAMTESTCASE_CHECKERBOARD;
 
 	/* Loop endless. */
 	tTestParams.ulLoops = 0;
