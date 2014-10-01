@@ -34,7 +34,6 @@ Import('platform_lib_netx500', 'platform_lib_netx56', 'platform_lib_netx50', 'pl
 # (i.e. spaces, tabs, newlines). The amount of whitespace does not matter.
 sources_common = """
 	src/header.c
-	src/burst_access.s
 	src/ramtest.c
 	src/random_burst.s
 """
