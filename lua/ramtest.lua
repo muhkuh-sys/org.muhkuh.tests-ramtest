@@ -60,7 +60,7 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 		-- The data bus has a size of 16 bits.
 		ulDataCfg = 0x00000050
 	else 
-		-- The data bus has a size of 16 bits.
+		-- The data bus has a size of 32 bits.
 		ulDataCfg = 0x00000060
 	end
 	print(string.format("ulDataCfg=0x%08x", ulDataCfg))
@@ -74,6 +74,26 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	end
 end
 
+
+
+local function setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
+	-- Generate the value for the HIF_IO_CTRL register.
+	-- This depends on the data bus width of the SDRAM device.
+	ulGeneralCtrl = atSdramAttributes["general_ctrl"]
+	if bit.band(ulGeneralCtrl,0x00010000)==0 then
+		-- The data bus has a size of 8 bits.
+		ulHifIoCtrl = 0x00000040
+	else 
+		-- The data bus has a size of 16 bits.
+		ulHifIoCtrl = 0x00000050
+	end
+
+	-- Read and write ASIC_CTRL access key.
+	local ulValue = tPlugin:read_data32(0x101c0070)
+	tPlugin:write_data32(0x101c0070, ulValue)
+	
+	tPlugin:write_data32(0x101c0c40, ulHifIoCtrl)
+end
 
 
 local atPlatformAttributes = {
@@ -162,11 +182,12 @@ local atPlatformAttributes = {
 		["ulAsic"] = 10,
 		["sdram"] = {
 			[SDRAM_INTERFACE_MEM] = {
-			
 			},
 			[SDRAM_INTERFACE_HIF] = {
 				["ulController"] = 0x101c0140,
-				["ulArea_Start"] = 0x80000000
+				["ulArea_Start"] = 0x80000000,
+				["ulTiming"] = 0x00A00000,
+				["setup"] = setup_sdram_hif_netx10
 			}
 		}
 	}
