@@ -33,9 +33,9 @@ local atSdramAttributes = {
 	["general_ctrl"]  = 0x030d0001, -- Inhalt des general_ctrl registers 
 	["timing_ctrl"]   = 0x00012151, -- teil des inhalts des timing-ctrl registers  
 	["mr"]            = 0x00000033, -- mode register 
-	["size_exponent"] = 23 -- 8
+	["size_exponent"] = 23 -- 8 MB
 -- NOTE: Some boards with netX51/52 Step A are limited to 2MB.
---	["size_exponent"] = 21 -- 2
+--	["size_exponent"] = 21 -- 2 MB
 }
 
 
