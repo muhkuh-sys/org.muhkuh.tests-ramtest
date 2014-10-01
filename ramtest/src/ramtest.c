@@ -170,6 +170,17 @@ static RAMTEST_RESULT_T ram_test_checkerboard(RAMTEST_PARAMETER_T *ptRamTestPara
 
 
 
+/*
+	1: write 0s                         forward
+	2: check 0s, write 1s               forward
+	   check 1s, write 0s, check 0s     backward
+	   write 1s                         forward
+	   check 1s, write 0s               forward
+	4: check 0s, write 1s               backward
+	5: check 1s, write 0s               backward
+	6: check 0s                         backward
+*/
+
 static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParameter)
 {
 
