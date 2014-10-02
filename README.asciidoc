@@ -88,7 +88,7 @@ It defines the number of bytes asciimath:[m] as asciimath:[m=2^text{size_exponen
 +checks+::
   This determines which checks to run. Select one or more
   values from this list and separate them with
-  commata: +DATABUS+ +MARCHC+ +CHECKERBOARD+ +08BIT+, +16BIT+, +32BIT+ and +BURST+.
+  commata: +DATABUS+, +MARCHC+, +CHECKERBOARD+, +08BIT+, +16BIT+, +32BIT+ and +BURST+.
 +loops+::
   The number of loops to run.
 
