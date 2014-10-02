@@ -51,7 +51,7 @@ If a read back value differs from the expected one, the process is stopped and t
 The RAM test applies the random value approach multiple times:
 
 - Repeat this for asciimath:[l] times:
-  * Loop over 4 different startvalues for the pseudorandom number generation
+  * Loop over 6 different startvalues for the pseudorandom number generation
   ** If enabled: run the random value test with 8 bit accesses to the memory
   ** If enabled: run the random value test with 16 bit accesses to the memory
   ** If enabled: run the random value test with 32 bit accesses to the memory
@@ -59,7 +59,7 @@ The RAM test applies the random value approach multiple times:
 
 Formula for the maximum length LFSR (ML LFSR): +
 
-*asciimath:[f(n+1)= ( ( ( f(n) >> 31 ) ^ ( f(n) >> 6 ) ^ ( f(n) >> 4) ^ ( f(n) >> 1 ) ) ^ f(n) ) & 1 ) << 31 ) | ( f(n) >> 1 )]* +
+*asciimath:[f(n+1)= ( ( ( f(n) ">>" 31 ) text( xor ) ( f(n) ">>" 6 ) text( xor ) ( f(n) ">>" 4) text( xor ) ( f(n) ">>" 1 ) ) text( xor ) f(n) ) \and 1 ) "<<" 31 ) \or ( f(n) ">>" 1 )]* +
 
 
 The program flow can be modified with a set of parameters:
