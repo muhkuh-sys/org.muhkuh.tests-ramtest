@@ -11,12 +11,12 @@ require("romloader")
 
 
 	CHECK_DATABUS            = 0x00000001
-	CHECK_08BIT  	         = 0x00000002
-	CHECK_16BIT  	         = 0x00000004
-	CHECK_32BIT  	         = 0x00000008
+	CHECK_08BIT              = 0x00000002
+	CHECK_16BIT              = 0x00000004
+	CHECK_32BIT              = 0x00000008
 	CHECK_MARCHC             = 0x00000010
 	CHECK_CHECKERBOARD       = 0x00000020
-	CHECK_BURST 	         = 0x00000040
+	CHECK_BURST              = 0x00000040
 
 
 
@@ -263,8 +263,52 @@ end
 
 
 
-function get_sdram_size(atSdramAttributes)
-	return math.pow(2, atSdramAttributes["size_exponent"])
+function get_sdram_size(tPlugin, atSdramAttributes)
+	local ulSize = nil
+	
+	-- Is a size specified in the attributes?
+	if atSdramAttributes["size_exponent"]==nil then
+		-- No -> get the size from the geometry parameters.
+		local ulGeneralCtrl = atSdramAttributes["general_ctrl"]
+		-- Extract the geometry parameters.
+		local ulBanks    =            bit.band(ulGeneralCtrl, 0x00000003)
+		local ulRows     = bit.rshift(bit.band(ulGeneralCtrl, 0x00000030), 4)
+		local ulColumns  = bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8)
+		local ulBusWidth = nil
+		
+		local tAsicTyp = tPlugin:GetChiptyp()
+		if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 then
+			ulBusWidth = 2
+			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+				ulBusWidth = 4
+			end
+		elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50 then
+			ulBusWidth = 2
+			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+				ulBusWidth = 4
+			end
+		elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
+			ulBusWidth = 1
+			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+				ulBusWidth = 2
+			end
+		elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B then
+			ulBusWidth = 2
+			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+				ulBusWidth = 4
+			end
+		else
+			error("Unknown chiptyp!")
+		end
+		
+		-- Combine the geometry parameters to the size in bytes.
+		ulSize = bit.lshift(2, ulBanks) * bit.lshift(256, ulColumns) * bit.lshift(2048, ulRows) * ulBusWidth
+	else
+		-- Yes -> ignore the geometry parameters.
+		ulSize = math.pow(2, atSdramAttributes["size_exponent"])
+	end
+	
+	return ulSize
 end
 
 

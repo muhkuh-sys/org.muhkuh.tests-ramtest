@@ -1,25 +1,4 @@
-local strLuaBinPath = arg[-1] .. "/.."
-local strScriptPath = arg[0] .. "/.."
-
-package.cpath =
-	strLuaBinPath .. "/lua_plugins/?.dll;" ..
-	strLuaBinPath .. "/../lua_plugins/?.dll;" ..
-	package.cpath
-
-package.path =
-	strScriptPath .. "/?.lua;" ..
-	strScriptPath .. "/lua/?.lua;" ..
-	strLuaBinPath .. "/lua/?.lua;" ..
-	strLuaBinPath .. "/../lua/?.lua;" ..
-	package.path
-
-__MUHKUH_WORKING_FOLDER = strScriptPath .. "/"
-
-require("select_plugin_cli")
-require("romloader_usb")
-require("romloader_uart")
-require("romloader_eth")
-require("tester_cli")
+require("muhkuh_cli_init")
 require("ramtest")
 
 tPlugin = tester.getCommonPlugin()
@@ -36,7 +15,7 @@ local atSdramAttributes = {
 }
 
 ulSDRAMStart = ramtest.get_sdram_start(tPlugin, ramtest.SDRAM_INTERFACE_HIF)
-ulSDRAMSize  = ramtest.get_sdram_size(atSdramAttributes)
+ulSDRAMSize  = ramtest.get_sdram_size(tPlugin, atSdramAttributes)
 ulChecks     = ramtest.CHECK_08BIT + ramtest.CHECK_16BIT + ramtest.CHECK_32BIT + ramtest.CHECK_BURST
 ulChecks = ulChecks +ramtest.CHECK_DATABUS + ramtest.CHECK_MARCHC + ramtest.CHECK_CHECKERBOARD
 --ulChecks     = ramtest.CHECK_08BIT

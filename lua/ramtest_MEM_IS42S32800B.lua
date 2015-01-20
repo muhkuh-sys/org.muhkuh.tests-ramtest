@@ -1,3 +1,4 @@
+require("muhkuh_cli_init")
 require("ramtest")
 
 tPlugin = tester.getCommonPlugin()
@@ -14,8 +15,8 @@ local atSdramAttributes = {
 }
 
 
-ulSDRAMStart = ramtest.get_sdram_start(ramtest.SDRAM_INTERFACE_MEM)
-ulSDRAMSize  = ramtest.get_sdram_size(atSdramAttributes)
+ulSDRAMStart = ramtest.get_sdram_start(tPlugin, ramtest.SDRAM_INTERFACE_MEM)
+ulSDRAMSize  = ramtest.get_sdram_size(tPlugin, atSdramAttributes)
 ulChecks     = ramtest.CHECK_08BIT + ramtest.CHECK_16BIT + ramtest.CHECK_32BIT + ramtest.CHECK_BURST
 --ulChecks     = ramtest.CHECK_32BIT + ramtest.CHECK_BURST
 --ulChecks     = ramtest.CHECK_08BIT

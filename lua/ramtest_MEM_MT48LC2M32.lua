@@ -1,25 +1,4 @@
-local strLuaBinPath = arg[-1] .. "/.."
-local strScriptPath = arg[0] .. "/.."
-
-package.cpath =
-	strLuaBinPath .. "/lua_plugins/?.dll;" ..
-	strLuaBinPath .. "/../lua_plugins/?.dll;" ..
-	package.cpath
-
-package.path =
-	strScriptPath .. "/?.lua;" ..
-	strScriptPath .. "/lua/?.lua;" ..
-	strLuaBinPath .. "/lua/?.lua;" ..
-	strLuaBinPath .. "/../lua/?.lua;" ..
-	package.path
-
-__MUHKUH_WORKING_FOLDER = strScriptPath .. "/"
-
-require("select_plugin_cli")
-require("romloader_usb")
-require("romloader_uart")
-require("romloader_eth")
-require("tester_cli")
+require("muhkuh_cli_init")
 require("ramtest")
 
 
@@ -42,7 +21,7 @@ local atSdramAttributes = {
 ulSDRAMStart = ramtest.get_sdram_start(tPlugin, ramtest.SDRAM_INTERFACE_MEM)
 --get the SDRAM_INTERFACE_MEM (contains start adress, ulControl, timing)
 
-ulSDRAMSize  = ramtest.get_sdram_size(atSdramAttributes) -- returns 2 ^^ size_exponent = 2^21 in diesem fall (2M)
+ulSDRAMSize  = ramtest.get_sdram_size(tPlugin, atSdramAttributes) -- returns 2 ^^ size_exponent = 2^21 in diesem fall (2M)
 -- was soll getestet werden ?
 -- ulSDRAMSize ist nicht die tatsächliche von einer hardware gelieferte größe, sondern eine gespeicherte
 
