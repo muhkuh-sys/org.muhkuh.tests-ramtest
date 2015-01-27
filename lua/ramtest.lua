@@ -3,6 +3,7 @@
 --             * setup_sdram uses atSdramAttributes.ulTiming if present,
 --               instead of the value in atPlatformAttributes
 --             * test_ram_noerror always returns the status code from netx
+-- 27.01.15 SL * prettified output of phaseshift test
 
 module("ramtest", package.seeall)
 
@@ -371,9 +372,12 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 	local function printf(...) print(string.format(...)) end
 
 	local function printResults()
-		print("    Sample phase: 0  1  2  3  4  5")
+		print(" ")
+		print("---------------+------------------")
+		print("  Sample phase:|  0  1  2  3  4  5")
+		print("---------------+------------------")
 		for iClockPhase = 0, 5 do
-			local strLine = string.format("Clock phase: %d  ", iClockPhase)
+			local strLine = string.format("Clock phase: %d |", iClockPhase)
 			for iSamplePhase = 0, 5 do
 				local ulResult = aiTestResults[iClockPhase][iSamplePhase]
 				local strResult
@@ -386,20 +390,27 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 			end
 			print(strLine)
 		end
+		print("---------------+------------------")
+		print("0 = Ok   1 = failed   - = not tested")
+		print(" ")
 	end
-
-
+	
+	
 	ulSDRAMStart = get_sdram_start(tPlugin, iInterface)
 	ulSDRAMSize  = get_sdram_size(atSdramAttributes)
 	ulChecks     = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
 	ulLoops      = 1
-
+	
 	while ulLoops <= ulMaxLoops do
 		for iClockPhase = 0, 5 do
 			for iSamplePhase = 0, 5 do
 				local ulPreviousResult = aiTestResults[iClockPhase][iSamplePhase]
 				if ulPreviousResult ~= nil and ulPreviousResult ~= 0 then
+					printf(" ")
+					printf("======================================================================================")
 					printf("Clock phase: %d   Sample phase: %d   Previous result: 0x%08x -- Skipping", iClockPhase, iSamplePhase, ulPreviousResult)
+					printf("======================================================================================")
+					printf(" ")
 
 				else
 					-- Timing Control:
@@ -412,8 +423,11 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 						+ 0x800000
 						+ iSamplePhase * 0x1000000
 					atSdramAttributes.ulTiming = ulTiming
-
+					printf(" ")
+					printf("======================================================================================")
 					printf("Clock phase: %d   Sample phase: %d   ulTiming: 0x%08x", iClockPhase, iSamplePhase, ulTiming)
+					printf("======================================================================================")
+					printf(" ")
 
 					setup_sdram(tPlugin, iInterface, atSdramAttributes)
 					ulResult = test_ram_noerror(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
