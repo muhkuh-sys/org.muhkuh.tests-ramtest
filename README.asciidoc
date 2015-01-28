@@ -93,5 +93,5 @@ It defines the number of bytes asciimath:[m] as asciimath:[m=2^text{size_exponen
   The number of loops to run.
 
 [TIP]
-A good source for the parameters +general_ctrl+, +timing_ctrl+ and +mr+ is the +netx.xml+ file distributed with the Hilscher Bootwizard (http://www.hilscher.com/support_design.html?absenden=1&kat=5).
+A good source for the parameters +general_ctrl+, +timing_ctrl+ and +mr+ is the +netx.xml+ file distributed with the Hilscher Bootwizard (https://kb.hilscher.com/display/BOOTWIZ/netX+Bootwizard).
 
