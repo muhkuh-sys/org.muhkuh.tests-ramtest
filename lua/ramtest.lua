@@ -4,6 +4,7 @@
 --               instead of the value in atPlatformAttributes
 --             * test_ram_noerror always returns the status code from netx
 -- 27.01.15 SL * prettified output of phaseshift test
+-- 28.01.15 SL * fixed call to get_sdram_size in test_phase_parameters
 
 module("ramtest", package.seeall)
 
@@ -397,7 +398,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 	
 	
 	ulSDRAMStart = get_sdram_start(tPlugin, iInterface)
-	ulSDRAMSize  = get_sdram_size(atSdramAttributes)
+	ulSDRAMSize  = get_sdram_size(tPlugin, atSdramAttributes)
 	ulChecks     = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
 	ulLoops      = 1
 	
