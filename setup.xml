@@ -4,7 +4,7 @@
 <muhkuh_buildsystem project="ramtest">
 	<project_version>
 		<major>1</major>
-		<minor>0</minor>
+		<minor>1</minor>
 		<micro>0</micro>
 	</project_version>
 
@@ -12,7 +12,7 @@
 		<group>org.scons</group>
 		<name>scons-local</name>
 		<package>scons-local</package>
-		<version>2.2.0_1</version>
+		<version>2.3.4_1</version>
 		<typ>tar.bz2</typ>
 	</scons>
 
