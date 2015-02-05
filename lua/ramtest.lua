@@ -11,13 +11,13 @@ require("bit")
 require("romloader")
 
 
-	CHECK_DATABUS            = 0x00000001
-	CHECK_08BIT              = 0x00000002
-	CHECK_16BIT              = 0x00000004
-	CHECK_32BIT              = 0x00000008
-	CHECK_MARCHC             = 0x00000010
-	CHECK_CHECKERBOARD       = 0x00000020
-	CHECK_BURST              = 0x00000040
+CHECK_DATABUS            = 0x00000001
+CHECK_08BIT              = 0x00000002
+CHECK_16BIT              = 0x00000004
+CHECK_32BIT              = 0x00000008
+CHECK_MARCHC             = 0x00000010
+CHECK_CHECKERBOARD       = 0x00000020
+CHECK_BURST              = 0x00000040
 
 
 
@@ -104,7 +104,6 @@ local atPlatformAttributes = {
 			[SDRAM_INTERFACE_MEM] = {
 				["ulController"] = 0x00100140,
 				["ulArea_Start"] = 0x80000000,
-				["ulTiming"] = 0x03c00000,
 				["setup"] = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
@@ -118,7 +117,6 @@ local atPlatformAttributes = {
 			[SDRAM_INTERFACE_MEM] = {
 				["ulController"] = 0x00100140,
 				["ulArea_Start"] = 0x80000000,
-				["ulTiming"] = 0x03c00000,
 				["setup"] = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
@@ -132,15 +130,11 @@ local atPlatformAttributes = {
 			[SDRAM_INTERFACE_MEM] = {
 				["ulController"] = 0x101c0140,
 				["ulArea_Start"] = 0x80000000,
-				["ulTiming"] = 0x00a00000,
 				["setup"] = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
 				["ulController"] = 0x101c0240,
 				["ulArea_Start"] = 0x40000000,
-				-- ACHTUNG: bei Svens SDR SPI Test war *nur* 0x03a stabil!
-				-- Alt: 0x00b00000
-				["ulTiming"] = 0x03a00000,
 				["setup"] = setup_sdram_hif_netx56
 			}
 		}
@@ -152,15 +146,11 @@ local atPlatformAttributes = {
 			[SDRAM_INTERFACE_MEM] = {
 				["ulController"] = 0x101c0140,
 				["ulArea_Start"] = 0x80000000,
-				["ulTiming"] = 0x00a00000,
 				["setup"] = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
 				["ulController"] = 0x101c0240,
 				["ulArea_Start"] = 0x40000000,
-				-- ACHTUNG: bei Svens SDR SPI Test war *nur* 0x03a stabil!
-				-- Alt: 0x00b00000
-				["ulTiming"] = 0x03a00000,
 				["setup"] = setup_sdram_hif_netx56
 			}
 		}
@@ -172,7 +162,7 @@ local atPlatformAttributes = {
 			[SDRAM_INTERFACE_MEM] = {
 				["ulController"] = 0x1c000140,
 				["ulArea_Start"] = 0x80000000,
-				["ulTiming"]     = 0x00a00000,
+				["setup"] = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
 			}
@@ -187,12 +177,12 @@ local atPlatformAttributes = {
 			[SDRAM_INTERFACE_HIF] = {
 				["ulController"] = 0x101c0140,
 				["ulArea_Start"] = 0x80000000,
-				["ulTiming"] = 0x00A00000,
 				["setup"] = setup_sdram_hif_netx10
 			}
 		}
 	}
 }
+
 
 
 local function get_interface_attributes(tPlugin, tInterface)
@@ -211,11 +201,46 @@ local function get_interface_attributes(tPlugin, tInterface)
 	if atInterface==nil then
 		error("Chiptype "..tChipType.." has no SDRAM attributes for interface: ", tInterface)
 	end
-
+	
 	return atInterface
 end
 
+
+
+local function compare_netx_version(tPlugin, atSdramAttributes)
+	-- Get the connected chip type.
+	local tChipType = tPlugin:GetChiptyp()
+	
+	-- Get the required chip type for the parameter.
+	local tRequiredChipType = atSdramAttributes["netX"]
+	if tRequiredChipType==nil then
+		local strError =      "The SDRAM parameter have no 'netX' entry. It specifies the chip type for the parameter set.\n"
+		strError = strError .. "Possible values are netX500, netX100, netX51, netX51B, netX50 and netX10.\n"
+		strError = strError .. "Copy one of the following lines to your settings:\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX500,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX100,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX51,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX51B,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX50,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX10,"
+		error(strError)
+	end
+	
+	if tChipType~=tRequiredChipType then
+		local strError =      "The connected chip type does not match the one specified in the SDRAM parameters.\n"
+		strError = strError .. "In other words: the parameters do not work with the connected netX.\n"
+		strError = strError .. "Connected netX:     " .. tPlugin:GetChiptypName(tChipType) .. "\n"
+		strError = strError .. "Parameters are for: " .. tPlugin:GetChiptypName(tRequiredChipType) .. "\n"
+		error(strError)
+	end
+end
+
+
+
 function setup_sdram(tPlugin, tInterface, atSdramAttributes)
+	-- Compare the chip type.
+	compare_netx_version(tPlugin, atSdramAttributes)
+	
 	-- Get the interface attributes.
 	local atInterface = get_interface_attributes(tPlugin, tInterface)
 	
@@ -230,8 +255,7 @@ function setup_sdram(tPlugin, tInterface, atSdramAttributes)
 	
 	-- Combine the timing control value from the base timing and the SDRAM specific value.
 	local ulGeneralCtrl = atSdramAttributes["general_ctrl"]
-	local ulTimingCtrl = atSdramAttributes["ulTiming"] or atInterface["ulTiming"]
-	local ulTimingCtrl = ulTimingCtrl + atSdramAttributes["timing_ctrl"]
+	local ulTimingCtrl  = atSdramAttributes["timing_ctrl"]
 	local ulMr = atSdramAttributes["mr"]
 	
 	print(string.format("SDRAM general ctrl: 0x%08x", ulGeneralCtrl))
@@ -361,7 +385,9 @@ end
 -- test all combinations of SDCLK phase and data sample phase.
 -- iInterface = ramtest.SDRAM_INTERFACE_MEM/HIF
 function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoops)
-
+	-- Compare the chip type.
+	compare_netx_version(tPlugin, atSdramAttributes)
+	
 	-- init/print results
 	local aiTestResults = {}
 
