@@ -19,6 +19,8 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 #-------------------------------------------------------------------------#
 
+import os.path
+
 
 #----------------------------------------------------------------------------
 #
@@ -101,7 +103,41 @@ aAttribs.update(dict({
 	'toclevels': 4
 }))
 
-doc = env_default.Asciidoc('targets/doc/org.muhkuh.tests.ramtest.html', 'README.asciidoc', ASCIIDOC_BACKEND='html5', ASCIIDOC_ATTRIBUTES=aAttribs)
+tDoc = env_default.Asciidoc('targets/doc/org.muhkuh.tests.ramtest.html', 'README.asciidoc', ASCIIDOC_BACKEND='html5', ASCIIDOC_ATTRIBUTES=aAttribs)
+
+#----------------------------------------------------------------------------
+# 
+# Build the artifacts.
+#
+
+aArtifactServer = ('nexus@netx01', 'muhkuh', 'muhkuh_snapshots')
+strArtifactGroup = 'tests.muhkuh.org'
+
+aArtifactGroupReverse = strArtifactGroup.split('.')
+aArtifactGroupReverse.reverse()
+
+
+strArtifactId = 'ramtest'
+tArcList = env_default.ArchiveList('zip')
+tArcList.AddFiles('netx/',
+	ramtest_netx10,
+	ramtest_netx50,
+	ramtest_netx56,
+	ramtest_netx500)
+tArcList.AddFiles('lua/',
+	'lua/ramtest.lua')
+tArcList.AddFiles('demo/',
+	'lua/ramtest_MEM_MT48LC2M32.lua')
+tArcList.AddFiles('doc/',
+	tDoc)
+tArcList.AddFiles('',
+	'ivy/org.muhkuh.tests.ramtest/install.xml')
+
+strArtifactPath = 'targets/ivy/repository/%s/%s/%s' % ('/'.join(aArtifactGroupReverse),strArtifactId,PROJECT_VERSION)
+tArc = env_default.Archive(os.path.join(strArtifactPath, '%s-%s.zip' % (strArtifactId,PROJECT_VERSION)), None, ARCHIVE_CONTENTS=tArcList)
+tIvy = env_default.ArtifactVersion(os.path.join(strArtifactPath, 'ivy-%s.xml' % PROJECT_VERSION), 'ivy/%s.%s/ivy.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
+tPom = env_default.ArtifactVersion(os.path.join(strArtifactPath, '%s-%s.pom' % (strArtifactId,PROJECT_VERSION)), 'ivy/%s.%s/pom.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
+
 
 #----------------------------------------------------------------------------
 #
