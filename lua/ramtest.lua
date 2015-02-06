@@ -209,29 +209,79 @@ end
 
 
 local function compare_netx_version(tPlugin, atSdramAttributes)
+	local atChipTypes = {
+		[500] = {
+			romloader.ROMLOADER_CHIPTYP_NETX500,
+			romloader.ROMLOADER_CHIPTYP_NETX100
+		},
+		[56] = {
+			romloader.ROMLOADER_CHIPTYP_NETX56,
+			romloader.ROMLOADER_CHIPTYP_NETX56B
+		},
+		[50] = {
+			romloader.ROMLOADER_CHIPTYP_NETX50
+		},
+		[10] = {
+			romloader.ROMLOADER_CHIPTYP_NETX10
+		}
+	}
+	
 	-- Get the connected chip type.
 	local tChipType = tPlugin:GetChiptyp()
+	
+	local atChipTypesStr = {}
+	for uiNetxTyp,atTypes in pairs(atChipTypes) do
+		local strChipTypes = ""
+		sizChipTypes = #atTypes
+		for uiCnt,tTyp in ipairs(atTypes) do
+			strChipTypes = strChipTypes .. tPlugin:GetChiptypName(tTyp)
+			-- Is more than one element left?
+			if uiCnt+1<sizChipTypes then
+				-- Yes, more than one left. Use a comma as a separator.
+				strChipTypes = strChipTypes .. ", "
+			-- Is exactly one element left?
+			elseif uiCnt+1==sizChipTypes then
+				-- Yes, connect it with "and".
+				strChipTypes = strChipTypes .. " and "
+			end
+		end
+		atChipTypesStr[uiNetxTyp] = strChipTypes
+	end
+	
+	
+	local strHelp = "Possible values are:\n"
+	for uiNetxTyp,strTypes in pairs(atChipTypesStr) do
+		strHelp = strHelp .. string.format("  %3d: %s\n", uiNetxTyp, strTypes)
+	end
 	
 	-- Get the required chip type for the parameter.
 	local tRequiredChipType = atSdramAttributes["netX"]
 	if tRequiredChipType==nil then
-		local strError =      "The SDRAM parameter have no 'netX' entry. It specifies the chip type for the parameter set.\n"
-		strError = strError .. "Possible values are netX500, netX100, netX51, netX51B, netX50 and netX10.\n"
-		strError = strError .. "Copy one of the following lines to your settings:\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX500,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX100,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX56,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX56B,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX50,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX10,"
+		local strError = "The SDRAM parameter have no 'netX' entry. It specifies the chip type for the parameter set.\n"
+		strError = strError .. strHelp
 		error(strError)
 	end
 	
-	if tChipType~=tRequiredChipType then
+	local atTypes = atChipTypes[tRequiredChipType]
+	if atTypes==nil then
+		local strError = string.format("The SDRAM parameter have an invalid netX value: %s", tRequiredChipType)
+		strError = strError .. strHelp
+		error(strError)
+	end
+	
+	local fChipTypeMatches = false
+	for uiCnt,tTyp in ipairs(atTypes) do
+		if tTyp==tChipType then
+			fChipTypeMatches = true
+			break
+		end
+	end
+	
+	if fChipTypeMatches~=true then
 		local strError =      "The connected chip type does not match the one specified in the SDRAM parameters.\n"
 		strError = strError .. "In other words: the parameters do not work with the connected netX.\n"
 		strError = strError .. "Connected netX:     " .. tPlugin:GetChiptypName(tChipType) .. "\n"
-		strError = strError .. "Parameters are for: " .. tPlugin:GetChiptypName(tRequiredChipType) .. "\n"
+		strError = strError .. "Parameters are for: " .. atChipTypesStr[tRequiredChipType] .. "\n"
 		error(strError)
 	end
 end

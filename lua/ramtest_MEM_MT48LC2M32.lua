@@ -8,12 +8,10 @@ if tPlugin==nil then
 end
 
 local atSdramAttributes = {
-	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX500,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX100,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX56,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX56B,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX50,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX10,
+	["netX"]          = 500,
+--	["netX"]          = 56,
+--	["netX"]          = 50,
+--	["netX"]          = 10,
 
 	["general_ctrl"]  = 0x030d0001,
 	["timing_ctrl"]   = 0x03c12151,
