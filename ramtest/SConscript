@@ -68,28 +68,28 @@ env_netx500_t.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_t.Append(CPPPATH = aCppPath)
 src_netx500_t = env_netx500_t.SetBuildPath('targets/netx500/muhkuh_test', 'src', sources_common+sources_test)
 elf_netx500_t = env_netx500_t.Elf('targets/netx500/muhkuh_test/ramtest.elf', src_netx500_t + platform_lib_netx500)
-ramtest_netx500 = env_netx500_t.ObjCopy('targets/netx500/muhkuh_test/ramtest.bin', elf_netx500_t)
+ramtest_netx500 = env_netx500_t.ObjCopy('targets/netx500/muhkuh_test/ramtest_netx500.bin', elf_netx500_t)
 
 env_netx56_t = env_netx56_default.Clone()
 env_netx56_t.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_t.Append(CPPPATH = aCppPath)
 src_netx56_t = env_netx56_t.SetBuildPath('targets/netx56/muhkuh_test', 'src', sources_common+sources_test)
 elf_netx56_t = env_netx56_t.Elf('targets/netx56/muhkuh_test/ramtest.elf', src_netx56_t + platform_lib_netx56)
-ramtest_netx56 = env_netx56_t.ObjCopy('targets/netx56/muhkuh_test/ramtest.bin', elf_netx56_t)
+ramtest_netx56 = env_netx56_t.ObjCopy('targets/netx56/muhkuh_test/ramtest_netx56.bin', elf_netx56_t)
 
 env_netx50_t = env_netx50_default.Clone()
 env_netx50_t.Replace(LDFILE = 'src/netx50/netx50.ld')
 env_netx50_t.Append(CPPPATH = aCppPath)
 src_netx50_t = env_netx50_t.SetBuildPath('targets/netx50/muhkuh_test', 'src', sources_common+sources_test)
 elf_netx50_t = env_netx50_t.Elf('targets/netx50/muhkuh_test/ramtest.elf', src_netx50_t + platform_lib_netx50)
-ramtest_netx50 = env_netx50_t.ObjCopy('targets/netx50/muhkuh_test/ramtest.bin', elf_netx50_t)
+ramtest_netx50 = env_netx50_t.ObjCopy('targets/netx50/muhkuh_test/ramtest_netx50.bin', elf_netx50_t)
 
 env_netx10_t = env_netx10_default.Clone()
 env_netx10_t.Replace(LDFILE = 'src/netx10/netx10.ld')
 env_netx10_t.Append(CPPPATH = aCppPath)
 src_netx10_t = env_netx10_t.SetBuildPath('targets/netx10/muhkuh_test', 'src', sources_common+sources_test)
 elf_netx10_t = env_netx10_t.Elf('targets/netx10/muhkuh_test/ramtest.elf', src_netx10_t + platform_lib_netx10)
-ramtest_netx10 = env_netx10_t.ObjCopy('targets/netx10/muhkuh_test/ramtest.bin', elf_netx10_t)
+ramtest_netx10 = env_netx10_t.ObjCopy('targets/netx10/muhkuh_test/ramtest_netx10.bin', elf_netx10_t)
 
 Export('ramtest_netx500', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 
@@ -102,28 +102,28 @@ env_netx500_s = env_netx500_default.Clone()
 env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_s.Append(CPPPATH = aCppPath)
 src_netx500_s = env_netx500_s.SetBuildPath('targets/netx500/standalone', 'src', sources_common+sources_standalone)
-elf_netx500_s = env_netx500_s.Elf('targets/netx500/standalone/ramtest.elf', src_netx500_s + platform_lib_netx500)
+elf_netx500_s = env_netx500_s.Elf('targets/netx500/standalone/ramtest_netx500.elf', src_netx500_s + platform_lib_netx500)
 
 
 env_netx56_s = env_netx56_default.Clone()
 env_netx56_s.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_s.Append(CPPPATH = aCppPath)
 src_netx56_s = env_netx56_s.SetBuildPath('targets/netx56/standalone', 'src', sources_common+sources_standalone)
-elf_netx56_s = env_netx56_s.Elf('targets/netx56/standalone/ramtest.elf', src_netx56_s + platform_lib_netx56)
+elf_netx56_s = env_netx56_s.Elf('targets/netx56/standalone/ramtest_netx56.elf', src_netx56_s + platform_lib_netx56)
 
 
 env_netx50_s = env_netx50_default.Clone()
 env_netx50_s.Replace(LDFILE = 'src/netx50/netx50.ld')
 env_netx50_s.Append(CPPPATH = aCppPath)
 src_netx50_s = env_netx50_s.SetBuildPath('targets/netx50/standalone', 'src', sources_common+sources_standalone)
-elf_netx50_s = env_netx50_s.Elf('targets/netx50/standalone/ramtest.elf', src_netx50_s + platform_lib_netx50)
+elf_netx50_s = env_netx50_s.Elf('targets/netx50/standalone/ramtest_netx50.elf', src_netx50_s + platform_lib_netx50)
 
 
 env_netx10_s = env_netx10_default.Clone()
 env_netx10_s.Replace(LDFILE = 'src/netx10/netx10.ld')
 env_netx10_s.Append(CPPPATH = aCppPath)
 src_netx10_s = env_netx10_s.SetBuildPath('targets/netx10/standalone', 'src', sources_common+sources_standalone)
-elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest.elf', src_netx10_s + platform_lib_netx10)
+elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest_netx10.elf', src_netx10_s + platform_lib_netx10)
 
 
 
@@ -135,5 +135,5 @@ env_netx500_d = env_netx500_default.Clone()
 env_netx500_d.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_d.Append(CPPPATH = aCppPath)
 src_netx500_d = env_netx500_d.SetBuildPath('targets/netx500/debugger', 'src', sources_common+sources_debugger)
-elf_netx500_d = env_netx500_d.Elf('targets/netx500/debugger/ramtest.elf', src_netx500_d + platform_lib_netx500)
+elf_netx500_d = env_netx500_d.Elf('targets/netx500/debugger/ramtest_netx500.elf', src_netx500_d + platform_lib_netx500)
 
