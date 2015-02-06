@@ -10,8 +10,8 @@ end
 local atSdramAttributes = {
 	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX500,
 --	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX100,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX51,
---	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX51B,
+--	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX56,
+--	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX56B,
 --	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX50,
 --	["netX"]          = romloader.ROMLOADER_CHIPTYP_NETX10,
 

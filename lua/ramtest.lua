@@ -220,8 +220,8 @@ local function compare_netx_version(tPlugin, atSdramAttributes)
 		strError = strError .. "Copy one of the following lines to your settings:\n"
 		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX500,\n"
 		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX100,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX51,\n"
-		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX51B,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX56,\n"
+		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX56B,\n"
 		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX50,\n"
 		strError = strError .. "        [\"netX\"]          = romloader.ROMLOADER_CHIPTYP_NETX10,"
 		error(strError)
