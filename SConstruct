@@ -128,6 +128,8 @@ tArcList.AddFiles('lua/',
 	'lua/ramtest.lua')
 tArcList.AddFiles('demo/',
 	'lua/ramtest_MEM_MT48LC2M32.lua')
+tArcList.AddFiles('templates/',
+	'lua/ramtest_template.lua')
 tArcList.AddFiles('doc/',
 	tDoc)
 tArcList.AddFiles('',
