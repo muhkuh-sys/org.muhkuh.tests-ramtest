@@ -1,5 +1,5 @@
--- SL 28.07.14
--- try all combinations of sdclk_phase and data_sample_phase
+-- 28.07.14 SL try all combinations of sdclk_phase and data_sample_phase
+-- 03.03.15 SL adapt to new API taking a netx type and no extra ulTiming value
 
 -- NXHX51-ETM Rev.2, netX51 Step A
 --                  sample phase
@@ -44,10 +44,14 @@ end
 
 
 local atSdramAttributes = {
+	["netX"]          = 500,
+--	["netX"]          = 56,
+--	["netX"]          = 50,
+--	["netX"]          = 10,
+
 	["general_ctrl"]  = 0x030d0001,
 	["timing_ctrl"]   = 0x00012151,
 	["mr"]            = 0x00000033,
-	["ulTiming"]      = 0x03b00000, -- dummy
 	["size_exponent"] = 23
 }
 

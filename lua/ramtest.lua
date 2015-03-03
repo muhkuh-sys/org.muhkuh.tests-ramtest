@@ -5,6 +5,7 @@
 --             * test_ram_noerror always returns the status code from netx
 -- 27.01.15 SL * prettified output of phaseshift test
 -- 28.01.15 SL * fixed call to get_sdram_size in test_phase_parameters
+-- 03.03.15 SL * adapted calculation of timing_ctrl to changes in setup_sdram
 
 module("ramtest", package.seeall)
 
@@ -472,7 +473,8 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 		print(" ")
 	end
 	
-	
+	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0x000fffff)
+
 	ulSDRAMStart = get_sdram_start(tPlugin, iInterface)
 	ulSDRAMSize  = get_sdram_size(tPlugin, atSdramAttributes)
 	ulChecks     = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
@@ -494,15 +496,15 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 					-- 22:20 MEM_SDCLK_PHASE 0-5
 					-- 23    MEM_SDCLK_SSNEG 1
 					-- 26:24 DATA_SAMPLE_PHASE 0-5
-
 					local ulTiming =
 						iClockPhase * 0x100000
 						+ 0x800000
 						+ iSamplePhase * 0x1000000
-					atSdramAttributes.ulTiming = ulTiming
+					atSdramAttributes.timing_ctrl = timing_ctrl_base + ulTiming
+					
 					printf(" ")
 					printf("======================================================================================")
-					printf("Clock phase: %d   Sample phase: %d   ulTiming: 0x%08x", iClockPhase, iSamplePhase, ulTiming)
+					printf("Clock phase: %d   Sample phase: %d   timing_ctrl: 0x%08x", iClockPhase, iSamplePhase, atSdramAttributes.timing_ctrl)
 					printf("======================================================================================")
 					printf(" ")
 
