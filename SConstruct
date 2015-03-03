@@ -126,8 +126,6 @@ tArcList.AddFiles('netx/',
 	ramtest_netx500)
 tArcList.AddFiles('lua/',
 	'lua/ramtest.lua')
-tArcList.AddFiles('demo/',
-	'lua/ramtest_MEM_MT48LC2M32.lua')
 tArcList.AddFiles('templates/',
 	'lua/ramtest_template.lua')
 tArcList.AddFiles('doc/',
@@ -155,7 +153,3 @@ Command('targets/testbench/netx/setup_netx56.bin',  setup_netx56,  Copy("$TARGET
 
 # Copy all LUA scripts.
 Command('targets/testbench/lua/ramtest.lua',                        'lua/ramtest.lua',                            Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/ramtest_HIF_IS42S16400F-6BLI.lua',       'lua/ramtest_HIF_IS42S16400F-6BLI.lua',       Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/ramtest_MEM_IS42S32800B.lua',            'lua/ramtest_MEM_IS42S32800B.lua',            Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/ramtest_MEM_MT48LC2M32.lua',             'lua/ramtest_MEM_MT48LC2M32.lua',             Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/timing_phase_test_MEM_MT48LC2M32.lua',   'lua/timing_phase_test_MEM_MT48LC2M32.lua',   Copy("$TARGET", "$SOURCE"))
