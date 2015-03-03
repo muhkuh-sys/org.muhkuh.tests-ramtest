@@ -139,6 +139,15 @@ tIvy = env_default.ArtifactVersion(os.path.join(strArtifactPath, 'ivy-%s.xml' % 
 tPom = env_default.ArtifactVersion(os.path.join(strArtifactPath, '%s-%s.pom' % (strArtifactId,PROJECT_VERSION)), 'ivy/%s.%s/pom.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
 
 
+# Build the artifact list for the deploy operation to bintray.
+env_default.AddArtifact(tArc, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'zip')
+env_default.AddArtifact(tIvy, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'ivy')
+tArtifacts = env_default.Artifact('targets/artifacts.xml', None)
+
+# Copy the artifacts to a fixed filename to allow a deploy to github.
+Command('targets/ivy/%s.zip' % strArtifactId,  tArc,  Copy("$TARGET", "$SOURCE"))
+Command('targets/ivy/%s.xml' % strArtifactId,  tIvy,  Copy("$TARGET", "$SOURCE"))
+
 #----------------------------------------------------------------------------
 #
 # Make a local demo installation.
