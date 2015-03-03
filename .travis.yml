@@ -27,3 +27,4 @@ deploy:
     - targets/ivy/ivy.xml
   on:
     repo: muhkuh-sys/muhkuh_tests-ramtest
+    tags: true
