@@ -288,12 +288,12 @@ end
 
 
 
-function setup_sdram(tPlugin, tInterface, atSdramAttributes)
+function setup_sdram(tPlugin, atSdramAttributes)
 	-- Compare the chip type.
 	compare_netx_version(tPlugin, atSdramAttributes)
 	
 	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, tInterface)
+	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes["interface"])
 	
 	-- Call the setup function for the platform and interface.
 	local pfnSetup = atInterface["setup"]
@@ -324,9 +324,9 @@ end
 
 
 
-function disable_sdram(tPlugin, tInterface)
+function disable_sdram(tPlugin, atSdramAttributes)
 	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, tInterface)
+	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes["interface"])
 	
 	-- Get the base address of the SDRAM controller.
 	local ulSDRamController = atInterface["ulController"]
@@ -389,9 +389,9 @@ end
 
 
 
-function get_sdram_start(tPlugin, tInterface)
+function get_sdram_start(tPlugin, atSdramAttributes)
 	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, tInterface)
+	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes["interface"])
 
 	return atInterface["ulArea_Start"]
 end

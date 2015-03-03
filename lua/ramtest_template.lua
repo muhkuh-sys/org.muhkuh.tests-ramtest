@@ -12,11 +12,12 @@ local atSdramAttributes = {
 	["general_ctrl"]  = ${REGISTER_GENERAL_CTRL},
 	["timing_ctrl"]   = ${REGISTER_TIMING_CTRL},
 	["mr"]            = ${REGISTER_MODE},
-	["size_exponent"] = ${SIZE_EXPONENT}
+	["size_exponent"] = ${SIZE_EXPONENT},
+	["interface"]     = ramtest.SDRAM_INTERFACE_${INTERFACE}
 }
 
 
-ulSDRAMStart = ramtest.get_sdram_start(tPlugin, ramtest.SDRAM_INTERFACE_MEM)
+ulSDRAMStart = ramtest.get_sdram_start(tPlugin, atSdramAttributes)
 ulSDRAMSize  = ramtest.get_sdram_size(tPlugin, atSdramAttributes)
 
 ulChecks     = 0
@@ -31,9 +32,9 @@ ulChecks     = ulChecks + ramtest.CHECK_CHECKERBOARD
 ulLoops      = 0x1
 
 
-ramtest.setup_sdram(tPlugin, ramtest.SDRAM_INTERFACE_MEM, atSdramAttributes)
+ramtest.setup_sdram(tPlugin, atSdramAttributes)
 ramtest.test_ram(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
-ramtest.disable_sdram(tPlugin, ramtest.SDRAM_INTERFACE_MEM)
+ramtest.disable_sdram(tPlugin, atSdramAttributes)
 
 
 print("")
