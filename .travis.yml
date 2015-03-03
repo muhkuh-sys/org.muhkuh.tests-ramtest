@@ -25,6 +25,7 @@ deploy:
   file:
     - targets/ivy/ramtest.zip
     - targets/ivy/ivy.xml
+  skip_cleanup: true
   on:
     repo: muhkuh-sys/muhkuh_tests-ramtest
     tags: true
