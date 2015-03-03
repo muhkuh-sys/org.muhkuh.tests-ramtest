@@ -146,7 +146,7 @@ tArtifacts = env_default.Artifact('targets/artifacts.xml', None)
 
 # Copy the artifacts to a fixed filename to allow a deploy to github.
 Command('targets/ivy/%s.zip' % strArtifactId,  tArc,  Copy("$TARGET", "$SOURCE"))
-Command('targets/ivy/%s.xml' % strArtifactId,  tIvy,  Copy("$TARGET", "$SOURCE"))
+Command('targets/ivy/ivy.xml', tIvy,  Copy("$TARGET", "$SOURCE"))
 
 #----------------------------------------------------------------------------
 #
