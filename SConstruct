@@ -127,7 +127,9 @@ tArcList.AddFiles('netx/',
 tArcList.AddFiles('lua/',
 	'lua/ramtest.lua')
 tArcList.AddFiles('templates/',
-	'lua/ramtest_template.lua')
+	'lua/attributes_template.lua',
+	'lua/ramtest_template.lua',
+	'lua/timing_phase_test_template.lua')
 tArcList.AddFiles('doc/',
 	tDoc)
 tArcList.AddFiles('',
