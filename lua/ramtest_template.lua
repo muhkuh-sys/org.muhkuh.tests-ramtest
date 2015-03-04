@@ -7,14 +7,8 @@ if tPlugin==nil then
 	error("No plug-in selected, nothing to do!")
 end
 
-local atSdramAttributes = {
-	["netX"]          = ${CHIP_TYPE},
-	["general_ctrl"]  = ${REGISTER_GENERAL_CTRL},
-	["timing_ctrl"]   = ${REGISTER_TIMING_CTRL},
-	["mr"]            = ${REGISTER_MODE},
-	["size_exponent"] = ${SIZE_EXPONENT},
-	["interface"]     = ramtest.SDRAM_INTERFACE_${INTERFACE}
-}
+
+${SDRAM_ATTRIBUTES}
 
 
 ulSDRAMStart = ramtest.get_sdram_start(tPlugin, atSdramAttributes)
