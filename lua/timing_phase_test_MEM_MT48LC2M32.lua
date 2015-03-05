@@ -1,5 +1,6 @@
 -- 28.07.14 SL try all combinations of sdclk_phase and data_sample_phase
 -- 03.03.15 SL adapt to new API taking a netx type and no extra ulTiming value
+-- 05.05.15 SL removed extra interface parameter from call
 
 -- NXHX51-ETM Rev.2, netX51 Step A
 --                  sample phase
@@ -55,7 +56,7 @@ local atSdramAttributes = {
 	["size_exponent"] = 23
 }
 
-ramtest.test_phase_parameters(tPlugin, atSdramAttributes, ramtest.SDRAM_INTERFACE_MEM, 2)
+ramtest.test_phase_parameters(tPlugin, atSdramAttributes, 2)
 
 -- Disconnect the plug-in.
 tPlugin:Disconnect()

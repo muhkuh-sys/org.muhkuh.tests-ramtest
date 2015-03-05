@@ -6,6 +6,8 @@
 -- 27.01.15 SL * prettified output of phaseshift test
 -- 28.01.15 SL * fixed call to get_sdram_size in test_phase_parameters
 -- 03.03.15 SL * adapted calculation of timing_ctrl to changes in setup_sdram
+-- 05.03.15 SL * test_phase_parameters: adapted to changed function interfaces
+--               ["x"] rewritten as .x
 
 module("ramtest", package.seeall)
 
@@ -58,7 +60,7 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	print(string.format("ulAddressCfg=0x%08x", ulAddressCfg))
 	
 	-- Get the configuration value for the data bus size.
-	ulGeneralCtrl = atSdramAttributes["general_ctrl"]
+	ulGeneralCtrl = atSdramAttributes.general_ctrl
 	if bit.band(ulGeneralCtrl,0x00010000)==0 then
 		-- The data bus has a size of 16 bits.
 		ulDataCfg = 0x00000050
@@ -82,7 +84,7 @@ end
 local function setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
 	-- Generate the value for the HIF_IO_CTRL register.
 	-- This depends on the data bus width of the SDRAM device.
-	ulGeneralCtrl = atSdramAttributes["general_ctrl"]
+	ulGeneralCtrl = atSdramAttributes.general_ctrl
 	if bit.band(ulGeneralCtrl,0x00010000)==0 then
 		-- The data bus has a size of 8 bits.
 		ulHifIoCtrl = 0x00000040
@@ -101,12 +103,12 @@ end
 
 local atPlatformAttributes = {
 	[romloader.ROMLOADER_CHIPTYP_NETX500] = {
-		["ulAsic"] = 500,
-		["sdram"] = {
+		ulAsic = 500,
+		sdram = {
 			[SDRAM_INTERFACE_MEM] = {
-				["ulController"] = 0x00100140,
-				["ulArea_Start"] = 0x80000000,
-				["setup"] = nil
+				ulController = 0x00100140,
+				ulArea_Start = 0x80000000,
+				setup = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
 			}
@@ -114,12 +116,12 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX100] = {
-		["ulAsic"] = 500,
-		["sdram"] = {
+		ulAsic = 500,
+		sdram = {
 			[SDRAM_INTERFACE_MEM] = {
-				["ulController"] = 0x00100140,
-				["ulArea_Start"] = 0x80000000,
-				["setup"] = nil
+				ulController = 0x00100140,
+				ulArea_Start = 0x80000000,
+				setup = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
 			}
@@ -127,44 +129,44 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX56] = {
-		["ulAsic"] = 56,
-		["sdram"] = {
+		ulAsic = 56,
+		sdram = {
 			[SDRAM_INTERFACE_MEM] = {
-				["ulController"] = 0x101c0140,
-				["ulArea_Start"] = 0x80000000,
-				["setup"] = nil
+				ulController = 0x101c0140,
+				ulArea_Start = 0x80000000,
+				setup = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
-				["ulController"] = 0x101c0240,
-				["ulArea_Start"] = 0x40000000,
-				["setup"] = setup_sdram_hif_netx56
+				ulController = 0x101c0240,
+				ulArea_Start = 0x40000000,
+				setup = setup_sdram_hif_netx56
 			}
 		}
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX56B] = {
-		["ulAsic"] = 56,
-		["sdram"] = {
+		ulAsic = 56,
+		sdram = {
 			[SDRAM_INTERFACE_MEM] = {
-				["ulController"] = 0x101c0140,
-				["ulArea_Start"] = 0x80000000,
-				["setup"] = nil
+				ulController = 0x101c0140,
+				ulArea_Start = 0x80000000,
+				setup = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
-				["ulController"] = 0x101c0240,
-				["ulArea_Start"] = 0x40000000,
-				["setup"] = setup_sdram_hif_netx56
+				ulController = 0x101c0240,
+				ulArea_Start = 0x40000000,
+				setup = setup_sdram_hif_netx56
 			}
 		}
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX50] = {
-		["ulAsic"] = 50,
-		["sdram"] = {
+		ulAsic = 50,
+		sdram = {
 			[SDRAM_INTERFACE_MEM] = {
-				["ulController"] = 0x1c000140,
-				["ulArea_Start"] = 0x80000000,
-				["setup"] = nil
+				ulController = 0x1c000140,
+				ulArea_Start = 0x80000000,
+				setup = nil
 			},
 			[SDRAM_INTERFACE_HIF] = {
 			}
@@ -172,14 +174,14 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX10] = {
-		["ulAsic"] = 10,
-		["sdram"] = {
+		ulAsic = 10,
+		sdram = {
 			[SDRAM_INTERFACE_MEM] = {
 			},
 			[SDRAM_INTERFACE_HIF] = {
-				["ulController"] = 0x101c0140,
-				["ulArea_Start"] = 0x80000000,
-				["setup"] = setup_sdram_hif_netx10
+				ulController = 0x101c0140,
+				ulArea_Start = 0x80000000,
+				setup = setup_sdram_hif_netx10
 			}
 		}
 	}
@@ -195,7 +197,7 @@ local function get_interface_attributes(tPlugin, tInterface)
 		error("Unknown chip type: ", tChipType)
 	end
 	-- Get the interface attributes.
-	local atSdram = atPlatform["sdram"]
+	local atSdram = atPlatform.sdram
 	if atSdram==nil then
 		error("Chiptype has no sdram attributes: ", tChipType)
 	end
@@ -256,7 +258,7 @@ local function compare_netx_version(tPlugin, atSdramAttributes)
 	end
 	
 	-- Get the required chip type for the parameter.
-	local tRequiredChipType = atSdramAttributes["netX"]
+	local tRequiredChipType = atSdramAttributes.netX
 	if tRequiredChipType==nil then
 		local strError = "The SDRAM parameter have no 'netX' entry. It specifies the chip type for the parameter set.\n"
 		strError = strError .. strHelp
@@ -294,21 +296,21 @@ function setup_sdram(tPlugin, atSdramAttributes)
 	compare_netx_version(tPlugin, atSdramAttributes)
 	
 	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes["interface"])
+	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes.interface)
 	
 	-- Call the setup function for the platform and interface.
-	local pfnSetup = atInterface["setup"]
+	local pfnSetup = atInterface.setup
 	if pfnSetup~=nil then
 		pfnSetup(tPlugin, atSdramAttributes)
 	end
 	
 	-- Get the base address of the SDRAM controller.
-	local ulSDRamController = atInterface["ulController"]
+	local ulSDRamController = atInterface.ulController
 	
 	-- Combine the timing control value from the base timing and the SDRAM specific value.
-	local ulGeneralCtrl = atSdramAttributes["general_ctrl"]
-	local ulTimingCtrl  = atSdramAttributes["timing_ctrl"]
-	local ulMr = atSdramAttributes["mr"]
+	local ulGeneralCtrl = atSdramAttributes.general_ctrl
+	local ulTimingCtrl  = atSdramAttributes.timing_ctrl
+	local ulMr = atSdramAttributes.mr
 	
 	print(string.format("SDRAM general ctrl: 0x%08x", ulGeneralCtrl))
 	print(string.format("SDRAM timing ctrl:  0x%08x", ulTimingCtrl))
@@ -327,10 +329,10 @@ end
 
 function disable_sdram(tPlugin, atSdramAttributes)
 	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes["interface"])
+	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes.interface)
 	
 	-- Get the base address of the SDRAM controller.
-	local ulSDRamController = atInterface["ulController"]
+	local ulSDRamController = atInterface.ulController
 	
 	-- Disable the SDRam controller.
 	tPlugin:write_data32(ulSDRamController+0, 0)
@@ -344,9 +346,9 @@ function get_sdram_size(tPlugin, atSdramAttributes)
 	local ulSize = nil
 	
 	-- Is a size specified in the attributes?
-	if atSdramAttributes["size_exponent"]==nil then
+	if atSdramAttributes.size_exponent==nil then
 		-- No -> get the size from the geometry parameters.
-		local ulGeneralCtrl = atSdramAttributes["general_ctrl"]
+		local ulGeneralCtrl = atSdramAttributes.general_ctrl
 		-- Extract the geometry parameters.
 		local ulBanks    =            bit.band(ulGeneralCtrl, 0x00000003)
 		local ulRows     = bit.rshift(bit.band(ulGeneralCtrl, 0x00000030), 4)
@@ -382,7 +384,7 @@ function get_sdram_size(tPlugin, atSdramAttributes)
 		ulSize = bit.lshift(2, ulBanks) * bit.lshift(256, ulColumns) * bit.lshift(2048, ulRows) * ulBusWidth
 	else
 		-- Yes -> ignore the geometry parameters.
-		ulSize = math.pow(2, atSdramAttributes["size_exponent"])
+		ulSize = math.pow(2, atSdramAttributes.size_exponent)
 	end
 	
 	return ulSize
@@ -392,13 +394,13 @@ end
 
 function get_sdram_start(tPlugin, atSdramAttributes)
 	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes["interface"])
+	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes.interface)
 
-	return atInterface["ulArea_Start"]
+	return atInterface.ulArea_Start
 end
 
 
-
+-- run the ram test
 function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 	-- Get the platform attributes for the chip type.
 	local tChipType = tPlugin:GetChiptyp()
@@ -408,7 +410,7 @@ function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 	end
 	
 	-- Get the binary.
-	local strBinaryName = string.format("netx/ramtest_netx%d.bin", atPlatformAttributes["ulAsic"])
+	local strBinaryName = string.format("netx/ramtest_netx%d.bin", atPlatformAttributes.ulAsic)
 	
 	-- Construct the parameter.
 	local aulParameter = {
@@ -424,7 +426,7 @@ function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 end
 
 
-
+-- wrapper: run ram test and abort on error
 function test_ram(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 	local ulResult = test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 	if ulResult~=0 then
@@ -433,14 +435,26 @@ function test_ram(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 end
 
 
+-- Detect the working values of SDCLK phase and data sample phase
+-- by running the SDRAM test for all valid combinations.
+--
+-- Initially, the SDRAM test is run once for all combinations.
+-- In further rounds, the SDRAM test is re-run for all combinations 
+-- which passed the previous tests. 
+-- The number of runs of the SDRAM test is doubled in each round until
+-- it exceeds ulMaxLoops.
 
--- test all combinations of SDCLK phase and data sample phase.
--- iInterface = ramtest.SDRAM_INTERFACE_MEM/HIF
-function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoops)
+function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 	-- Compare the chip type.
 	compare_netx_version(tPlugin, atSdramAttributes)
 	
-	-- init/print results
+	-- define test parameters
+	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0x000fffff)
+	local ulSDRAMStart     = get_sdram_start(tPlugin, atSdramAttributes)
+	local ulSDRAMSize      = get_sdram_size(tPlugin, atSdramAttributes)
+	local ulChecks         = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
+	
+	-- init the result matrix, define print function
 	local aiTestResults = {}
 
 	for iClockPhase = 0, 5 do
@@ -473,13 +487,9 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 		print(" ")
 	end
 	
-	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0x000fffff)
+	-- run the test
+	local ulLoops          = 1
 
-	ulSDRAMStart = get_sdram_start(tPlugin, iInterface)
-	ulSDRAMSize  = get_sdram_size(tPlugin, atSdramAttributes)
-	ulChecks     = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
-	ulLoops      = 1
-	
 	while ulLoops <= ulMaxLoops do
 		for iClockPhase = 0, 5 do
 			for iSamplePhase = 0, 5 do
@@ -508,12 +518,12 @@ function test_phase_parameters(tPlugin, atSdramAttributes, iInterface, ulMaxLoop
 					printf("======================================================================================")
 					printf(" ")
 
-					setup_sdram(tPlugin, iInterface, atSdramAttributes)
+					setup_sdram(tPlugin, atSdramAttributes)
 					ulResult = test_ram_noerror(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
-					disable_sdram(tPlugin, iInterface)
+					aiTestResults[iClockPhase][iSamplePhase] = ulResult
+					disable_sdram(tPlugin, atSdramAttributes)
 
 					printf("Clock phase: %d   Sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
-					aiTestResults[iClockPhase][iSamplePhase] = ulResult
 					printResults()
 				end
 			end
