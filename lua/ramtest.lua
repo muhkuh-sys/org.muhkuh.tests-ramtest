@@ -588,11 +588,9 @@ function run_ramtest(par)
 	local ulChecks    = par.ulChecks     or 0
 	local ulLoops     = par.ulLoops      or 1
 	local ulPerfTests = par.ulPerfTests  or 0
-	local ulRowSize   = par.ulRowSize    or 0
 	
 	printf("ulAreaStart 0x%08x", ulAreaStart )
 	printf("ulAreaSize  0x%08x", ulAreaSize  )
-	printf("ulRowSize   0x%08x", ulRowSize   )
 	printf("ulChecks    0x%08x", ulChecks    )
 	printf("ulPerfTests 0x%08x", ulPerfTests )
 	printf("ulLoops     0x%08x", ulLoops     )
@@ -603,7 +601,6 @@ function run_ramtest(par)
 		ulChecks    ,
 		ulLoops     ,
 		ulPerfTests ,
-		ulRowSize   ,
 		0           , -- pfnProgress
 		0           , -- ulProgress
 	}
@@ -629,10 +626,27 @@ end
 
 -- Run the performance test
 function run_performance_test(tPlugin, ulAreaStart, ulAreaSize, ulPerfTests)
-	local ulResult, aulTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulRowSize=1024, ulPerfTests=ulPerfTests}
+	local ulResult, aulTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests}
 	
 	print("Result: ", ulResult)
-	for i = 1, 32 do 
-		print(i, aulTimes[i])
+	
+	local t = {}
+	for i, v in ipairs(aulTimes) do
+		t[i-1] = v/100
 	end
+	
+	printf("Start address: 0x%08x", ulAreaStart)
+	printf("Area size:     0x%08x", ulAreaSize)
+	print()
+	print("Times in microseconds:")
+	printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
+	printf("sequential read       %10.3f %10.3f %10.3f %10.3f ", t[ 0],   t[ 1],   t[ 2],    t[ 3])
+	printf("sequential write      %10.3f %10.3f %10.3f %10.3f ", t[ 4],   t[ 5],   t[ 6],    t[ 7])
+	printf("sequential read/write %10.3f %10.3f %10.3f %10.3f ", t[ 8],   t[ 9],   t[10],    t[11])
+	printf("row read              %10.3f %10.3f %10.3f %10.3f ", t[13],   t[14],   t[15],    t[16])
+	printf("row write             %10.3f %10.3f %10.3f %10.3f ", t[17],   t[18],   t[19],    t[20])
+	printf("row read/write        %10.3f %10.3f %10.3f %10.3f ", t[21],   t[22],   t[23],    t[24])
+	
+	printf("sequential NOP Thumb %10.3f", t[12])
+	
 end

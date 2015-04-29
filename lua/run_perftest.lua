@@ -17,32 +17,32 @@ local atSdramAttributes = {
 
 local ulAreaStart = 0x80000000
 local ulAreaSize = 0x10000
-local ulTestCases = 
-	ramtest.PERFTEST_SEQ_R8      
-	+ ramtest.PERFTEST_SEQ_R16     
-	+ ramtest.PERFTEST_SEQ_R32     
-	+ ramtest.PERFTEST_SEQ_R256    
-	+ ramtest.PERFTEST_SEQ_W8      
-	+ ramtest.PERFTEST_SEQ_W16     
-	+ ramtest.PERFTEST_SEQ_W32     
-	+ ramtest.PERFTEST_SEQ_W256    
-	+ ramtest.PERFTEST_SEQ_RW8     
-	+ ramtest.PERFTEST_SEQ_RW16    
-	+ ramtest.PERFTEST_SEQ_RW32    
-	+ ramtest.PERFTEST_SEQ_RW256   
+local ulTestCases =
+	ramtest.PERFTEST_SEQ_R8
+	+ ramtest.PERFTEST_SEQ_R16
+	+ ramtest.PERFTEST_SEQ_R32
+	+ ramtest.PERFTEST_SEQ_R256
+	+ ramtest.PERFTEST_SEQ_W8
+	+ ramtest.PERFTEST_SEQ_W16
+	+ ramtest.PERFTEST_SEQ_W32
+	+ ramtest.PERFTEST_SEQ_W256
+	+ ramtest.PERFTEST_SEQ_RW8
+	+ ramtest.PERFTEST_SEQ_RW16
+	+ ramtest.PERFTEST_SEQ_RW32
+	+ ramtest.PERFTEST_SEQ_RW256
 	+ ramtest.PERFTEST_SEQ_NOP
-	+ ramtest.PERFTEST_ROW_R8      
-	+ ramtest.PERFTEST_ROW_R16     
-	+ ramtest.PERFTEST_ROW_R32     
-	+ ramtest.PERFTEST_ROW_R256    
-	+ ramtest.PERFTEST_ROW_W8      
-	+ ramtest.PERFTEST_ROW_W16     
-	+ ramtest.PERFTEST_ROW_W32     
-	+ ramtest.PERFTEST_ROW_W256    
---	+ ramtest.PERFTEST_ROW_RW8     
-	+ ramtest.PERFTEST_ROW_RW16    
-	+ ramtest.PERFTEST_ROW_RW32    
-	+ ramtest.PERFTEST_ROW_RW256   
+	+ ramtest.PERFTEST_ROW_R8
+	+ ramtest.PERFTEST_ROW_R16
+	+ ramtest.PERFTEST_ROW_R32
+	+ ramtest.PERFTEST_ROW_R256
+	+ ramtest.PERFTEST_ROW_W8
+	+ ramtest.PERFTEST_ROW_W16
+	+ ramtest.PERFTEST_ROW_W32
+	+ ramtest.PERFTEST_ROW_W256
+	+ ramtest.PERFTEST_ROW_RW8
+	+ ramtest.PERFTEST_ROW_RW16
+	+ ramtest.PERFTEST_ROW_RW32
+	+ ramtest.PERFTEST_ROW_RW256
 
 
 tPlugin = tester.getCommonPlugin()

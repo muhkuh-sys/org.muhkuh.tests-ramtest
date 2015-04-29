@@ -5,6 +5,9 @@
 
 int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, unsigned long ulSeed);
 
+unsigned long ram_perftest_get_row_size(void);
+unsigned long ram_perftest_get_refresh_time(void);
+
 
 
 typedef struct RAMTEST_PAIR_STRUCT
@@ -804,33 +807,33 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 	return tResult;
 }
 
-typedef RAMTEST_RESULT_T (FN_RAMPERFTEST_T) (unsigned long ulStartaddress, unsigned long ulEndAddress,unsigned long ulRowSize, unsigned long *pulTime);
+typedef RAMTEST_RESULT_T (FN_RAMPERFTEST_T) (unsigned long ulStartaddress, unsigned long ulEndAddress,unsigned long ulRowSize, unsigned long ulRefreshTime);
 
-extern FN_RAMPERFTEST_T ram_perftest_seq_R8;
-extern FN_RAMPERFTEST_T ram_perftest_seq_R16;
-extern FN_RAMPERFTEST_T ram_perftest_seq_R32;
-extern FN_RAMPERFTEST_T ram_perftest_seq_R256;
-extern FN_RAMPERFTEST_T ram_perftest_seq_W8;
-extern FN_RAMPERFTEST_T ram_perftest_seq_W16;
-extern FN_RAMPERFTEST_T ram_perftest_seq_W32;
-extern FN_RAMPERFTEST_T ram_perftest_seq_W256;
-extern FN_RAMPERFTEST_T ram_perftest_seq_RW8;
-extern FN_RAMPERFTEST_T ram_perftest_seq_RW16;
-extern FN_RAMPERFTEST_T ram_perftest_seq_RW32;
-extern FN_RAMPERFTEST_T ram_perftest_seq_RW256;
-extern FN_RAMPERFTEST_T ram_perftest_row_R8;
-extern FN_RAMPERFTEST_T ram_perftest_row_R16;
-extern FN_RAMPERFTEST_T ram_perftest_row_R32;
-extern FN_RAMPERFTEST_T ram_perftest_row_R256;
-extern FN_RAMPERFTEST_T ram_perftest_row_W8;
-extern FN_RAMPERFTEST_T ram_perftest_row_W16;
-extern FN_RAMPERFTEST_T ram_perftest_row_W32;
-extern FN_RAMPERFTEST_T ram_perftest_row_W256;
-extern FN_RAMPERFTEST_T ram_perftest_row_RW8;
-extern FN_RAMPERFTEST_T ram_perftest_row_RW16;
-extern FN_RAMPERFTEST_T ram_perftest_row_RW32;
-extern FN_RAMPERFTEST_T ram_perftest_row_RW256;
-extern FN_RAMPERFTEST_T ram_perftest_seq_nop;
+FN_RAMPERFTEST_T ram_perftest_seq_R8;
+FN_RAMPERFTEST_T ram_perftest_seq_R16;
+FN_RAMPERFTEST_T ram_perftest_seq_R32;
+FN_RAMPERFTEST_T ram_perftest_seq_R256;
+FN_RAMPERFTEST_T ram_perftest_seq_W8;
+FN_RAMPERFTEST_T ram_perftest_seq_W16;
+FN_RAMPERFTEST_T ram_perftest_seq_W32;
+FN_RAMPERFTEST_T ram_perftest_seq_W256;
+FN_RAMPERFTEST_T ram_perftest_seq_RW8;
+FN_RAMPERFTEST_T ram_perftest_seq_RW16;
+FN_RAMPERFTEST_T ram_perftest_seq_RW32;
+FN_RAMPERFTEST_T ram_perftest_seq_RW256;
+FN_RAMPERFTEST_T ram_perftest_row_R8;
+FN_RAMPERFTEST_T ram_perftest_row_R16;
+FN_RAMPERFTEST_T ram_perftest_row_R32;
+FN_RAMPERFTEST_T ram_perftest_row_R256;
+FN_RAMPERFTEST_T ram_perftest_row_W8;
+FN_RAMPERFTEST_T ram_perftest_row_W16;
+FN_RAMPERFTEST_T ram_perftest_row_W32;
+FN_RAMPERFTEST_T ram_perftest_row_W256;
+FN_RAMPERFTEST_T ram_perftest_row_RW8;
+FN_RAMPERFTEST_T ram_perftest_row_RW16;
+FN_RAMPERFTEST_T ram_perftest_row_RW32;
+FN_RAMPERFTEST_T ram_perftest_row_RW256;
+FN_RAMPERFTEST_T ram_perftest_seq_nop;
 
 typedef struct RAMPERFTEST_DESC_Ttag {
 	FN_RAMPERFTEST_T  *pfnTestCode;
@@ -872,31 +875,70 @@ const RAMPERFTEST_DESC_T atRamPerfTests[26] = {
 	{NULL}
 };
 
+/*
+unsigned long ram_perftest_get_row_size1(void);
+unsigned long ram_perftest_get_refresh_time1(void);
+
+HOSTADEF(ptExtSdramCtrlArea);
+unsigned long ram_perftest_get_row_size1(void)
+{
+	NX500_SDRAM_GENERAL_CTRL_T tCtrl;
+	unsigned long ulNumColumns;
+	unsigned long ulNumBanks;
+	unsigned long ulDataBusBytes;
+	unsigned long ulRowSize;
+	
+	tCtrl.val = ptExtSdramCtrlArea->ulSdram_general_ctrl;
+	ulNumColumns = (tCtrl.bf.columns + 1) << 11;
+	ulNumBanks = (tCtrl.bf.banks + 1) << 1;
+#if HOST=="netx10"
+	ulDataBusBytes = (tCtrl.bf.dbus32 + 1) << 1;
+#else
+	ulDataBusBytes = (tCtrl.bf.dbus16 + 1) ;
+#endif
+	ulRowSize = ulDataBusBytes * ulNumColumns * ulNumBanks;
+	
+	return ulRowSize;
+}
+
+unsigned long ram_perftest_get_refresh_time1(void)
+{
+	return 0;
+}
+*/
 
 RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 {
 	RAMTEST_RESULT_T tResult;
-	unsigned long ulCases;
-	unsigned long ulTime;
 	unsigned long pulStartAddress;
 	unsigned long pulEndAddress;
+	unsigned long ulRowSizeBytes;
+	unsigned long ulRefreshTimeClocks;
+	unsigned long ulCases;
+	unsigned long ulTime;
 	const RAMPERFTEST_DESC_T *ptRamPerfTest;
-
-
 	int iNumTimeEntries;
 	int i;
-
-	iNumTimeEntries = sizeof(ptParameter->ulTimes)/sizeof(ptParameter->ulTimes[0]);
-	for (i=0; i<iNumTimeEntries; i++)
-	{
-		ptParameter->ulTimes[i] = 0;
-	}
-
+	
 	tResult         = RAMTEST_RESULT_OK;
 	ulCases         = ptParameter->ulPerfTestCases;
 	pulStartAddress = ptParameter->ulStart;
 	pulEndAddress   = pulStartAddress + ptParameter->ulSize;
 	ptRamPerfTest = atRamPerfTests;
+	
+	ulRowSizeBytes = ram_perftest_get_row_size();
+	ulRefreshTimeClocks = ram_perftest_get_refresh_time();
+	
+	uprintf(". \n");
+	uprintf(". Row size: %d bytes\n", ulRowSizeBytes);	
+	uprintf(". Refresh time: %d * 10ns\n", ulRefreshTimeClocks);
+	uprintf(". \n");
+	
+	iNumTimeEntries = sizeof(ptParameter->ulTimes)/sizeof(ptParameter->ulTimes[0]);
+	for (i=0; i<iNumTimeEntries; i++)
+	{
+		ptParameter->ulTimes[i] = 0;
+	}
 
 	while ((tResult==RAMTEST_RESULT_OK) && (ptRamPerfTest -> pfnTestCode != NULL))
 	{
@@ -908,17 +950,9 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 		}
 		else
 		{
-			uprintf(". Running test %s ...\n", ptRamPerfTest -> pszTestName);
-			ulTime = 0xffffffff;
-			tResult = ptRamPerfTest -> pfnTestCode(pulStartAddress, pulEndAddress, 1024, &ulTime);
-			if( tResult==RAMTEST_RESULT_OK )
-			{
-				uprintf(". Done. Time: %d * 10ns\n", ulTime);
-			}
-			else
-			{
-				uprintf("! Test failed.\n");
-			}
+			uprintf(". Running test %s ...", ptRamPerfTest -> pszTestName);
+			ulTime = ptRamPerfTest -> pfnTestCode(pulStartAddress, pulEndAddress, ulRowSizeBytes, ulRefreshTimeClocks);
+			uprintf(" %d cycles\n", ulTime);
 		}
 		ptParameter->ulTimes[ptRamPerfTest -> iResultIndex] = ulTime;
 		++ptRamPerfTest;

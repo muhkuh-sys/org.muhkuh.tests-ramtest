@@ -1,5 +1,5 @@
 @ core routines for RAM performance test
-@ SL Apr 23, 2015
+@ SL Apr 29, 2015
 
 @ todo:
 @ netx Initialisierung - Caches aus
@@ -12,6 +12,7 @@
 
 	.text
 	.arm
+	.altmacro
 
 .global ram_perftest_seq_R8   
 .global ram_perftest_seq_R16  
@@ -39,9 +40,95 @@
 .global ram_perftest_row_RW256  
 .global ram_perftest_seq_nop
 
-@--------------------------------------
+.global ram_perftest_get_row_size
+.global ram_perftest_get_refresh_time
 
-@ Setup GPIO counter 0 to count cycles
+
+@--------------------------------------
+@ Get the time for a complete refresh based on the current SDRAM controller settings.
+@
+@ Return value:
+@ r0: time in clock cycles in r0 (100 MHz)
+@
+@ Uses r0, r1, r2
+@
+@ refresh time = #rows * #banks * t_refi
+@ Worst case:    64k     8        32 microseconds = 2^(16+3+5) = 2^24 microseconds = 16s
+
+ram_perftest_get_refresh_time:
+	stmfd	sp!, {r1, r2}
+	
+	ldr r1, =HOSTADDR(ext_sdram_ctrl)
+	mov r0, #100 /* r0 = 100 clock cycles (= 1 microsecond) */
+	
+	@ t_REFI
+	ldr r2, [r1, #HOSTREL(sdram_timing_ctrl)]
+	and r2, r2, #HOSTMSK(sdram_timing_ctrl_t_REFI)
+	lsr r2, r2, #HOSTSRT(sdram_timing_ctrl_t_REFI)
+	add r2, r2, #2 /* 0 = 3.9 microseconds */
+	lsl r0, r2 /* r0 = r0 * microseconds per refresh */
+	
+	@ number of rows
+	ldr r2, [r1, #HOSTREL(sdram_general_ctrl)]
+	and r2, r2, #HOSTMSK(sdram_general_ctrl_rows)
+	lsr r2, r2, #HOSTSRT(sdram_general_ctrl_rows)
+	add r2, r2, #11 /* 0 = 2048 rows */
+	lsl r0, r2 /* r0 = r0 * rows/bank */
+	
+	@ number of banks
+	ldr r2, [r1, #HOSTREL(sdram_general_ctrl)]
+	and r2, r2, #HOSTMSK(sdram_general_ctrl_banks)
+	lsr r2, r2, #HOSTSRT(sdram_general_ctrl_banks)
+	add r2, r2, #1 /* 0 = 2 banks */
+	lsl r0, r2 /* r0 = r0 * number of banks */
+	
+	ldmfd	sp!, {r1, r2}
+	bx lr
+
+	
+@--------------------------------------
+@ Get the row size in bytes based on the current SDRAM controller settings.
+@
+@ Return value:
+@  r0 : row size
+@
+@ Uses r0, r1
+
+@ row length = number of columns * bus width (1/2/4 bytes)
+
+ram_perftest_get_row_size:
+	stmfd	sp!, {r1}
+	
+	@ r1 = sdram_general_ctrl
+	ldr r1, =HOSTADDR(ext_sdram_ctrl)
+	ldr r1, [r1, #HOSTREL(sdram_general_ctrl)]
+	
+	@ r0 = number of columns
+	@ ((sdram_general_ctrl_columns+1) * 256)
+	and r0, r1, #HOSTMSK(sdram_general_ctrl_columns)
+	lsr r0, r0, #HOSTSRT(sdram_general_ctrl_columns)
+	add r0, r0, #1
+	lsl r0, r0, #8
+	
+	@ multiply with 2 or 4 (netx 10: 1 or 2) bytes bus width
+	.if HOST==NX10
+	and r1, r1, #HOSTMSK(sdram_general_ctrl_dbus16)
+	lsr r1, r1, #HOSTSRT(sdram_general_ctrl_dbus16)
+	lsl r0, r0, r1
+	.else
+	and r1, r1, #HOSTMSK(sdram_general_ctrl_dbus32)
+	lsr r1, r1, #HOSTSRT(sdram_general_ctrl_dbus32)
+	add r1, r1, #1
+	lsl r0, r0, r1
+	.endif
+	
+	ldmfd	sp!, {r1}
+	bx lr
+
+
+@--------------------------------------
+@ Setup GPIO counter 0 to count cycles.
+@
 @ Uses r4, r5
 
 ram_perftest_start_time:
@@ -56,9 +143,13 @@ ram_perftest_start_time:
 	bx lr
 	
 @--------------------------------------
-
-@ Stop GPIO counter 0 and return its value in r0
+@ Stop GPIO counter 0 and return its value
+@
+@ Return value:
+@  r0 : counter value
+@
 @ Uses r0, r1
+
 ram_perftest_end_time:
 	ldr r1, =HOSTADDR(gpio)
 	ldr r0, =0
@@ -66,94 +157,27 @@ ram_perftest_end_time:
 	ldr r0, [r1, #HOSTREL(gpio_counter0_cnt)]
 	bx lr
 
-	
 @--------------------------------------
+@ Wait until GPIO counter 0 exceeds the given value.
+@ The counter must be running.
+@
+@ Parameters:
+@  r3 : compare value
+@
+@ Uses r4, r5
 
-@ Get refresh time based on current SDRAM controller settings
-@ Returns time in clock cycles (100 MHz)
-@ refresh time = #rows * #banks * t_refi
-@ Worst case:    64k     8        32 microseconds = 2^(16+3+5) = 2^24 microseconds = 16s
-@ Uses r4-r6
-ram_perftest_get_refresh_time:
-	@ r4 = sdram_general_ctrl
-	ldr r4, =HOSTADDR(ext_sdram_ctrl)
-	mov r5, #100 /* r5 = 100 clock cycles (= 1 microsecond) */
-	
-	@ t_REFI
-	ldr r6, [r4, #HOSTREL(sdram_timing_ctrl)]
-	and r6, r6, #HOSTMSK(sdram_timing_ctrl_t_REFI)
-	lsr r6, r6, #HOSTSRT(sdram_timing_ctrl_t_REFI)
-	add r6, r6, #2 /* 0 = 3.9 microseconds */
-	lsl r5, r6 /* r5 = r5 * microseconds per refresh */
-	
-	@ number of rows
-	ldr r6, [r4, #HOSTREL(sdram_general_ctrl)]
-	and r6, r6, #HOSTMSK(sdram_general_ctrl_rows)
-	lsr r6, r6, #HOSTSRT(sdram_general_ctrl_rows)
-	add r6, r6, #11 /* 0 = 2048 rows */
-	lsl r5, r6 /* r5 = r5 * rows/bank */
-	
-	@ number of banks
-	ldr r6, [r4, #HOSTREL(sdram_general_ctrl)]
-	and r6, r6, #HOSTMSK(sdram_general_ctrl_banks)
-	lsr r6, r6, #HOSTSRT(sdram_general_ctrl_banks)
-	add r6, r6, #1 /* 0 = 2 banks */
-	lsl r5, r6 /* r5 = r5 * number of banks */
-
-	bx lr
-
-@--------------------------------------
-@ (sdram_general_ctrl.rows+1) * 2k 
-@ quick hack: wait 64 ms
-ram_perftest_wait_refresh:
-	stmfd	sp!, {r4, r5, r6, lr}
-	bl ram_perftest_start_time
-	bl ram_perftest_get_refresh_time
-	mov r6, r5
+ram_perftest_wait_counter0:
 	ldr r4, =HOSTADDR(gpio)
 wait_loop:
 	ldr r5, [r4, #HOSTREL(gpio_counter0_cnt)]
-	cmp r5, r6
+	cmp r5, r3
 	bls wait_loop
-	ldmfd	sp!, {r4, r5, r6,  lr}
 	bx	lr
 	
-@--------------------------------------
 
-@ row length = number of columns * number of data bits
 
-ram_perftest_get_row_size:
-	@ r4 = sdram_general_ctrl
-	ldr r4, =HOSTADDR(ext_sdram_ctrl)
-	ldr r4, [r4, #HOSTREL(sdram_general_ctrl)]
-	
-	@ number of columns
-	@ r5 = sdram_general_ctrl_columns * 256
-	and r5, r4, #HOSTMSK(sdram_general_ctrl_columns)
-	lsr r5, r5, #HOSTSRT(sdram_general_ctrl_columns)
-	add r5, r5, #1
-	lsl r5, r5, #8
-	
-	@ number of data bits
-	@ r6 = sdram_general_ctrl_dbus32 + 4
-	.if HOST==NX10
-	and r6, r4, #HOSTMSK(sdram_general_ctrl_dbus16)
-	lsr r6, r6, #HOSTSRT(sdram_general_ctrl_dbus16)
-	add r6, r6, #3
-	.else
-	and r6, r4, #HOSTMSK(sdram_general_ctrl_dbus32)
-	lsr r6, r6, #HOSTSRT(sdram_general_ctrl_dbus32)
-	add r6, r6, #4
-	.endif
-	
-	@ r5 = r5 << r6 (multiply number of 
-	lsl r2, r5, r6
-	bx lr
-	
 
 @--------------------------------------
-
-
 R8    = 1
 R16   = 2
 R32   = 3
@@ -167,18 +191,26 @@ RW16  = 10
 RW32  = 11
 RW256 = 12
 
-.altmacro
-@ sequential test
-@ r0 : start address
-@ r1 : end address
-@ r2 : unused
-@ r3 : pointer to timer value
-@ r4-r12: scratch
+/*
+@ Sequential read/write test.
+@
+@ Parameters:
+@  r0 : start address
+@  r1 : end address
+@  r2 : row size (not used)
+@  r3 : refresh delay in clocks 
+@ 
+@ Return value:
+@  r0 : >0 time in clock cycles, =0 error
+@
+@ Uses r0-r12
+*/
 
 .macro ram_perftest_seq accessmode
 	LOCAL loop
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	bl ram_perftest_wait_refresh
+	bl ram_perftest_start_time
+	bl ram_perftest_wait_counter0
 	bl ram_perftest_start_time
 	
 loop:
@@ -216,9 +248,7 @@ loop:
 	bls loop
 	
 	bl ram_perftest_end_time
-	str r0, [r3]
 	
-	mov	r0, #0				@ set return value to 0
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 	bx	lr
 .endm
@@ -239,25 +269,32 @@ ram_perftest_seq_RW256:ram_perftest_seq RW256
 
 
 @--------------------------------------
-@ Increment the address by one row after each access.
-@ Make several passes with increasing offsets into the rows.
-
+@ Row-by-row read/write test.
+@ Increments the address by one row after each access.
+@ Makes several passes with increasing offsets into the rows.
+@
 @ Parameters:
-@ r0 : start address
-@ r1 : end address
-@ r2 : row size
-@ r3 : pointer to return value (elapsed time)
-
+@  r0 : start address
+@  r1 : end address
+@  r2 : row size 
+@  r3 : refresh delay in clocks 
+@ 
+@ Return value:
+@  r0 : >0 time in clock cycles, =0 error
+@
+@ Uses r0-r12
+@
 @ Work registers:
 @ r3 : row offset
 @ r4 : address
 @ r5-r12: load/store
+
 .macro ram_perftest_row accessmode
 	LOCAL loop_pass
 	LOCAL loop_row
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	bl ram_perftest_wait_refresh
-	bl ram_perftest_get_row_size
+	bl ram_perftest_start_time
+	bl ram_perftest_wait_counter0
 	bl ram_perftest_start_time
 	
 	@ row offset = 0
@@ -324,9 +361,6 @@ loop_row:
 	bl ram_perftest_end_time
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	str r0, [r3]
-	
-	mov	r0, #0				@ set return value to 0
 	bx	lr
 .endm
 
@@ -345,14 +379,20 @@ ram_perftest_row_RW32: ram_perftest_row RW32
 ram_perftest_row_RW256:ram_perftest_row RW256
 
 @--------------------------------------
-@ r0 : start address
-@ r1 : end address
-@ r2 : unused
-@ r3 : pointer to timer value
-@ r4-r12: scratch
-
+@ Parameters:
+@  r0 : start address
+@  r1 : end address
+@  r2 : row size 
+@  r3 : refresh delay in clocks 
+@
+@ Return value:
+@  r0 : >0 time in clock cycles, =0 error
+@
+@ Uses r0-r5
+@ 
 @ r4 : address
 @ r5 : opcode
+
 ram_perftest_seq_nop:
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 
@@ -367,17 +407,15 @@ gen_nop_loop:
 	ldr r5, =opcode_addr_bx_lr
 	ldrh r5, [r5]
 	strh r5, [r4], #2
-	
-	bl ram_perftest_wait_refresh
+
+	bl ram_perftest_start_time
+	bl ram_perftest_wait_counter0
 	bl ram_perftest_start_time
 	orr r0, r0, #1
 	blx r0
 	bl ram_perftest_end_time
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	str r0, [r3]
-	
-	mov	r0, #0				@ set return value to 0
 	bx	lr
 	
 	
@@ -386,10 +424,6 @@ opcode_addr_nop:
 	nop
 opcode_addr_bx_lr:
 	bx lr
-
-	
-
-
 
 .end
 

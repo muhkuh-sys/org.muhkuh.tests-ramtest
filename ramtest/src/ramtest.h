@@ -64,7 +64,6 @@ typedef struct RAMTEST_PARAMETER_STRUCT
 	unsigned long ulLoops;
 	
 	unsigned long ulPerfTestCases;
-	unsigned long ulRowSize;
 	PFN_RAMTEST_PROGRESS_T pfnProgress;
 	unsigned long ulProgress;
 	unsigned long ulTimes[32];
