@@ -6,6 +6,7 @@
 int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, unsigned long ulSeed);
 
 
+
 typedef struct RAMTEST_PAIR_STRUCT
 {
 	unsigned long uiSeed;
@@ -14,10 +15,10 @@ typedef struct RAMTEST_PAIR_STRUCT
 
 static const RAMTEST_PAIR_T testPairs[6] =
 {
-	{  9004440025      }, /* 64 bit */
-	{  300454440035    }, /* 64 bit */
+	{  9004440025      }, /* 64 bit, truncated to 32 bit: 414505433*/
+	{  300454440035    }, /* 64 bit, 4101696611*/
 	{  314159265       },
-	{  100000000003    }, /* 64 bit */
+	{  100000000003    }, /* 64 bit, 1215752195*/
 	{  99989           },
 	{  7271477         }
 };
@@ -108,14 +109,14 @@ static RAMTEST_RESULT_T ram_test_checkerboard_1pass(RAMTEST_PARAMETER_T *ptRamTe
 	pulEnd   = (volatile unsigned long*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
 	ulXor = ulPattern ^ ulAntiPattern;
 
-	/* 
+	/*
 	 * Fill Ram with checkerboard pattern, e.g.
 	 * 10101010101010101010101010101010
 	 * 01010101010101010101010101010101
 	 */
 	pulCnt = pulStart;
 	ulValue = ulPattern;
-	
+
 	while(pulCnt<pulEnd)
 	{
 		*pulCnt = ulValue;
@@ -158,13 +159,13 @@ static RAMTEST_RESULT_T ram_test_checkerboard(RAMTEST_PARAMETER_T *ptRamTestPara
 	RAMTEST_RESULT_T tResult;
 	unsigned long pattern 	  = 0xAAAAAAAA;
 	unsigned long antipattern = 0x55555555;
-	
+
 	tResult = ram_test_checkerboard_1pass(ptRamTestParameter, pattern, antipattern);
 	if (tResult == RAMTEST_RESULT_OK)
 	{
 		tResult = ram_test_checkerboard_1pass(ptRamTestParameter, antipattern, pattern);
 	}
-	
+
 	return tResult;
 }
 
@@ -426,15 +427,15 @@ static RAMTEST_RESULT_T ram_test_08bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 	unsigned long ulRandom;
 	unsigned char ucRandom;
 	unsigned char ucReadBack;
-	
+
 	tResult = RAMTEST_RESULT_OK;
 	pucStart = (volatile unsigned char*)(ptRamTestParameter->ulStart); //Start Value
 	pucEnd   = (volatile unsigned char*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize); // End value
 	ulSeed = ptTestPair->uiSeed;
-	
-	
+
+
 	/* fill ram */
-	
+
 	ulRandom = ulSeed;
 	pucCnt = pucStart;
 
@@ -445,12 +446,12 @@ static RAMTEST_RESULT_T ram_test_08bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 		*pucCnt = ucRandom;
 		++pucCnt;
 	};
-	
+
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
-	
-	
+
+
 	/* read back and compare */
-	
+
 	ulRandom = ulSeed;
 	pucCnt = pucStart;
 
@@ -487,7 +488,7 @@ static RAMTEST_RESULT_T ram_test_16bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 	unsigned long ulRandom;
 	unsigned short usRandom;
 	unsigned short usReadBack;
-	
+
 	tResult = RAMTEST_RESULT_OK;
 	pusStart = (volatile unsigned short*)(ptRamTestParameter->ulStart); //Start Value
 	pusEnd   = (volatile unsigned short*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize); // End value
@@ -495,7 +496,7 @@ static RAMTEST_RESULT_T ram_test_16bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 
 
 	/* fill ram */
-	
+
 	ulRandom = ulSeed;
 	pusCnt = pusStart;
 
@@ -506,15 +507,15 @@ static RAMTEST_RESULT_T ram_test_16bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 		*pusCnt = usRandom;
 		++pusCnt;
 	};
-	
+
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 
-	
+
 	/* read back and compare */
-	
+
 	ulRandom = ulSeed;
 	pusCnt = pusStart;
-	
+
 	while( pusCnt<pusEnd )
 	{
 		ulRandom = pseudo_generator(ulRandom);
@@ -548,38 +549,38 @@ static RAMTEST_RESULT_T ram_test_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 	unsigned long ulSeed;
 	unsigned long ulRandom;
 	unsigned long ulReadBack;
-	
+
 	tResult = RAMTEST_RESULT_OK;
 	pulStart = (volatile unsigned long*)(ptRamTestParameter->ulStart);
 	pulEnd   = (volatile unsigned long*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
 	ulSeed   = ptTestPair->uiSeed;
-	
-	
+
+
 	/* fill ram */
-	
+
 	ulRandom = ulSeed;
 	pulCnt = pulStart;
-	
+
 	while(pulCnt<pulEnd)
 	{
 		ulRandom = pseudo_generator(ulRandom);	//Generate a pseudorandom nr
 		*(pulCnt) = ulRandom;
 		++pulCnt;
 	}
-	
+
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
-	
-	
+
+
 	/* Read back and compare */
-	
+
 	ulRandom = ulSeed;
 	pulCnt = pulStart;
-	
+
 	while (pulCnt<pulEnd)
 	{
 		ulRandom = pseudo_generator(ulRandom);
 		ulReadBack = *pulCnt;
-	
+
 		if (ulReadBack != ulRandom)
 		{
 			uprintf("! 32 bit access at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
@@ -803,7 +804,149 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 	return tResult;
 }
 
+typedef RAMTEST_RESULT_T (FN_RAMPERFTEST_T) (unsigned long ulStartaddress, unsigned long ulEndAddress,unsigned long ulRowSize, unsigned long *pulTime);
 
+extern FN_RAMPERFTEST_T ram_perftest_seq_R8;
+extern FN_RAMPERFTEST_T ram_perftest_seq_R16;
+extern FN_RAMPERFTEST_T ram_perftest_seq_R32;
+extern FN_RAMPERFTEST_T ram_perftest_seq_R256;
+extern FN_RAMPERFTEST_T ram_perftest_seq_W8;
+extern FN_RAMPERFTEST_T ram_perftest_seq_W16;
+extern FN_RAMPERFTEST_T ram_perftest_seq_W32;
+extern FN_RAMPERFTEST_T ram_perftest_seq_W256;
+extern FN_RAMPERFTEST_T ram_perftest_seq_RW8;
+extern FN_RAMPERFTEST_T ram_perftest_seq_RW16;
+extern FN_RAMPERFTEST_T ram_perftest_seq_RW32;
+extern FN_RAMPERFTEST_T ram_perftest_seq_RW256;
+extern FN_RAMPERFTEST_T ram_perftest_row_R8;
+extern FN_RAMPERFTEST_T ram_perftest_row_R16;
+extern FN_RAMPERFTEST_T ram_perftest_row_R32;
+extern FN_RAMPERFTEST_T ram_perftest_row_R256;
+extern FN_RAMPERFTEST_T ram_perftest_row_W8;
+extern FN_RAMPERFTEST_T ram_perftest_row_W16;
+extern FN_RAMPERFTEST_T ram_perftest_row_W32;
+extern FN_RAMPERFTEST_T ram_perftest_row_W256;
+extern FN_RAMPERFTEST_T ram_perftest_row_RW8;
+extern FN_RAMPERFTEST_T ram_perftest_row_RW16;
+extern FN_RAMPERFTEST_T ram_perftest_row_RW32;
+extern FN_RAMPERFTEST_T ram_perftest_row_RW256;
+extern FN_RAMPERFTEST_T ram_perftest_seq_nop;
+
+typedef struct RAMPERFTEST_DESC_Ttag {
+	FN_RAMPERFTEST_T  *pfnTestCode;
+	char              *pszTestName;
+	RAMPERFTESTCASE_T  tTestFlag;
+	int                iResultIndex;
+} RAMPERFTEST_DESC_T;
+
+/* causes warning: initialization discards 'const' qualifier from pointer target type [enabled by default]
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=62198 */
+
+const RAMPERFTEST_DESC_T atRamPerfTests[26] = {
+	{ram_perftest_seq_R8,    "ram_perftest_seq_R8",    RAMPERFTESTCASE_SEQ_R8,    0} ,
+	{ram_perftest_seq_R16,   "ram_perftest_seq_R16",   RAMPERFTESTCASE_SEQ_R16,   1} ,
+	{ram_perftest_seq_R32,   "ram_perftest_seq_R32",   RAMPERFTESTCASE_SEQ_R32,   2} ,
+	{ram_perftest_seq_R256,  "ram_perftest_seq_R256",  RAMPERFTESTCASE_SEQ_R256,  3} ,
+	{ram_perftest_seq_W8,    "ram_perftest_seq_W8",    RAMPERFTESTCASE_SEQ_W8,    4} ,
+	{ram_perftest_seq_W16,   "ram_perftest_seq_W16",   RAMPERFTESTCASE_SEQ_W16,   5} ,
+	{ram_perftest_seq_W32,   "ram_perftest_seq_W32",   RAMPERFTESTCASE_SEQ_W32,   6} ,
+	{ram_perftest_seq_W256,  "ram_perftest_seq_W256",  RAMPERFTESTCASE_SEQ_W256,  7} ,
+	{ram_perftest_seq_RW8,   "ram_perftest_seq_RW8",   RAMPERFTESTCASE_SEQ_RW8,   8} ,
+	{ram_perftest_seq_RW16,  "ram_perftest_seq_RW16",  RAMPERFTESTCASE_SEQ_RW16,  9} ,
+	{ram_perftest_seq_RW32,  "ram_perftest_seq_RW32",  RAMPERFTESTCASE_SEQ_RW32,  10} ,
+	{ram_perftest_seq_RW256, "ram_perftest_seq_RW256", RAMPERFTESTCASE_SEQ_RW256, 11} ,
+	{ram_perftest_seq_nop,   "ram_perftest_seq_nop",   RAMPERFTESTCASE_SEQ_NOP,   12} ,
+
+	{ram_perftest_row_R8,    "ram_perftest_row_R8",    RAMPERFTESTCASE_ROW_R8,    13} ,
+	{ram_perftest_row_R16,   "ram_perftest_row_R16",   RAMPERFTESTCASE_ROW_R16,   14} ,
+	{ram_perftest_row_R32,   "ram_perftest_row_R32",   RAMPERFTESTCASE_ROW_R32,   15} ,
+	{ram_perftest_row_R256,  "ram_perftest_row_R256",  RAMPERFTESTCASE_ROW_R256,  16} ,
+	{ram_perftest_row_W8,    "ram_perftest_row_W8",    RAMPERFTESTCASE_ROW_W8,    17} ,
+	{ram_perftest_row_W16,   "ram_perftest_row_W16",   RAMPERFTESTCASE_ROW_W16,   18} ,
+	{ram_perftest_row_W32,   "ram_perftest_row_W32",   RAMPERFTESTCASE_ROW_W32,   19} ,
+	{ram_perftest_row_W256,  "ram_perftest_row_W256",  RAMPERFTESTCASE_ROW_W256,  20} ,
+	{ram_perftest_row_RW8,   "ram_perftest_row_RW8",   RAMPERFTESTCASE_ROW_RW8,   21} ,
+	{ram_perftest_row_RW16,  "ram_perftest_row_RW16",  RAMPERFTESTCASE_ROW_RW16,  22} ,
+	{ram_perftest_row_RW32,  "ram_perftest_row_RW32",  RAMPERFTESTCASE_ROW_RW32,  23} ,
+	{ram_perftest_row_RW256, "ram_perftest_row_RW256", RAMPERFTESTCASE_ROW_RW256, 24} ,
+	{NULL}
+};
+
+
+RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
+{
+	RAMTEST_RESULT_T tResult;
+	unsigned long ulCases;
+	unsigned long ulTime;
+	unsigned long pulStartAddress;
+	unsigned long pulEndAddress;
+	const RAMPERFTEST_DESC_T *ptRamPerfTest;
+
+
+	int iNumTimeEntries;
+	int i;
+
+	iNumTimeEntries = sizeof(ptParameter->ulTimes)/sizeof(ptParameter->ulTimes[0]);
+	for (i=0; i<iNumTimeEntries; i++)
+	{
+		ptParameter->ulTimes[i] = 0;
+	}
+
+	tResult         = RAMTEST_RESULT_OK;
+	ulCases         = ptParameter->ulPerfTestCases;
+	pulStartAddress = ptParameter->ulStart;
+	pulEndAddress   = pulStartAddress + ptParameter->ulSize;
+	ptRamPerfTest = atRamPerfTests;
+
+	while ((tResult==RAMTEST_RESULT_OK) && (ptRamPerfTest -> pfnTestCode != NULL))
+	{
+
+		if ((ulCases & ( ptRamPerfTest -> tTestFlag) ) == 0)
+		{
+			uprintf(". Skipping test %s ...\n", ptRamPerfTest -> pszTestName);
+			ulTime = 0;
+		}
+		else
+		{
+			uprintf(". Running test %s ...\n", ptRamPerfTest -> pszTestName);
+			ulTime = 0xffffffff;
+			tResult = ptRamPerfTest -> pfnTestCode(pulStartAddress, pulEndAddress, 1024, &ulTime);
+			if( tResult==RAMTEST_RESULT_OK )
+			{
+				uprintf(". Done. Time: %d * 10ns\n", ulTime);
+			}
+			else
+			{
+				uprintf("! Test failed.\n");
+			}
+		}
+		ptParameter->ulTimes[ptRamPerfTest -> iResultIndex] = ulTime;
+		++ptRamPerfTest;
+	}
+
+	return tResult;
+}
+
+void ramtest_print_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
+{
+	const RAMPERFTEST_DESC_T *ptRamPerfTest;
+	int iCnt;
+
+	uprintf(". Performance tests:\n");
+	iCnt = 0;
+	for (ptRamPerfTest = atRamPerfTests; ptRamPerfTest->pfnTestCode != NULL; ++ptRamPerfTest)
+	{
+		if ((ptParameter->ulPerfTestCases & ptRamPerfTest->tTestFlag) != 0)
+		{
+			uprintf(". %s\n", ptRamPerfTest -> pszTestName);
+			iCnt = iCnt + 1;
+		}
+	}
+
+	if (iCnt == 0) {
+		uprintf(".  none\n");
+	}
+}
 
 
 RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
@@ -854,6 +997,8 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		uprintf("     Burst\n");
 	}
 
+	ramtest_print_performance_tests(ptParameter);
+
 	ulLoopMax = ptParameter->ulLoops;
 	if( ulLoopMax==0 )
 	{
@@ -882,17 +1027,17 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		uprintf("*  Deterministic test - Loop %08d  *\n", ulLoopCnt);
 		uprintf("*                                      *\n");
 		uprintf("****************************************\n");
-		tRamTestResult = ramtest_deterministic(ptParameter);
 
+		tRamTestResult = ramtest_deterministic(ptParameter);
 		if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
+
+
 
 		uprintf("****************************************\n");
 		uprintf("*                                      *\n");
 		uprintf("*  Random number test - Loop %08d  *\n", ulLoopCnt);
 		uprintf("*                                      *\n");
 		uprintf("****************************************\n");
-
-
 
 		for(uiTestCnt=0; uiTestCnt<(sizeof(testPairs)/sizeof(RAMTEST_PAIR_T)); ++uiTestCnt )
 		{
@@ -906,6 +1051,23 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			uprintf(". Test case %d OK.\n", uiTestCnt+1);
 		}
 
+
+
+		/* TODO: does it make sense to run the performance tests multiple times in a loop? */
+		if (ptParameter->ulPerfTestCases != 0)
+		{
+			uprintf("****************************************\n");
+			uprintf("*                                      *\n");
+			uprintf("*  Performance Tests - Loop %08d  *\n", ulLoopCnt);
+			uprintf("*                                      *\n");
+			uprintf("****************************************\n");
+
+			tRamTestResult = ramtest_run_performance_tests(ptParameter);
+			if( tRamTestResult!=RAMTEST_RESULT_OK ) break;
+		}
+
+
+
 		if( tRamTestResult==RAMTEST_RESULT_OK )
 		{
 			/* Test loop OK. */
@@ -916,6 +1078,8 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			break;
 		}
+
+
 	} while(tRamTestResult==RAMTEST_RESULT_OK);
 
 	return tRamTestResult;

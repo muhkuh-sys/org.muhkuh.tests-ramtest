@@ -36,6 +36,7 @@ sources_common = """
 	src/header.c
 	src/ramtest.c
 	src/random_burst.s
+	src/performance_test.S
 """
 
 

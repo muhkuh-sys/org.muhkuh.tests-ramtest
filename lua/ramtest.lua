@@ -8,13 +8,14 @@
 -- 03.03.15 SL * adapted calculation of timing_ctrl to changes in setup_sdram
 -- 05.03.15 SL * test_phase_parameters: adapted to changed function interfaces
 --               ["x"] rewritten as .x
+-- 29.04.15 SL * added performance test
 
 module("ramtest", package.seeall)
 
 require("bit")
 require("romloader")
 
-
+-- Flags for functional tests
 CHECK_DATABUS            = 0x00000001
 CHECK_08BIT              = 0x00000002
 CHECK_16BIT              = 0x00000004
@@ -23,11 +24,39 @@ CHECK_MARCHC             = 0x00000010
 CHECK_CHECKERBOARD       = 0x00000020
 CHECK_BURST              = 0x00000040
 
+-- Flags for performance tests
+PERFTEST_SEQ_R8          = 0x00000001
+PERFTEST_SEQ_R16         = 0x00000002
+PERFTEST_SEQ_R32         = 0x00000004
+PERFTEST_SEQ_R256        = 0x00000008
+PERFTEST_SEQ_W8          = 0x00000010
+PERFTEST_SEQ_W16         = 0x00000020
+PERFTEST_SEQ_W32         = 0x00000040
+PERFTEST_SEQ_W256        = 0x00000080
+PERFTEST_SEQ_RW8         = 0x00000100
+PERFTEST_SEQ_RW16        = 0x00000200
+PERFTEST_SEQ_RW32        = 0x00000400
+PERFTEST_SEQ_RW256       = 0x00000800
+PERFTEST_SEQ_NOP         = 0x00001000
+
+PERFTEST_ROW_R8          = 0x00010000
+PERFTEST_ROW_R16         = 0x00020000
+PERFTEST_ROW_R32         = 0x00040000
+PERFTEST_ROW_R256        = 0x00080000
+PERFTEST_ROW_W8          = 0x00100000
+PERFTEST_ROW_W16         = 0x00200000
+PERFTEST_ROW_W32         = 0x00400000
+PERFTEST_ROW_W256        = 0x00800000
+PERFTEST_ROW_RW8         = 0x01000000
+PERFTEST_ROW_RW16        = 0x02000000
+PERFTEST_ROW_RW32        = 0x04000000
+PERFTEST_ROW_RW256       = 0x08000000
 
 
 SDRAM_INTERFACE_MEM = 1
 SDRAM_INTERFACE_HIF = 2
 
+local function printf(...) print(string.format(...)) end
 
 local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	local atAddressLines = {
@@ -435,6 +464,9 @@ function test_ram(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 end
 
 
+
+
+
 -- Detect the working values of SDCLK phase and data sample phase
 -- by running the SDRAM test for all valid combinations.
 --
@@ -535,3 +567,72 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 end
 
 
+
+-- Run the RAM test
+-- parameters:
+-- ulAreaStart
+-- ulAreaSize
+-- ulChecks
+-- ulPerfTests
+-- ulLoops
+function run_ramtest(par)
+	-- Get the platform attributes for the chip type.
+	local tChipType = tPlugin:GetChiptyp()
+	local atPlatformAttributes = atPlatformAttributes[tChipType]
+	if atPlatformAttributes==nil then
+		error("Unknown chip type: ", tChipType)
+	end
+	
+	local ulAreaStart = par.ulAreaStart  or 0
+	local ulAreaSize  = par.ulAreaSize   or 0
+	local ulChecks    = par.ulChecks     or 0
+	local ulLoops     = par.ulLoops      or 1
+	local ulPerfTests = par.ulPerfTests  or 0
+	local ulRowSize   = par.ulRowSize    or 0
+	
+	printf("ulAreaStart 0x%08x", ulAreaStart )
+	printf("ulAreaSize  0x%08x", ulAreaSize  )
+	printf("ulRowSize   0x%08x", ulRowSize   )
+	printf("ulChecks    0x%08x", ulChecks    )
+	printf("ulPerfTests 0x%08x", ulPerfTests )
+	printf("ulLoops     0x%08x", ulLoops     )
+	
+	local aulParameter = {
+		ulAreaStart ,
+		ulAreaSize  ,
+		ulChecks    ,
+		ulLoops     ,
+		ulPerfTests ,
+		ulRowSize   ,
+		0           , -- pfnProgress
+		0           , -- ulProgress
+	}
+	local iParLen = #aulParameter -- offset of time array -1
+	for i=1, 32 do
+		table.insert(aulParameter, "OUTPUT")
+	end
+	
+	-- Get the binary.
+	local strBinaryName = string.format("netx/ramtest_netx%d.bin", atPlatformAttributes.ulAsic)
+	
+	-- Install the binary.
+	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, aulParameter)
+	
+	local aulTimes = {}
+	for i=1, 32 do
+		aulTimes[i] = aulParameter[iParLen+i]
+	end
+	
+	return ulResult, aulTimes
+end
+
+
+-- Run the performance test
+function run_performance_test(tPlugin, ulAreaStart, ulAreaSize, ulPerfTests)
+	local ulResult, aulTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulRowSize=1024, ulPerfTests=ulPerfTests}
+	
+	print("Result: ", ulResult)
+	for i = 1, 32 do 
+		print(i, aulTimes[i])
+	end
+end
