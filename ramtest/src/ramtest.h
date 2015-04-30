@@ -48,6 +48,7 @@ typedef enum
 	RAMPERFTESTCASE_ROW_RW16     = 0x02000000,
 	RAMPERFTESTCASE_ROW_RW32     = 0x04000000,
 	RAMPERFTESTCASE_ROW_RW256    = 0x08000000,
+	RAMPERFTESTCASE_ROW_JUMP     = 0x10000000,
 } RAMPERFTESTCASE_T;
 
 
@@ -64,6 +65,9 @@ typedef struct RAMTEST_PARAMETER_STRUCT
 	unsigned long ulLoops;
 	
 	unsigned long ulPerfTestCases;
+	unsigned long ulRowSize;
+	unsigned long ulRefreshTime_clk;
+	
 	PFN_RAMTEST_PROGRESS_T pfnProgress;
 	unsigned long ulProgress;
 	unsigned long ulTimes[32];

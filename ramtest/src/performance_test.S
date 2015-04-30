@@ -1,12 +1,13 @@
-@ core routines for RAM performance test
-@ SL Apr 29, 2015
+@ Core routines for RAM performance test
+@ SL Apr 30, 2015
 
-@ todo:
-@ netx Initialisierung - Caches aus
-@ Bei Variante Row: ein Durchlauf mit Offset 0, einer mit Offset 1/2/4/32 usw.
-@ Best Case Codeausfuehrung aus SDRAM: NOP-Folge als Thumb
-@ Worst Case Codeausfuehrung aus SDRAM: Sprung von Row zu Row (Thumb) (optional)
-@ row size/refresh time in C Code setzen und ausgeben
+/*
+	Initialization
+	Currently, no explicit initialization is taking place.
+	The performance test is run via the romcode and the muhkuh framework.
+	On the netX 500, the cache is off. On the other netX types, there are no caches.
+	On the netX 50, the SDRAM fix is performed by the plugin.
+*/
 
 #include "netx_io_areas.S"
 
@@ -39,6 +40,7 @@
 .global ram_perftest_row_RW32 
 .global ram_perftest_row_RW256  
 .global ram_perftest_seq_nop
+.global ram_perftest_row_jump
 
 .global ram_perftest_get_row_size
 .global ram_perftest_get_refresh_time
@@ -46,6 +48,8 @@
 
 @--------------------------------------
 @ Get the time for a complete refresh based on the current SDRAM controller settings.
+@ Note: This assumes the MEM SDRAM controller and does not work if the test 
+@       is to be run on HIF SDRAM.
 @
 @ Return value:
 @ r0: time in clock cycles in r0 (100 MHz)
@@ -88,6 +92,8 @@ ram_perftest_get_refresh_time:
 	
 @--------------------------------------
 @ Get the row size in bytes based on the current SDRAM controller settings.
+@ Note: This assumes the MEM SDRAM controller and does not work if the test 
+@       is to be run on HIF SDRAM.
 @
 @ Return value:
 @  r0 : row size
@@ -396,13 +402,10 @@ ram_perftest_row_RW256:ram_perftest_row RW256
 ram_perftest_seq_nop:
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 
-	ldr r5, =opcode_addr_nop
-	ldrh r5, [r5]
 	mov r4, r0
-gen_nop_loop:
-	strh r5, [r4], #2
-	cmp r4, r1
-	bls gen_nop_loop
+	mov r5, r1
+	ldr r6, =opcode_addr_nop
+	bl fill_code 
 	
 	ldr r5, =opcode_addr_bx_lr
 	ldrh r5, [r5]
@@ -419,11 +422,96 @@ gen_nop_loop:
 	bx	lr
 	
 	
+
+@--------------------------------------
+@ Parameters:
+@  r0 : start address
+@  r1 : end address
+@  r2 : row size 
+@  r3 : refresh delay in clocks 
+
+
+@		0		1		2			m
+@	0	b 10	b 11	b 12...	b 1m
+@	1	b 20	b 21	b 22...	b 2m
+@	2	b 30	b 31	b 32...	b 3m
+@	3	b 40	b 41	b 42...
+@	...
+@	n	b 01	b 02	b 03...	bx lr
+
+
+ram_perftest_row_jump:
+	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
+
+	@ fill with 'add PC, r4'. 
+	@ r4 will contain the jump distance to the next row.
+	mov r4, r0
+	sub r5, r1, r2
+	ldr r6, =opcode_addr_add_pc_r4
+	bl fill_code
+	
+	@ fill the last row of the range with 'add PC, r5'. 
+	@ r5 will contain the (negative) jump distance to the start of the next column.
+	sub r4, r1, r2
+	mov r5, r1
+	ldr r6, =opcode_addr_add_pc_r5
+	bl fill_code
+	
+	bl ram_perftest_start_time
+	bl ram_perftest_wait_counter0
+	bl ram_perftest_start_time
+	
+	@ set r4 with jump distance from row to row
+	sub r4, r2, #4
+	
+	@ set r5 with jump distance back to beginning of next 2 byte column
+	sub r5, r0, r1
+	add r5, r5, r2
+	sub r5, r5, #2
+	
+	orr r0, r0, #1
+	blx r0
+	bl ram_perftest_end_time
+	
+	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
+	bx	lr
+	
+	
+	
+@--------------------------------------
+@ Fill a memory area with a 2-byte thumb instruction
+@ and put "bx lr" into the last word.
+@
+@ Parameters:
+@ r4 : destination address
+@ r5 : end address + 1
+@ r6 : pointer to thumb instruction
+@
+@ uses r4-r6
+
+fill_code:
+	ldrh r6, [r6]
+fill_code_loop:
+	strh r6, [r4], #2
+	cmp r4, r5
+	bcc fill_code_loop
+	
+	@ put the return instruction at the end
+	sub r4, r4, #2
+	ldr r6, =opcode_addr_bx_lr
+	ldrh r6, [r6]
+	strh r6, [r4], #2
+	bx lr
+	
 	.thumb
 opcode_addr_nop:
 	nop
+opcode_addr_add_pc_r4:
+	add pc, r4
+opcode_addr_add_pc_r5:
+	add pc, r5
 opcode_addr_bx_lr:
 	bx lr
-
+	
 .end
 

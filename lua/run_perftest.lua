@@ -43,6 +43,7 @@ local ulTestCases =
 	+ ramtest.PERFTEST_ROW_RW16
 	+ ramtest.PERFTEST_ROW_RW32
 	+ ramtest.PERFTEST_ROW_RW256
+--	+ ramtest.PERFTEST_ROW_JUMP
 
 
 tPlugin = tester.getCommonPlugin()
@@ -51,7 +52,28 @@ if tPlugin==nil then
 end
 
 ramtest.setup_sdram(tPlugin, atSdramAttributes)
-ramtest.run_performance_test(tPlugin, ulAreaStart, ulAreaSize, ulTestCases, ulLoops)
+ramtest.run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulTestCases, ulLoops)
+ramtest.disable_sdram(tPlugin, atSdramAttributes)
+
+
+local atSdramAttributes = {
+	netX          = 500,
+--	netX          = 56,
+--	netX          = 50,
+--	netX          = 10,
+
+	general_ctrl  = 0x030d0001,
+	timing_ctrl   = 0x00012151,
+	mr            = 0x00000033,
+	size_exponent = 23,
+	interface     = ramtest.SDRAM_INTERFACE_MEM
+}
+
+local ulAreaStart = 0x80000000
+local ulAreaSize = 0x1000
+local ulTestCases = ramtest.PERFTEST_ROW_JUMP
+ramtest.setup_sdram(tPlugin, atSdramAttributes)
+ramtest.run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulTestCases, ulLoops)
 ramtest.disable_sdram(tPlugin, atSdramAttributes)
 
 tPlugin:Disconnect()

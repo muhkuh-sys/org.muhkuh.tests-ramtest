@@ -51,6 +51,7 @@ PERFTEST_ROW_RW8         = 0x01000000
 PERFTEST_ROW_RW16        = 0x02000000
 PERFTEST_ROW_RW32        = 0x04000000
 PERFTEST_ROW_RW256       = 0x08000000
+PERFTEST_ROW_JUMP        = 0x10000000
 
 
 SDRAM_INTERFACE_MEM = 1
@@ -370,6 +371,51 @@ function disable_sdram(tPlugin, atSdramAttributes)
 end
 
 
+function get_sdram_geometry(tPlugin, atSdramAttributes)
+	local ulGeneralCtrl = atSdramAttributes.general_ctrl
+	-- Extract the geometry parameters.
+	local ulBanks    = bit.lshift(2,               bit.band(ulGeneralCtrl, 0x00000003))
+	local ulRows     = bit.lshift(2048, bit.rshift(bit.band(ulGeneralCtrl, 0x00000070), 4))
+	local ulColumns  = bit.lshift(256,  bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8))
+	local ulBusWidth = bit.lshift(1,    bit.rshift(bit.band(ulGeneralCtrl, 0x00010000), 16))
+	
+	local tAsicTyp = tPlugin:GetChiptyp()
+	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B then
+		ulBusWidth = ulBusWidth * 2
+	elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
+		ulBusWidth = ulBusWidth
+	else
+		error("Unknown chiptyp!")
+	end
+	
+	local ulRowSize = ulColumns * ulBusWidth
+	local ulSize    = ulRowSize * ulRows * ulBanks
+	
+	print()
+	print("Geometry:")
+	printf("Banks    : %d",       ulBanks    )
+	printf("Rows     : %d",       ulRows     )
+	printf("Columns  : %d bytes", ulColumns  )
+	printf("BusWidth : %d bytes", ulBusWidth )
+	printf("RowSize  : %d bytes", ulRowSize  )
+	printf("Size     : %d bytes", ulSize     )
+	print()
+
+	-- bus width, row size and size are in bytes
+	local tGeom = {
+		ulBanks    = ulBanks    ,    
+		ulRows     = ulRows     ,    
+		ulColumns  = ulColumns  ,    
+		ulBusWidth = ulBusWidth ,    
+		ulRowSize  = ulRowSize, 
+		ulSize     = ulSize
+	}
+	
+	return tGeom
+end
+
 
 function get_sdram_size(tPlugin, atSdramAttributes)
 	local ulSize = nil
@@ -583,17 +629,24 @@ function run_ramtest(par)
 		error("Unknown chip type: ", tChipType)
 	end
 	
-	local ulAreaStart = par.ulAreaStart  or 0
-	local ulAreaSize  = par.ulAreaSize   or 0
-	local ulChecks    = par.ulChecks     or 0
-	local ulLoops     = par.ulLoops      or 1
-	local ulPerfTests = par.ulPerfTests  or 0
+	local ulAreaStart       = par.ulAreaStart        or 0
+	local ulAreaSize        = par.ulAreaSize         or 0
+	local ulChecks          = par.ulChecks           or 0
+	local ulLoops           = par.ulLoops            or 1
+	local ulPerfTests       = par.ulPerfTests        or 0
+	local ulRowSize         = par.ulRowSize          or 0
+	local ulRefreshTime_clk = par.ulRefreshTime_clk  or 0
 	
-	printf("ulAreaStart 0x%08x", ulAreaStart )
-	printf("ulAreaSize  0x%08x", ulAreaSize  )
-	printf("ulChecks    0x%08x", ulChecks    )
-	printf("ulPerfTests 0x%08x", ulPerfTests )
-	printf("ulLoops     0x%08x", ulLoops     )
+	print()
+	print("Call parameters:")
+	printf("ulAreaStart        0x%08x", ulAreaStart )
+	printf("ulAreaSize         0x%08x", ulAreaSize  )
+	printf("ulChecks           0x%08x", ulChecks    )
+	printf("ulPerfTests        0x%08x", ulPerfTests )
+	printf("ulLoops            0x%08x", ulLoops     )
+	printf("ulRowSize          0x%08x", ulRowSize     )
+	printf("ulRefreshTime_clk  0x%08x", ulRefreshTime_clk     )
+	print()
 	
 	local aulParameter = {
 		ulAreaStart ,
@@ -601,6 +654,8 @@ function run_ramtest(par)
 		ulChecks    ,
 		ulLoops     ,
 		ulPerfTests ,
+		ulRowSize   ,
+		ulRefreshTime_clk,
 		0           , -- pfnProgress
 		0           , -- ulProgress
 	}
@@ -625,8 +680,24 @@ end
 
 
 -- Run the performance test
-function run_performance_test(tPlugin, ulAreaStart, ulAreaSize, ulPerfTests)
-	local ulResult, aulTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests}
+function run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulPerfTests)
+
+	-- Get the row size
+	local tGeometry = get_sdram_geometry(tPlugin, atSdramAttributes)
+	local ulRowSize = tGeometry.ulRowSize
+	
+	-- Get the array refresh time
+	local ulTimingCtrl = atSdramAttributes.timing_ctrl
+	local ult_REFI    = 3.9 * bit.lshift(1, bit.rshift(bit.band(ulTimingCtrl, 0x00030000), 16))
+	local ulArrayRefreshTime_us = ult_REFI * tGeometry.ulRows * tGeometry.ulBanks
+	local ulRefreshTime_clk = ulArrayRefreshTime_us * 100
+	print()
+	printf("t_REFI: %3.2f microseconds", ult_REFI)
+	printf("Array refresh time: %5.2f ms, %d * 10ns clocks", ulArrayRefreshTime_us/1000, ulRefreshTime_clk)
+	print()
+	
+	local ulResult, aulTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
+		ulRowSize = ulRowSize, ulRefreshTime_clk=ulRefreshTime_clk}
 	
 	print("Result: ", ulResult)
 	
@@ -647,6 +718,8 @@ function run_performance_test(tPlugin, ulAreaStart, ulAreaSize, ulPerfTests)
 	printf("row write             %10.3f %10.3f %10.3f %10.3f ", t[17],   t[18],   t[19],    t[20])
 	printf("row read/write        %10.3f %10.3f %10.3f %10.3f ", t[21],   t[22],   t[23],    t[24])
 	
-	printf("sequential NOP Thumb %10.3f", t[12])
+	printf("sequential NOP Thumb  %10.3f", t[12])
+	printf("row-to-row jump Thumb %10.3f", t[25])
+	
 	
 end

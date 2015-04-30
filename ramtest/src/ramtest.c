@@ -5,6 +5,7 @@
 
 int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, unsigned long ulSeed);
 
+/* not used */
 unsigned long ram_perftest_get_row_size(void);
 unsigned long ram_perftest_get_refresh_time(void);
 
@@ -834,6 +835,7 @@ FN_RAMPERFTEST_T ram_perftest_row_RW16;
 FN_RAMPERFTEST_T ram_perftest_row_RW32;
 FN_RAMPERFTEST_T ram_perftest_row_RW256;
 FN_RAMPERFTEST_T ram_perftest_seq_nop;
+FN_RAMPERFTEST_T ram_perftest_row_jump;
 
 typedef struct RAMPERFTEST_DESC_Ttag {
 	FN_RAMPERFTEST_T  *pfnTestCode;
@@ -845,7 +847,7 @@ typedef struct RAMPERFTEST_DESC_Ttag {
 /* causes warning: initialization discards 'const' qualifier from pointer target type [enabled by default]
 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=62198 */
 
-const RAMPERFTEST_DESC_T atRamPerfTests[26] = {
+const RAMPERFTEST_DESC_T atRamPerfTests[27] = {
 	{ram_perftest_seq_R8,    "ram_perftest_seq_R8",    RAMPERFTESTCASE_SEQ_R8,    0} ,
 	{ram_perftest_seq_R16,   "ram_perftest_seq_R16",   RAMPERFTESTCASE_SEQ_R16,   1} ,
 	{ram_perftest_seq_R32,   "ram_perftest_seq_R32",   RAMPERFTESTCASE_SEQ_R32,   2} ,
@@ -872,46 +874,16 @@ const RAMPERFTEST_DESC_T atRamPerfTests[26] = {
 	{ram_perftest_row_RW16,  "ram_perftest_row_RW16",  RAMPERFTESTCASE_ROW_RW16,  22} ,
 	{ram_perftest_row_RW32,  "ram_perftest_row_RW32",  RAMPERFTESTCASE_ROW_RW32,  23} ,
 	{ram_perftest_row_RW256, "ram_perftest_row_RW256", RAMPERFTESTCASE_ROW_RW256, 24} ,
+	{ram_perftest_row_jump,  "ram_perftest_row_jump",  RAMPERFTESTCASE_ROW_JUMP,  25} ,
 	{NULL}
 };
 
-/*
-unsigned long ram_perftest_get_row_size1(void);
-unsigned long ram_perftest_get_refresh_time1(void);
-
-HOSTADEF(ptExtSdramCtrlArea);
-unsigned long ram_perftest_get_row_size1(void)
-{
-	NX500_SDRAM_GENERAL_CTRL_T tCtrl;
-	unsigned long ulNumColumns;
-	unsigned long ulNumBanks;
-	unsigned long ulDataBusBytes;
-	unsigned long ulRowSize;
-	
-	tCtrl.val = ptExtSdramCtrlArea->ulSdram_general_ctrl;
-	ulNumColumns = (tCtrl.bf.columns + 1) << 11;
-	ulNumBanks = (tCtrl.bf.banks + 1) << 1;
-#if HOST=="netx10"
-	ulDataBusBytes = (tCtrl.bf.dbus32 + 1) << 1;
-#else
-	ulDataBusBytes = (tCtrl.bf.dbus16 + 1) ;
-#endif
-	ulRowSize = ulDataBusBytes * ulNumColumns * ulNumBanks;
-	
-	return ulRowSize;
-}
-
-unsigned long ram_perftest_get_refresh_time1(void)
-{
-	return 0;
-}
-*/
 
 RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 {
 	RAMTEST_RESULT_T tResult;
-	unsigned long pulStartAddress;
-	unsigned long pulEndAddress;
+	unsigned long ulStartAddress;
+	unsigned long ulEndAddress;
 	unsigned long ulRowSizeBytes;
 	unsigned long ulRefreshTimeClocks;
 	unsigned long ulCases;
@@ -922,15 +894,15 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 	
 	tResult         = RAMTEST_RESULT_OK;
 	ulCases         = ptParameter->ulPerfTestCases;
-	pulStartAddress = ptParameter->ulStart;
-	pulEndAddress   = pulStartAddress + ptParameter->ulSize;
+	ulStartAddress = ptParameter->ulStart;
+	ulEndAddress   = ulStartAddress + ptParameter->ulSize;
 	ptRamPerfTest = atRamPerfTests;
 	
-	ulRowSizeBytes = ram_perftest_get_row_size();
-	ulRefreshTimeClocks = ram_perftest_get_refresh_time();
+	ulRowSizeBytes = ptParameter->ulRowSize;
+	ulRefreshTimeClocks = ptParameter->ulRefreshTime_clk;
 	
 	uprintf(". \n");
-	uprintf(". Row size: %d bytes\n", ulRowSizeBytes);	
+	uprintf(". Row size: %d bytes\n", ulRowSizeBytes);
 	uprintf(". Refresh time: %d * 10ns\n", ulRefreshTimeClocks);
 	uprintf(". \n");
 	
@@ -951,7 +923,7 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 		else
 		{
 			uprintf(". Running test %s ...", ptRamPerfTest -> pszTestName);
-			ulTime = ptRamPerfTest -> pfnTestCode(pulStartAddress, pulEndAddress, ulRowSizeBytes, ulRefreshTimeClocks);
+			ulTime = ptRamPerfTest -> pfnTestCode(ulStartAddress, ulEndAddress, ulRowSizeBytes, ulRefreshTimeClocks);
 			uprintf(" %d cycles\n", ulTime);
 		}
 		ptParameter->ulTimes[ptRamPerfTest -> iResultIndex] = ulTime;
@@ -1092,7 +1064,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			uprintf("****************************************\n");
 			uprintf("*                                      *\n");
-			uprintf("*  Performance Tests - Loop %08d  *\n", ulLoopCnt);
+			uprintf("*  Performance Tests - Loop %08d   *\n", ulLoopCnt);
 			uprintf("*                                      *\n");
 			uprintf("****************************************\n");
 
