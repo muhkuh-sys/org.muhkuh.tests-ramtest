@@ -2,18 +2,45 @@ require("muhkuh_cli_init")
 require("ramtest")
 
 
-local atSdramAttributes = {
-	netX          = 500,
---	netX          = 56,
---	netX          = 50,
---	netX          = 10,
 
+--  <hardware connection="ONBOARD" interface="MEM" netX="500" type="MT48LC2M32B2-7IT">
+--    <!--tRas neu: 5clk (alt 4) tRfc neu: 7clk (alt 6) Grund: alte Werte wurden falsch aus dem Datenblatt genommen-->
+local atSdramAttributes_500 = {
+	netX          = 500,
 	general_ctrl  = 0x030d0001,
-	timing_ctrl   = 0x00012151,
+	timing_ctrl   = 0x03C13251,
 	mr            = 0x00000033,
 	size_exponent = 23,
 	interface     = ramtest.SDRAM_INTERFACE_MEM
 }
+
+
+--  <hardware connection="ONBOARD" interface="MEM" netX="50" type="MT48LC2M32B2-7IT">
+--    <!--tRas neu: 5clk (alt 4) tRfc neu: 7clk (alt 6) Grund: alte Werte wurden falsch aus dem Datenblatt genommen, Im Bootwizzard file stand kein typ (-5,-6,-7) jedoch passen die Werte zum -7er -->
+local atSdramAttributes_50 = {
+	netX          = 50,
+	general_ctrl  = 0x030d0001,
+	timing_ctrl   = 0x00A13251,
+	mr            = 0x00000033,
+	size_exponent = 23,
+	interface     = ramtest.SDRAM_INTERFACE_MEM
+}
+
+
+--  <hardware connection="ONBOARD" interface="MEM" netX="56" type="MT48LC2M32B2-7IT">
+--    <!--HW im Klimaschrank getestet mit alten t-Werten, tRas neu: 5clk (alt 4) tRfc neu: 7clk (alt 6) Grund: alte Werte wurden falsch aus dem Datenblatt genommen-->
+local atSdramAttributes_56 = {
+	netX          = 56,
+	general_ctrl  = 0x030d0001,
+	timing_ctrl   = 0x00A13251,
+	mr            = 0x00000033,
+	size_exponent = 23,
+	interface     = ramtest.SDRAM_INTERFACE_MEM
+}
+
+
+
+local atSdramAttributes = atSdramAttributes_56
 
 local ulAreaStart = 0x80000000
 local ulAreaSize = 0x10000
@@ -43,7 +70,7 @@ local ulTestCases =
 	+ ramtest.PERFTEST_ROW_RW16
 	+ ramtest.PERFTEST_ROW_RW32
 	+ ramtest.PERFTEST_ROW_RW256
---	+ ramtest.PERFTEST_ROW_JUMP
+	+ ramtest.PERFTEST_ROW_JUMP
 
 
 tPlugin = tester.getCommonPlugin()
@@ -56,25 +83,12 @@ ramtest.run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize
 ramtest.disable_sdram(tPlugin, atSdramAttributes)
 
 
-local atSdramAttributes = {
-	netX          = 500,
---	netX          = 56,
---	netX          = 50,
---	netX          = 10,
-
-	general_ctrl  = 0x030d0001,
-	timing_ctrl   = 0x00012151,
-	mr            = 0x00000033,
-	size_exponent = 23,
-	interface     = ramtest.SDRAM_INTERFACE_MEM
-}
-
-local ulAreaStart = 0x80000000
-local ulAreaSize = 0x1000
-local ulTestCases = ramtest.PERFTEST_ROW_JUMP
-ramtest.setup_sdram(tPlugin, atSdramAttributes)
-ramtest.run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulTestCases, ulLoops)
-ramtest.disable_sdram(tPlugin, atSdramAttributes)
+-- local ulAreaStart = 0x80000000
+-- local ulAreaSize = 0x10000
+-- local ulTestCases = ramtest.PERFTEST_ROW_JUMP
+-- ramtest.setup_sdram(tPlugin, atSdramAttributes)
+-- ramtest.run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulTestCases, ulLoops)
+-- ramtest.disable_sdram(tPlugin, atSdramAttributes)
 
 tPlugin:Disconnect()
 
