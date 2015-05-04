@@ -446,7 +446,7 @@ ram_perftest_row_jump:
 	@ fill with 'add PC, r4'. 
 	@ r4 will contain the jump distance to the next row.
 	mov r4, r0
-	sub r5, r1, r2
+	mov r5, r1
 	ldr r6, =opcode_addr_add_pc_r4
 	bl fill_code
 	
