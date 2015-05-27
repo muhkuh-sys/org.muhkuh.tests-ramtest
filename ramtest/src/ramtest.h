@@ -21,6 +21,7 @@ typedef enum
 	RAMTESTCASE_BURST              = 0x00000040
 } RAMTESTCASE_T;
 
+
 typedef enum
 {
 	RAMPERFTESTCASE_SEQ_R8       = 0x00000001,
@@ -52,7 +53,6 @@ typedef enum
 } RAMPERFTESTCASE_T;
 
 
-
 struct RAMTEST_PARAMETER_STRUCT;
 typedef void (*PFN_RAMTEST_PROGRESS_T) (struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult);
 
@@ -79,7 +79,9 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter);
 RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter);
 RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter);
 void ramtest_print_performance_tests(RAMTEST_PARAMETER_T *ptParameter);
+void ram_perftest_init_netx(void);
 
 unsigned long pseudo_generator(unsigned long number);
+
 
 #endif  /* __RAMTEST_H__ */

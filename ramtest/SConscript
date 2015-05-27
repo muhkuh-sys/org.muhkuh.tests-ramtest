@@ -36,6 +36,7 @@ sources_common = """
 	src/header.c
 	src/ramtest.c
 	src/random_burst.s
+	src/ramtest_perf.c
 	src/performance_test.S
 """
 
@@ -58,6 +59,14 @@ sources_debugger = """
 	src/main_standalone.c
 """
 
+sources_sim = """
+	src/init_standalone.S
+	src/main_simu.c
+	src/setup_sdram.c
+	src/ramtest_perf.c
+	src/performance_test.S
+"""
+
 #----------------------------------------------------------------------------
 #
 # Build the muhkuh test version.
@@ -70,6 +79,14 @@ env_netx500_t.Append(CPPPATH = aCppPath)
 src_netx500_t = env_netx500_t.SetBuildPath('targets/netx500/muhkuh_test', 'src', sources_common+sources_test)
 elf_netx500_t = env_netx500_t.Elf('targets/netx500/muhkuh_test/ramtest.elf', src_netx500_t + platform_lib_netx500)
 ramtest_netx500 = env_netx500_t.ObjCopy('targets/netx500/muhkuh_test/ramtest_netx500.bin', elf_netx500_t)
+
+env_netx500_sim = env_netx500_default.Clone()
+env_netx500_sim.Replace(LDFILE = 'src/netx500/netx500.ld')
+env_netx500_sim.Append(CPPPATH = aCppPath)
+env_netx500_sim.Append(CPPDEFINES = [['SIMULATION', '1']])
+src_netx500_sim = env_netx500_sim.SetBuildPath('targets/netx500/sim', 'src',  sources_sim)
+elf_netx500_sim = env_netx500_sim.Elf('targets/netx500/sim/ramtest_netx500.elf', src_netx500_sim + platform_lib_netx500)
+ramtest_netx500_sim = env_netx500_sim.ObjCopy('targets/netx500/sim/ramtest_netx500.bin', elf_netx500_sim)
 
 env_netx56_t = env_netx56_default.Clone()
 env_netx56_t.Replace(LDFILE = 'src/netx56/netx56.ld')

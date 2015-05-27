@@ -44,6 +44,89 @@
 
 .global ram_perftest_get_row_size
 .global ram_perftest_get_refresh_time
+.global ram_perftest_init_netx
+
+ram_perftest_init_netx:
+#if ASIC_TYP==500 || ASIC_TYP==100
+Mode_SVC            = 0x13        
+I_Bit               = 0x80 @ when I bit is set, IRQ is disabled
+F_Bit               = 0x40 @ when F bit is set, FIQ is disabled
+Adr_vic_int_enclear = 0x001FF014 @ Adr_NX500_vic_vic_int_enclear
+Adr_dTCM_base       = 0x10000000 @ Adr_NX500_dTCM_base
+
+	stmfd	sp!, {r0, r1, r2}
+	
+@ ################## configure all relevant ARM Coprocessor register  #####################################
+	MOV     ip, #I_Bit | F_Bit | Mode_SVC   @ go to supervisor mode and keep interrupts disabled
+	MSR     cpsr_c, ip
+	
+	MOV     ip, #0
+	MCR     p15, 0, ip, c7, c7, 0           @ invalidate Instruction and Data caches
+	MCR     p15, 0, ip, c7, c10, 4          @ drain the Write buffer, to be sure not to have data in pipe
+	MCR     p15, 0, ip, c8, c7, 0           @ invalidate Instruction and Data Translation Lookaside Buffers
+	MRC     p15, 0, ip, c1, c0, 0           @ get the ctrl register
+	BIC     ip, ip, #0x0007                 @ .............cam   disable MMU, disable Alignment checking, disable D-Cache
+	BIC     ip, ip, #0x1100                 @ ...i...s........   disable System Protection, disable I-Cache
+	MCR     p15, 0, ip, c1, c0, 0           @ write ctrl register
+
+@ ################## clear all pending interrupts  #####################################
+	LDR     r1, =Adr_vic_int_enclear        @ clear all interrupts first
+	LDR     r2, =0xFFFFFFFF                 @ load the interrupt mask
+	STR     r2, [r1]
+@ ################## enable the tighly coupled memory now #####################################
+	LDR     r0, =Adr_dTCM_base              @ load the Tighly coupled Memory base address
+	ORR     r0, r0, #1                      @ add the enable bit to the base address
+	MCR     p15, 0, r0, c9, c1, 0           @ Enable the tightly coupled memory
+	
+	ldmfd   sp!, {r0, r1, r2}
+	bx      lr
+	
+#elif ASIC_TYP==50
+	
+#elif ASIC_TYP==10
+		
+#elif ASIC_TYP==56
+
+#define SR_Mode_SVC  0x13
+#define SR_Irq       0x80
+#define SR_Fiq       0x40
+	stmfd	sp!, {r0, r1}
+	
+	@ enable svc mode and disable irq and fiq
+	msr     cpsr_c, #SR_Irq|SR_Fiq|SR_Mode_SVC
+
+	@ clear data pipe
+	mcr     p15,    0, r1, c7, c10, 4
+
+	@ set the ctrl register to ...
+	@ TBIT enable (#15 = 0)
+	@ disable ITCM (#12 = 0)
+	@ little endianess (#7 = 0)
+	@ enable buffered writes in bufferable areas (#3 = 1)
+	@ disable DTCM (#2 = 0)
+	@ disable alignment check (#1 = 0)
+	ldr     r0,     =0x0f78
+	mcr     p15,    0, r0, c1, c0, 0
+
+	@ NOTE: r1 must be 0 here
+	ldr     r1,     =0
+	
+	@ Disable intram parity check.
+	ldr     r0,     =HOSTADDR(parity)
+	str     r1,     [r0, #HOSTREL(parity_enable)]
+	str     r1,     [r0, #HOSTREL(parity_abort_enable)]
+
+	ldr     r0,     =HOSTADDR(vic)
+	@ init vic registers
+	mvn     r1,     r1
+	@ disable all irqs
+	str     r1,     [r0, #HOSTREL(vic_int_enclear)]
+	str     r1,     [r0, #HOSTREL(vic_softint_clear)]
+
+	ldmfd	sp!, {r0, r1}
+	bx      lr
+#endif
+
 
 
 @--------------------------------------
@@ -132,56 +215,64 @@ ram_perftest_get_row_size:
 	bx lr
 
 
+	
 @--------------------------------------
-@ Setup GPIO counter 0 to count cycles.
+@ Configure GPIO counter 0 for counting clock cycles.
+@ The counter is stopped.
 @
 @ Uses r4, r5
 
-ram_perftest_start_time:
+ram_perftest_init_counter0:
 	ldr r4, =HOSTADDR(gpio)
 	ldr r5, =0
 	str r5, [r4, #HOSTREL(gpio_counter0_ctrl)]
 	str r5, [r4, #HOSTREL(gpio_counter0_cnt)]
 	ldr r5, =0xffffffff
 	str r5, [r4, #HOSTREL(gpio_counter0_max)]
-	ldr r5, =1
-	str r5, [r4, #HOSTREL(gpio_counter0_ctrl)]
-	bx lr
-	
-@--------------------------------------
-@ Stop GPIO counter 0 and return its value
-@
-@ Return value:
-@  r0 : counter value
-@
-@ Uses r0, r1
-
-ram_perftest_end_time:
-	ldr r1, =HOSTADDR(gpio)
-	ldr r0, =0
-	str r0, [r1, #HOSTREL(gpio_counter0_ctrl)]
-	ldr r0, [r1, #HOSTREL(gpio_counter0_cnt)]
 	bx lr
 
 @--------------------------------------
-@ Wait until GPIO counter 0 exceeds the given value.
-@ The counter must be running.
+@ Start GPIO counter 0 and wait until it exceeds the given value.
+@ The counter must be initialized and stopped.
 @
 @ Parameters:
 @  r3 : compare value
 @
 @ Uses r4, r5
 
-ram_perftest_wait_counter0:
+ram_perftest_delay_counter0:
 	ldr r4, =HOSTADDR(gpio)
+	ldr r5, =1
+	str r5, [r4, #HOSTREL(gpio_counter0_ctrl)]
 wait_loop:
 	ldr r5, [r4, #HOSTREL(gpio_counter0_cnt)]
 	cmp r5, r3
 	bls wait_loop
 	bx	lr
-	
 
 
+.altmacro
+@--------------------------------------
+@ Start GPIO counter 0.
+@
+@ Uses r4, r5
+
+.macro m_start_counter0
+	ldr r4, =HOSTADDR(gpio)
+	ldr r5, =1
+	str r5, [r4, #HOSTREL(gpio_counter0_ctrl)]
+.endm
+
+@--------------------------------------
+@ Stop GPIO timer 0 and return value in r0.
+@
+@ Uses r0, r1
+.macro m_stop_counter0
+	ldr r1, =HOSTADDR(gpio)
+	ldr r0, =0
+	str r0, [r1, #HOSTREL(gpio_counter0_ctrl)]
+	ldr r0, [r1, #HOSTREL(gpio_counter0_cnt)]
+.endm
 
 @--------------------------------------
 R8    = 1
@@ -215,10 +306,11 @@ RW256 = 12
 .macro ram_perftest_seq accessmode
 	LOCAL loop
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	bl ram_perftest_start_time
-	bl ram_perftest_wait_counter0
-	bl ram_perftest_start_time
-	
+	bl ram_perftest_init_counter0
+	bl ram_perftest_delay_counter0
+	bl ram_perftest_init_counter0
+	m_start_counter0
+
 loop:
 	.if accessmode == R8
 	ldrb r4, [r0], #1
@@ -253,7 +345,7 @@ loop:
 	cmp r0, r1
 	bls loop
 	
-	bl ram_perftest_end_time
+	m_stop_counter0
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 	bx	lr
@@ -273,35 +365,36 @@ ram_perftest_seq_RW16: ram_perftest_seq RW16
 ram_perftest_seq_RW32: ram_perftest_seq RW32
 ram_perftest_seq_RW256:ram_perftest_seq RW256
 
-
-@--------------------------------------
-@ Row-by-row read/write test.
-@ Increments the address by one row after each access.
-@ Makes several passes with increasing offsets into the rows.
-@
-@ Parameters:
-@  r0 : start address
-@  r1 : end address
-@  r2 : row size 
-@  r3 : refresh delay in clocks 
+@ --------------------------------------
+@  Row-by-row read/write test.
+@  Increments the address by one row after each access.
+@  Makes several passes with increasing offsets into the rows.
 @ 
-@ Return value:
-@  r0 : >0 time in clock cycles, =0 error
-@
-@ Uses r0-r12
-@
-@ Work registers:
-@ r3 : row offset
-@ r4 : address
-@ r5-r12: load/store
+@  Parameters:
+@   r0 : start address
+@   r1 : end address
+@   r2 : row size 
+@   r3 : refresh delay in clocks 
+@  
+@  Return value:
+@   r0 : >0 time in clock cycles, =0 error
+@ 
+@  Uses r0-r12
+@ 
+@  Work registers:
+@  r3 : row offset
+@  r4 : address
+@  r5-r12: load/store
+
 
 .macro ram_perftest_row accessmode
 	LOCAL loop_pass
 	LOCAL loop_row
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	bl ram_perftest_start_time
-	bl ram_perftest_wait_counter0
-	bl ram_perftest_start_time
+	bl ram_perftest_init_counter0
+	bl ram_perftest_delay_counter0
+	bl ram_perftest_init_counter0
+	m_start_counter0
 	
 	@ row offset = 0
 	mov r3, #0
@@ -364,7 +457,7 @@ loop_row:
 	cmp r3, r2
 	bls loop_pass
 
-	bl ram_perftest_end_time
+	m_stop_counter0
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 	bx	lr
@@ -411,12 +504,13 @@ ram_perftest_seq_nop:
 	ldrh r5, [r5]
 	strh r5, [r4], #2
 
-	bl ram_perftest_start_time
-	bl ram_perftest_wait_counter0
-	bl ram_perftest_start_time
+	bl ram_perftest_init_counter0
+	bl ram_perftest_delay_counter0
+	bl ram_perftest_init_counter0
+	m_start_counter0
 	orr r0, r0, #1
 	blx r0
-	bl ram_perftest_end_time
+	m_stop_counter0
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 	bx	lr
@@ -457,9 +551,10 @@ ram_perftest_row_jump:
 	ldr r6, =opcode_addr_add_pc_r5
 	bl fill_code
 	
-	bl ram_perftest_start_time
-	bl ram_perftest_wait_counter0
-	bl ram_perftest_start_time
+	bl ram_perftest_init_counter0
+	bl ram_perftest_delay_counter0
+	bl ram_perftest_init_counter0
+	m_start_counter0
 	
 	@ set r4 with jump distance from row to row
 	sub r4, r2, #4
@@ -471,7 +566,7 @@ ram_perftest_row_jump:
 	
 	orr r0, r0, #1
 	blx r0
-	bl ram_perftest_end_time
+	m_stop_counter0
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 	bx	lr
