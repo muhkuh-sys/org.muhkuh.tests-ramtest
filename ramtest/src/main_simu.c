@@ -45,8 +45,8 @@ void ramtest_main(void)
 	/* Execute once. (ignored by perf. test) */
 	tTestParams.ulLoops = 1;
 
-	/* initialize the system */
-	ram_perftest_init_netx();
+	/* TODO: initialize the system */
+	/* ram_perftest_init_netx(); */
 	
 	systime_init();
 	
