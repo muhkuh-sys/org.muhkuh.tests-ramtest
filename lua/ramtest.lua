@@ -58,6 +58,12 @@ SDRAM_INTERFACE_MEM = 1
 SDRAM_INTERFACE_HIF = 2
 
 local function printf(...) print(string.format(...)) end
+local function printf_ul(ch, ...) 
+	local str = string.format(...)
+	local line = string.rep(ch, str:len())
+	print(str)
+	print(line)
+end
 
 local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	local atAddressLines = {
@@ -679,6 +685,123 @@ function run_ramtest(par)
 end
 
 
+
+
+
+
+
+function vector_scale(v, factor)
+	local vres = {}
+	for i, comp in pairs(v) do
+		vres[i] = comp*factor
+	end
+	return vres
+end
+
+function vector_add(v1, v2)
+	local vres = {}
+	for i, comp1 in pairs(v1) do
+		vres[i] = comp1+v2[i]
+	end
+	return vres
+end
+
+function vector_subtract(v1, v2)
+	return vector_add(v1, vector_scale(v2, -1))
+end
+
+function vector_shift0(v)
+	local vres = {}
+	for i, comp in pairs(v) do
+		vres[i-1] = comp
+	end
+	return vres
+end
+
+-- Takes an array of arrays of values and 
+-- calculates, the min, avg and max across all subtables
+function vector_min_avg_max(aVectors)
+	local aMin = {}
+	local aMax = {}
+	local aAvg = {}
+	local aAvgCnt = {}
+	
+	for i, v in pairs(aVectors) do
+		for j, comp in pairs(v) do
+			aMin[j] = math.min(aMin[j] or comp, comp)
+			aMax[j] = math.max(aMax[j] or 0, comp)
+			aAvg[j] = (aAvg[j] or 0) + comp
+			aAvgCnt[j] = (aAvgCnt[j] or 0) + 1
+		end
+	end
+	
+	for i, v in pairs(aAvg) do
+		aAvg[i] = aAvg[i] / aAvgCnt[i]
+	end
+	
+	return aMin, aMax, aAvg
+end
+
+
+-- print time array
+function print_times(aulTimes)
+	local t = aulTimes
+	print("Times in microseconds:")
+	printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
+	printf("sequential read       %10.3f %10.3f %10.3f %10.3f ", t[ 0],   t[ 1],   t[ 2],    t[ 3])
+	printf("sequential write      %10.3f %10.3f %10.3f %10.3f ", t[ 4],   t[ 5],   t[ 6],    t[ 7])
+	printf("sequential read/write %10.3f %10.3f %10.3f %10.3f ", t[ 8],   t[ 9],   t[10],    t[11])
+	printf("row read              %10.3f %10.3f %10.3f %10.3f ", t[13],   t[14],   t[15],    t[16])
+	printf("row write             %10.3f %10.3f %10.3f %10.3f ", t[17],   t[18],   t[19],    t[20])
+	printf("row read/write        %10.3f %10.3f %10.3f %10.3f ", t[21],   t[22],   t[23],    t[24])
+	printf("sequential NOP Thumb  %10.3f", t[12])
+	printf("row-to-row jump Thumb %10.3f", t[25])
+end
+
+function print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
+	print("Times in microseconds:")
+	printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
+	printf("sequential read       %10.3f %10.3f %10.3f %10.3f Min", tmin[ 0],   tmin[ 1],   tmin[ 2],    tmin[ 3])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 0],   tavg[ 1],   tavg[ 2],    tavg[ 3])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 0],   tmax[ 1],   tmax[ 2],    tmax[ 3])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 0],   tdif[ 1],   tdif[ 2],    tdif[ 3])
+	print()
+	printf("sequential write      %10.3f %10.3f %10.3f %10.3f Min", tmin[ 4],   tmin[ 5],   tmin[ 6],    tmin[ 7])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 4],   tavg[ 5],   tavg[ 6],    tavg[ 7])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 4],   tmax[ 5],   tmax[ 6],    tmax[ 7])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 4],   tdif[ 5],   tdif[ 6],    tdif[ 7])
+	print()
+	printf("sequential read/write %10.3f %10.3f %10.3f %10.3f Min", tmin[ 8],   tmin[ 9],   tmin[10],    tmin[11])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 8],   tavg[ 9],   tavg[10],    tavg[11])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 8],   tmax[ 9],   tmax[10],    tmax[11])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 8],   tdif[ 9],   tdif[10],    tdif[11])
+	print()
+	printf("row read              %10.3f %10.3f %10.3f %10.3f Min", tmin[13],   tmin[14],   tmin[15],    tmin[16])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[13],   tavg[14],   tavg[15],    tavg[16])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[13],   tmax[14],   tmax[15],    tmax[16])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[13],   tdif[14],   tdif[15],    tdif[16])
+	print()
+	printf("row write             %10.3f %10.3f %10.3f %10.3f Min", tmin[17],   tmin[18],   tmin[19],    tmin[20])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[17],   tavg[18],   tavg[19],    tavg[20])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[17],   tmax[18],   tmax[19],    tmax[20])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[17],   tdif[18],   tdif[19],    tdif[20])
+	print()
+	printf("row read/write        %10.3f %10.3f %10.3f %10.3f Min", tmin[21],   tmin[22],   tmin[23],    tmin[24])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[21],   tavg[22],   tavg[23],    tavg[24])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[21],   tmax[22],   tmax[23],    tmax[24])
+	printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[21],   tdif[22],   tdif[23],    tdif[24])
+	print()
+	printf("sequential NOP Thumb  %10.3f Min", tmin[12])
+	printf("                      %10.3f Avg", tavg[12])
+	printf("                      %10.3f Max", tmax[12])
+	printf("                      %10.3f Dif", tdif[12])
+	print()
+	printf("row-to-row jump Thumb %10.3f Min", tmin[25])
+	printf("                      %10.3f Avg", tavg[25])
+	printf("                      %10.3f Max", tmax[25])
+	printf("                      %10.3f Dif", tdif[25])
+end
+
 -- Run the performance test
 function run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulPerfTests)
 
@@ -696,115 +819,64 @@ function run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSiz
 	printf("Array refresh time: %5.2f ms, %d * 10ns clocks", ulArrayRefreshTime_us/1000, ulRefreshTime_clk)
 	print()
 	
-	--local iLoops = 1
-	local iLoops = 10
-
+	-- Do a calibration run using intram
+	local ulCalibrationAreaStart = 0x10000
+	local ulResult, aulCalibrationTimes
+	if ulCalibrationAreaStart then
+		ulResult, aulCalibrationTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulCalibrationAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
+		ulRowSize = ulRowSize, ulRefreshTime_clk=ulRefreshTime_clk}
+		aulCalibrationTimes = vector_shift0(aulCalibrationTimes)
+		aulCalibrationTimes = vector_scale(aulCalibrationTimes, 0.01)
+		
+	end
 	
+	-- Execute the tests
+	local iLoops = 10
 	local aaulTimes = {}
 	for iLoop = 1, iLoops do
 		local ulResult, aulTimes = run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
 		ulRowSize = ulRowSize, ulRefreshTime_clk=ulRefreshTime_clk}
-		
 		print("Result: ", ulResult)
-		
-		local t = {}
-		for i, v in ipairs(aulTimes) do
-			t[i-1] = v/100
-		end
-		
-		printf("Start address: 0x%08x", ulAreaStart)
-		printf("Area size:     0x%08x", ulAreaSize)
+		aulTimes = vector_shift0(aulTimes)
+		aulTimes = vector_scale(aulTimes, 0.01)
+		print_times(aulTimes)
 		print()
-		print("Times in microseconds:")
-		printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
-		printf("sequential read       %10.3f %10.3f %10.3f %10.3f ", t[ 0],   t[ 1],   t[ 2],    t[ 3])
-		printf("sequential write      %10.3f %10.3f %10.3f %10.3f ", t[ 4],   t[ 5],   t[ 6],    t[ 7])
-		printf("sequential read/write %10.3f %10.3f %10.3f %10.3f ", t[ 8],   t[ 9],   t[10],    t[11])
-		printf("row read              %10.3f %10.3f %10.3f %10.3f ", t[13],   t[14],   t[15],    t[16])
-		printf("row write             %10.3f %10.3f %10.3f %10.3f ", t[17],   t[18],   t[19],    t[20])
-		printf("row read/write        %10.3f %10.3f %10.3f %10.3f ", t[21],   t[22],   t[23],    t[24])
-		
-		printf("sequential NOP Thumb  %10.3f", t[12])
-		printf("row-to-row jump Thumb %10.3f", t[25])
-		
 		aaulTimes[iLoop] = aulTimes
 	end
 
-	if iLoops > 1 then
-		
-		local aulTimesMin = {}
-		local aulTimesMax = {}
-		local aulTimesAvg = {}
-		for iLoop = 1, iLoops do
-			for i, v in ipairs(aaulTimes[iLoop]) do
-				aulTimesMin[i] = math.min(aulTimesMin[i] or v, v)
-				aulTimesMax[i] = math.max(aulTimesMax[i] or 0, v)
-				aulTimesAvg[i] = (aulTimesAvg[i] or 0) + (v / iLoops)
-			end
-		end
-	
-		local tmin = {}
-		for i, v in ipairs(aulTimesMin) do
-			tmin[i-1] = v/100
-		end
-		local tmax = {}
-		for i, v in ipairs(aulTimesMax) do
-			tmax[i-1] = v/100
-		end
-		local tavg = {}
-		for i, v in ipairs(aulTimesAvg) do
-			tavg[i-1] = v/100
-		end
-		local tdif = {}
-		for i, v in pairs(aulTimesMax) do
-			tdif[i-1] = (v - aulTimesMin[i]) / 100
-		end
-		
+	-- Print the results
+	if iLoops == 1 then
 		printf("Start address: 0x%08x", ulAreaStart)
 		printf("Area size:     0x%08x", ulAreaSize)
 		print()
-		print("Times in microseconds:")
-		printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
-		printf("sequential read       %10.3f %10.3f %10.3f %10.3f Min", tmin[ 0],   tmin[ 1],   tmin[ 2],    tmin[ 3])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 0],   tavg[ 1],   tavg[ 2],    tavg[ 3])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 0],   tmax[ 1],   tmax[ 2],    tmax[ 3])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 0],   tdif[ 1],   tdif[ 2],    tdif[ 3])
+		aulTimes = aaulTimes[1]
+		printf_ul("-", "Times using SDRAM:")
+		print_times(aulTimes)
 		print()
-		printf("sequential write      %10.3f %10.3f %10.3f %10.3f Min", tmin[ 4],   tmin[ 5],   tmin[ 6],    tmin[ 7])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 4],   tavg[ 5],   tavg[ 6],    tavg[ 7])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 4],   tmax[ 5],   tmax[ 6],    tmax[ 7])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 4],   tdif[ 5],   tdif[ 6],    tdif[ 7])
+		printf_ul("-", "Times using Intram:")
+		print_times(aulCalibrationTimes)
 		print()
-		printf("sequential read/write %10.3f %10.3f %10.3f %10.3f Min", tmin[ 8],   tmin[ 9],   tmin[10],    tmin[11])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 8],   tavg[ 9],   tavg[10],    tavg[11])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 8],   tmax[ 9],   tmax[10],    tmax[11])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 8],   tdif[ 9],   tdif[10],    tdif[11])
+		printf_ul("-", "Times SDRAM - Intram:")
+		aulTimes = vector_subtract(aulTimes, aulCalibrationTimes)
+		print_times(aulTimes)
+	else
+		printf("Start address: 0x%08x", ulAreaStart)
+		printf("Area size:     0x%08x", ulAreaSize)
 		print()
-		printf("row read              %10.3f %10.3f %10.3f %10.3f Min", tmin[13],   tmin[14],   tmin[15],    tmin[16])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[13],   tavg[14],   tavg[15],    tavg[16])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[13],   tmax[14],   tmax[15],    tmax[16])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[13],   tdif[14],   tdif[15],    tdif[16])
+		printf_ul("-", "Times using SDRAM:")
+		local tmin, tmax, tavg = vector_min_avg_max(aaulTimes)
+		local tdif = vector_subtract(tmax, tmin)
+		print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
 		print()
-		printf("row write             %10.3f %10.3f %10.3f %10.3f Min", tmin[17],   tmin[18],   tmin[19],    tmin[20])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[17],   tavg[18],   tavg[19],    tavg[20])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[17],   tmax[18],   tmax[19],    tmax[20])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[17],   tdif[18],   tdif[19],    tdif[20])
+		printf_ul("-", "Times using Intram:")
+		print_times(aulCalibrationTimes)
 		print()
-		printf("row read/write        %10.3f %10.3f %10.3f %10.3f Min", tmin[21],   tmin[22],   tmin[23],    tmin[24])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[21],   tavg[22],   tavg[23],    tavg[24])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[21],   tmax[22],   tmax[23],    tmax[24])
-		printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[21],   tdif[22],   tdif[23],    tdif[24])
-		print()
+		printf_ul("-", "Times SDRAM - Intram:")
+		tmin = vector_subtract(tmin, aulCalibrationTimes)
+		tavg = vector_subtract(tavg, aulCalibrationTimes)
+		tmax = vector_subtract(tmax, aulCalibrationTimes)
+		print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
 		
-		printf("sequential NOP Thumb  %10.3f Min", tmin[12])
-		printf("                      %10.3f Avg", tavg[12])
-		printf("                      %10.3f Max", tmax[12])
-		printf("                      %10.3f Dif", tdif[12])
-		print()
-		printf("row-to-row jump Thumb %10.3f Min", tmin[25])
-		printf("                      %10.3f Avg", tavg[25])
-		printf("                      %10.3f Max", tmax[25])
-		printf("                      %10.3f Dif", tdif[25])
 	end
 
 end
