@@ -5,8 +5,8 @@
 
 /*-------------------------------------------------------------------------*/
 
-void ramtest_main(void) __attribute__ ((noreturn));
-void ramtest_main(void)
+int main(void);
+int main(void)
 {
 	unsigned long ulSdramStart        = 0x80000000UL; 
 	unsigned long ulSdramGeneralCtrl  = 0x030d0001UL;
@@ -62,6 +62,7 @@ void ramtest_main(void)
 	}
 
 	while(1);
+  return 0;
 }
 
 /*-----------------------------------*/

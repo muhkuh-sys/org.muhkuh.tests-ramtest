@@ -60,7 +60,7 @@ sources_debugger = """
 """
 
 sources_sim = """
-	src/init_standalone.S
+	src/init_simu.S
 	src/main_simu.c
 	src/setup_sdram.c
 	src/ramtest_perf.c
