@@ -288,6 +288,16 @@ RW16  = 10
 RW32  = 11
 RW256 = 12
 
+
+/* 
+   The number of accesses per loop.
+   Set to 1 for 1 byte/half-word/word transfer per loop 
+   or to 32/16/8 for 32 bytes transfer per loop.
+*/
+#define REPEAT_B 32
+#define REPEAT_H 16
+#define REPEAT_W  8
+
 /*
 @ Sequential read/write test.
 @
@@ -303,6 +313,7 @@ RW256 = 12
 @ Uses r0-r12
 */
 
+
 .macro ram_perftest_seq accessmode
 	LOCAL loop
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
@@ -313,245 +324,51 @@ RW256 = 12
 
 loop:
 	.if accessmode == R8
+	.rept REPEAT_B
 	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
-@	ldrb r4, [r0], #1
+	.endr
 	.elseif accessmode == R16
+	.rept REPEAT_H
 	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
-@	ldrh r4, [r0], #2
+	.endr
 	.elseif accessmode == R32
+	.rept REPEAT_W
 	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
-@	ldr r4, [r0], #4
+	.endr
 	.elseif accessmode == R256
 	ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
 	.elseif accessmode == W8
+	.rept REPEAT_B
 	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
-@	strb r4, [r0], #1
+	.endr
 	.elseif accessmode == W16
+	.rept REPEAT_H
 	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
-@	strh r4, [r0], #2
+	.endr
 	.elseif accessmode == W32
+	.rept REPEAT_W
 	str r4, [r0], #4
-@	str r4, [r0], #4
-@	str r4, [r0], #4
-@	str r4, [r0], #4
-@	str r4, [r0], #4
-@	str r4, [r0], #4
-@	str r4, [r0], #4
-@	str r4, [r0], #4
+	.endr
 	.elseif accessmode == W256
 	stmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
 	.elseif accessmode == RW8
+	.rept REPEAT_B
 	ldrb r4, [r0]
 	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
-@	ldrb r4, [r0]
-@	strb r4, [r0], #1
+	.endr
 	.elseif accessmode == RW16
+	.rept REPEAT_H
 	ldrh r4, [r0]
 	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
-@	ldrh r4, [r0]
-@	strh r4, [r0], #2
+	.endr
 	.elseif accessmode == RW32
+	.rept REPEAT_W
 	ldr r4, [r0]
 	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
-@	ldr r4, [r0]
-@	str r4, [r0], #4
+	.endr
 	.elseif accessmode == RW256
-	ldm r0, {r4, r5, r6, r7, r8, r9, r10, r11}
-	stmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	stmdb r0, {r4, r5, r6, r7, r8, r9, r10, r11}
 	.endif
 	
 	cmp r0, r1
@@ -618,247 +435,53 @@ loop_pass:
 loop_row:
 	@ load/store, inc address
 	.if accessmode == R8
+	.rept REPEAT_B
 	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
-@	ldrb r5, [r4], r2
+	.endr
 	.elseif accessmode == R16
+	.rept REPEAT_H
 	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
-@	ldrh r5, [r4], r2
+	.endr
 	.elseif accessmode == R32
+	.rept REPEAT_W
 	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
-@	ldr r5, [r4], r2
+	.endr
 	.elseif accessmode == R256
-	ldm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
+	ldmia r4, {r5, r6, r7, r8, r9, r10, r11, r12}
 	add r4, r4, r2
 	.elseif accessmode == W8
+	.rept REPEAT_B
 	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
-@	strb r5, [r4], r2
+	.endr
 	.elseif accessmode == W16
+	.rept REPEAT_H
 	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
-@	strh r5, [r4], r2
+	.endr
 	.elseif accessmode == W32
+	.rept REPEAT_W
 	str r5, [r4], r2
-@	str r5, [r4], r2
-@	str r5, [r4], r2
-@	str r5, [r4], r2
-@	str r5, [r4], r2
-@	str r5, [r4], r2
-@	str r5, [r4], r2
-@	str r5, [r4], r2
+	.endr
 	.elseif accessmode == W256
-	stm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
+	stmia r4, {r5, r6, r7, r8, r9, r10, r11, r12}
 	add r4, r4, r2
 	.elseif accessmode == RW8
+	.rept REPEAT_B
 	ldrb r5, [r4]
 	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
-@	ldrb r5, [r4]
-@	strb r5, [r4], r2
+	.endr
 	.elseif accessmode == RW16
+	.rept REPEAT_H
 	ldrh r5, [r4]
 	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
-@	ldrh r5, [r4]
-@	strh r5, [r4], r2
+	.endr
 	.elseif accessmode == RW32
+	.rept REPEAT_W
 	ldr r5, [r4]
 	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
-@	ldr r5, [r4]
-@	str r5, [r4], r2
+	.endr
 	.elseif accessmode == RW256
-	ldm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
-	stm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
+	ldmia r4!, {r5, r6, r7, r8, r9, r10, r11, r12}
+	stmdb r4!, {r5, r6, r7, r8, r9, r10, r11, r12}
 	add r4, r4, r2
 	.endif
 	
