@@ -393,8 +393,8 @@ ram_perftest_seq_RW32_loop
 ram_perftest_seq_RW256      
 	m_ram_perftest_seq_enter
 ram_perftest_seq_RW256_loop
-	ldm r0, {r4, r5, r6, r7, r8, r9, r10, r11}
-	stmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	stmdb r0,  {r4, r5, r6, r7, r8, r9, r10, r11}
 	m_ram_perftest_seq_loop ram_perftest_seq_RW256_loop
 
 
@@ -487,7 +487,7 @@ ram_perftest_row_R256
 ram_perftest_row_R256_loop_pass
 	add r4, r0, r3
 ram_perftest_row_R256_loop_row
-	ldm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
+	ldmia r4, {r5, r6, r7, r8, r9, r10, r11, r12}
 	add r4, r4, r2
 	m_ram_perftest_row_loop 32, ram_perftest_row_R256_loop_row, ram_perftest_row_R256_loop_pass
 
@@ -519,8 +519,8 @@ ram_perftest_row_W256
 	m_ram_perftest_row_enter
 ram_perftest_row_W256_loop_pass
 	add r4, r0, r3
-ram_perftest_row__loop_row
-	stm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
+ram_perftest_row_W256_loop_row
+	stmia r4, {r5, r6, r7, r8, r9, r10, r11, r12}
 	add r4, r4, r2
 	m_ram_perftest_row_loop 32, ram_perftest_row_W256_loop_row, ram_perftest_row_W256_loop_pass
 
@@ -556,8 +556,8 @@ ram_perftest_row_RW256
 ram_perftest_row_RW256_loop_pass
 	add r4, r0, r3
 ram_perftest_row_RW256_loop_row
-	ldm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
-	stm r4, {r5, r6, r7, r8, r9, r10, r11, r12}
+	ldmia r4!, {r5, r6, r7, r8, r9, r10, r11, r12}
+	stmdb r4!, {r5, r6, r7, r8, r9, r10, r11, r12}
 	add r4, r4, r2
 	m_ram_perftest_row_loop 32, ram_perftest_row_RW256_loop_row, ram_perftest_row_RW256_loop_pass
 
