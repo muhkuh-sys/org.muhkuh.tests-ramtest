@@ -259,6 +259,10 @@ int sdram_setup(unsigned long ulSdramStart,
 				ulSdramMr = HOSTDFLT(sdram_mr);
 			}
 
+			//sim_message(". SDRAM general ctrl:  ", disp_data, ulSdramGeneralCtrl);
+			//sim_message(". SDRAM timing ctrl:   ", disp_data, ulSdramTimingCtrl);
+			//sim_message(". SDRAM mode register: ", disp_data, ulSdramMr);
+			
 			uprintf("SDRAM general ctrl:  0x%08x\n", ulSdramGeneralCtrl);
 			uprintf("SDRAM timing ctrl:   0x%08x\n", ulSdramTimingCtrl);
 			uprintf("SDRAM mode register: 0x%08x\n", ulSdramMr);

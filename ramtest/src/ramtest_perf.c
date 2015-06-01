@@ -107,6 +107,14 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 	ulRowSizeBytes = ptParameter->ulRowSize;
 	ulRefreshTimeClocks = ptParameter->ulRefreshTime_clk;
 	
+	//sim_message(". ", disp_only, 0);
+	//sim_message(". SDRAM performance test", disp_only, 0);
+	//sim_message(". Start address: ", disp_data, ulStartAddress);
+	//sim_message(". End address:   ", disp_data, ulEndAddress);
+	//sim_message(". Row size:      ", disp_data, ulRowSizeBytes);
+	//sim_message(". Refresh time:  ", disp_data, ulRefreshTimeClocks);
+	//sim_message(". ", disp_only, 0);
+	
 	uprintf(". \n");
 	uprintf(". Row size: %d bytes\n", ulRowSizeBytes);
 	uprintf(". Refresh time: %d * 10ns\n", ulRefreshTimeClocks);
@@ -120,22 +128,25 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 
 	while ((tResult==RAMTEST_RESULT_OK) && (ptRamPerfTest -> pfnTestCode != NULL))
 	{
-
 		if ((ulCases & ( ptRamPerfTest -> tTestFlag) ) == 0)
 		{
+			//sim_message(". Skipping test ", disp_data, ptRamPerfTest -> tTestFlag);
 			uprintf(". Skipping test %s ...\n", ptRamPerfTest -> pszTestName);
 			ulTime = 0;
 		}
 		else
 		{
+			//sim_message(". Running test ", disp_data, ptRamPerfTest -> tTestFlag);
 			uprintf(". Running test %s ...", ptRamPerfTest -> pszTestName);
 			ulTime = ptRamPerfTest -> pfnTestCode(ulStartAddress, ulEndAddress, ulRowSizeBytes, ulRefreshTimeClocks);
+			//sim_message(". Time (cycles):", disp_data, ulTime);
 			uprintf(" %d cycles\n", ulTime);
 		}
 		ptParameter->ulTimes[ptRamPerfTest -> iResultIndex] = ulTime;
 		++ptRamPerfTest;
 	}
 
+	//sim_message(". End of SDRAM performance test", disp_only, 0);
 	return tResult;
 }
 

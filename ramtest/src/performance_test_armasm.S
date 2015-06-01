@@ -320,7 +320,8 @@ wait_loop
 	// 2. Durchlauf mit Intram-Adressbereich
 	// 3. mehrere loads/stores pro Schleifendurchlauf
 	
-ram_perftest_seq_R8         
+ram_perftest_seq_R8   
+	; sim_asm_message("SDRAM performance test: sequential access, 8 bit read",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_R8_loop
 	// dummy: add r0, r0, #1
@@ -328,30 +329,35 @@ ram_perftest_seq_R8_loop
 	m_ram_perftest_seq_loop ram_perftest_seq_R8_loop
 
 ram_perftest_seq_R16        
+	; sim_asm_message("SDRAM performance test: sequential access, 16 bit read",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_R16_loop
 	ldrh r4, [r0], #2
 	m_ram_perftest_seq_loop ram_perftest_seq_R16_loop
 
 ram_perftest_seq_R32        
+	; sim_asm_message("SDRAM performance test: sequential access, 32 bit read",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_R32_loop
 	ldr r4, [r0], #4
 	m_ram_perftest_seq_loop ram_perftest_seq_R32_loop
 
 ram_perftest_seq_R256       
+	; sim_asm_message("SDRAM performance test: sequential access, 256 bit read",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_R256_loop
 	ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
 	m_ram_perftest_seq_loop ram_perftest_seq_R256_loop
 
 ram_perftest_seq_W8         
+	; sim_asm_message("SDRAM performance test: sequential access, 8 bit write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_W8_loop
 	strb r4, [r0], #1
 	m_ram_perftest_seq_loop ram_perftest_seq_W8_loop
 
 ram_perftest_seq_W16        
+	; sim_asm_message("SDRAM performance test: sequential access, 16 bit read",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_W16_loop
 	strh r4, [r0], #2
@@ -359,17 +365,20 @@ ram_perftest_seq_W16_loop
 
 ram_perftest_seq_W32        
 	m_ram_perftest_seq_enter
+	; sim_asm_message("SDRAM performance test: sequential access, 32 bit read",disp_only,r0);
 ram_perftest_seq_W32_loop
 	str r4, [r0], #4
 	m_ram_perftest_seq_loop ram_perftest_seq_W32_loop
 
 ram_perftest_seq_W256       
+	; sim_asm_message("SDRAM performance test: sequential access, 256 bit read",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_W256_loop
 	stmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
 	m_ram_perftest_seq_loop ram_perftest_seq_W256_loop
 
 ram_perftest_seq_RW8        
+	; sim_asm_message("SDRAM performance test: sequential access, 8 bit read/write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_RW8_loop
 	ldrb r4, [r0]
@@ -377,6 +386,7 @@ ram_perftest_seq_RW8_loop
 	m_ram_perftest_seq_loop ram_perftest_seq_RW8_loop
 
 ram_perftest_seq_RW16       
+	; sim_asm_message("SDRAM performance test: sequential access, 16 bit read/write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_RW16_loop
 	ldrh r4, [r0]
@@ -384,6 +394,7 @@ ram_perftest_seq_RW16_loop
 	m_ram_perftest_seq_loop ram_perftest_seq_RW16_loop
 
 ram_perftest_seq_RW32       
+	; sim_asm_message("SDRAM performance test: sequential access, 32 bit read/write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_RW32_loop
 	ldr r4, [r0]
@@ -391,6 +402,7 @@ ram_perftest_seq_RW32_loop
 	m_ram_perftest_seq_loop ram_perftest_seq_RW32_loop
 
 ram_perftest_seq_RW256      
+	; sim_asm_message("SDRAM performance test: sequential access, 256 bit read/write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_RW256_loop
 	ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
@@ -459,6 +471,7 @@ ram_perftest_seq_RW256_loop
 
 
 ram_perftest_row_R8   
+	; sim_asm_message("SDRAM performance test: row access, 8 bit read",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_R8_loop_pass
 	add r4, r0, r3
@@ -467,6 +480,7 @@ ram_perftest_row_R8_loop_row
 	m_ram_perftest_row_loop 1, ram_perftest_row_R8_loop_row, ram_perftest_row_R8_loop_pass
 	
 ram_perftest_row_R16    
+	; sim_asm_message("SDRAM performance test: row access, 16 bit read",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_R16_loop_pass
 	add r4, r0, r3
@@ -475,6 +489,7 @@ ram_perftest_row_R16_loop_row
 	m_ram_perftest_row_loop 2, ram_perftest_row_R16_loop_row, ram_perftest_row_R16_loop_pass
 
 ram_perftest_row_R32    
+	; sim_asm_message("SDRAM performance test: row access, 32 bit read",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_R32_loop_pass
 	add r4, r0, r3
@@ -483,6 +498,7 @@ ram_perftest_row_R32_loop_row
 	m_ram_perftest_row_loop 4, ram_perftest_row_R32_loop_row, ram_perftest_row_R32_loop_pass
 
 ram_perftest_row_R256   
+	; sim_asm_message("SDRAM performance test: row access, 256 bit read",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_R256_loop_pass
 	add r4, r0, r3
@@ -492,6 +508,7 @@ ram_perftest_row_R256_loop_row
 	m_ram_perftest_row_loop 32, ram_perftest_row_R256_loop_row, ram_perftest_row_R256_loop_pass
 
 ram_perftest_row_W8     
+	; sim_asm_message("SDRAM performance test: row access, 8 bit write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_W8_loop_pass
 	add r4, r0, r3
@@ -500,6 +517,7 @@ ram_perftest_row_W8_loop_row
 	m_ram_perftest_row_loop 1, ram_perftest_row_W8_loop_row, ram_perftest_row_W8_loop_pass
 
 ram_perftest_row_W16    
+	; sim_asm_message("SDRAM performance test: row access, 16 bit write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_W16_loop_pass
 	add r4, r0, r3
@@ -508,6 +526,7 @@ ram_perftest_row_W16_loop_row
 	m_ram_perftest_row_loop 2, ram_perftest_row_W16_loop_row, ram_perftest_row_W16_loop_pass
 
 ram_perftest_row_W32    
+	; sim_asm_message("SDRAM performance test: row access, 32 bit write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_W32_loop_pass
 	add r4, r0, r3
@@ -516,6 +535,7 @@ ram_perftest_row_W32_loop_row
 	m_ram_perftest_row_loop 4, ram_perftest_row_W32_loop_row, ram_perftest_row_W32_loop_pass
 
 ram_perftest_row_W256   
+	; sim_asm_message("SDRAM performance test: row access, 256 bit write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_W256_loop_pass
 	add r4, r0, r3
@@ -525,6 +545,7 @@ ram_perftest_row_W256_loop_row
 	m_ram_perftest_row_loop 32, ram_perftest_row_W256_loop_row, ram_perftest_row_W256_loop_pass
 
 ram_perftest_row_RW8    
+	; sim_asm_message("SDRAM performance test: row access, 8 bit read/write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_RW8_loop_pass
 	add r4, r0, r3
@@ -534,6 +555,7 @@ ram_perftest_row_RW8_loop_row
 	m_ram_perftest_row_loop 1, ram_perftest_row_RW8_loop_row, ram_perftest_row_RW8_loop_pass
 
 ram_perftest_row_RW16   
+	; sim_asm_message("SDRAM performance test: row access, 16 bit read/write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_RW16_loop_pass
 	add r4, r0, r3
@@ -543,6 +565,7 @@ ram_perftest_row_RW16_loop_row
 	m_ram_perftest_row_loop 2, ram_perftest_row_RW16_loop_row, ram_perftest_row_RW16_loop_pass
 
 ram_perftest_row_RW32   
+	; sim_asm_message("SDRAM performance test: row access, 32 bit read/write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_RW32_loop_pass
 	add r4, r0, r3
@@ -552,6 +575,7 @@ ram_perftest_row_RW32_loop_row
 	m_ram_perftest_row_loop 4, ram_perftest_row_RW32_loop_row, ram_perftest_row_RW32_loop_pass
 
 ram_perftest_row_RW256  
+	; sim_asm_message("SDRAM performance test: row access, 256 bit read/write",disp_only,r0);
 	m_ram_perftest_row_enter
 ram_perftest_row_RW256_loop_pass
 	add r4, r0, r3
@@ -578,6 +602,7 @@ ram_perftest_row_RW256_loop_row
 // r5 : opcode
 
 ram_perftest_seq_nop
+	; sim_asm_message("SDRAM performance test: NOP sequence",disp_only,r0);
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 
 	mov r4, r0
@@ -620,6 +645,7 @@ ram_perftest_seq_nop
 
 
 ram_perftest_row_jump
+	; sim_asm_message("SDRAM performance test: row jump",disp_only,r0);
 	stmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 
 	// fill with 'add PC, r4'. 
