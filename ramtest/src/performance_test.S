@@ -290,13 +290,19 @@ RW256 = 12
 
 
 /* 
-   The number of accesses per loop.
-   Set to 1 for 1 byte/half-word/word transfer per loop 
-   or to 32/16/8 for 32 bytes transfer per loop.
+   For sequential access and row by row access with 8/16/32 bit:
+   The r/w/rw loops can be partly unrolled to reduce the effect of the 
+   loop construction.
+   
+	#define REPEAT_B 32
+	#define REPEAT_H 16
+	#define REPEAT_W  8
+	
+	32 byte accesse, 16 halfword accesses, 8 word accesses = 32 bytes.
 */
-#define REPEAT_B 32
-#define REPEAT_H 16
-#define REPEAT_W  8
+#define REPEAT_B 1
+#define REPEAT_H 1
+#define REPEAT_W 1
 
 /*
 @ Sequential read/write test.
