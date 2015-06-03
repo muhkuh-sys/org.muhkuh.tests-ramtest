@@ -608,18 +608,24 @@ ram_perftest_seq_nop
 	mov r4, r0
 	mov r5, r1
 	ldr r6, =opcode_addr_nop
+	; sim_asm_message("fill_code",disp_only,r0);
 	bl fill_code 
+	; sim_asm_message("fill_code done",disp_only,r0);
 	
 	ldr r5, =opcode_addr_bx_lr
 	ldrh r5, [r5]
 	strh r5, [r4], #2
 
+	; sim_asm_message("wait",disp_only,r0);
 	bl ram_perftest_init_counter0
 	bl ram_perftest_delay_counter0
+	; sim_asm_message("start counter",disp_only,r0);
 	bl ram_perftest_init_counter0
 	m_start_counter0
 	orr r0, r0, #1
+	; sim_asm_message("jump to SDRAM",disp_only,r0);
 	blx r0
+	; sim_asm_message("back in intram",disp_only,r0);
 	m_stop_counter0
 	
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
@@ -696,6 +702,9 @@ ram_perftest_row_jump
 // uses r4-r6
 
 fill_code
+	; sim_asm_message("fill_code r4 dest address     ",disp_data,r4);
+	; sim_asm_message("fill_code r5 end address      ",disp_data,r5);
+	; sim_asm_message("fill_code r6 pointer to instr.",disp_data,r6);
 	ldrh r6, [r6]
 fill_code_loop
 	strh r6, [r4], #2
