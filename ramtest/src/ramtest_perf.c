@@ -94,6 +94,10 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 	unsigned long ulRefreshTimeClocks;
 	unsigned long ulCases;
 	unsigned long ulTime;
+	
+	unsigned char *pucAddr;
+	unsigned char *pucEnd;
+	
 	const RAMPERFTEST_DESC_T *ptRamPerfTest;
 	int iNumTimeEntries;
 	int i;
@@ -119,6 +123,14 @@ RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter)
 	uprintf(". Row size: %d bytes\n", ulRowSizeBytes);
 	uprintf(". Refresh time: %d * 10ns\n", ulRefreshTimeClocks);
 	uprintf(". \n");
+	
+	/* initialize the memory */
+	pucAddr = (unsigned char*) ulStartAddress;
+	pucEnd = (unsigned char*) ulEndAddress;
+	while (pucAddr < pucEnd) {
+		*pucAddr = (unsigned char) (((unsigned long)pucAddr) &0xff);
+		++pucAddr;
+	}
 	
 	iNumTimeEntries = sizeof(ptParameter->ulTimes)/sizeof(ptParameter->ulTimes[0]);
 	for (i=0; i<iNumTimeEntries; i++)
