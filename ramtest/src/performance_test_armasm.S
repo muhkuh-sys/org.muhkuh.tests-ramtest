@@ -357,7 +357,7 @@ ram_perftest_seq_W8_loop
 	m_ram_perftest_seq_loop ram_perftest_seq_W8_loop
 
 ram_perftest_seq_W16        
-	; sim_asm_message("SDRAM performance test: sequential access, 16 bit read",disp_only,r0);
+	; sim_asm_message("SDRAM performance test: sequential access, 16 bit write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_W16_loop
 	strh r4, [r0], #2
@@ -365,13 +365,13 @@ ram_perftest_seq_W16_loop
 
 ram_perftest_seq_W32        
 	m_ram_perftest_seq_enter
-	; sim_asm_message("SDRAM performance test: sequential access, 32 bit read",disp_only,r0);
+	; sim_asm_message("SDRAM performance test: sequential access, 32 bit write",disp_only,r0);
 ram_perftest_seq_W32_loop
 	str r4, [r0], #4
 	m_ram_perftest_seq_loop ram_perftest_seq_W32_loop
 
 ram_perftest_seq_W256       
-	; sim_asm_message("SDRAM performance test: sequential access, 256 bit read",disp_only,r0);
+	; sim_asm_message("SDRAM performance test: sequential access, 256 bit write",disp_only,r0);
 	m_ram_perftest_seq_enter
 ram_perftest_seq_W256_loop
 	stmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11}
@@ -619,11 +619,10 @@ ram_perftest_seq_nop
 	; sim_asm_message("wait",disp_only,r0);
 	bl ram_perftest_init_counter0
 	bl ram_perftest_delay_counter0
-	; sim_asm_message("start counter",disp_only,r0);
+	; sim_asm_message("start counter/jump to SDRAM",disp_only,r0);
 	bl ram_perftest_init_counter0
 	m_start_counter0
 	orr r0, r0, #1
-	; sim_asm_message("jump to SDRAM",disp_only,r0);
 	blx r0
 	; sim_asm_message("back in intram",disp_only,r0);
 	m_stop_counter0
