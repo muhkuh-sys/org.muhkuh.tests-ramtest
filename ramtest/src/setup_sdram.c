@@ -186,6 +186,14 @@ static int setup_sdram_hif_netx56(unsigned long ulSdramGeneralCtrl)
 #endif
 
 
+/* keep the address of the controller in a global variable */
+#if ASIC_TYP==500
+	NX500_EXT_SDRAM_CTRL_AREA_T *g_ptSdram;
+#else
+	HOSTADEF(SDRAM) *g_ptSdram;
+#endif
+
+
 int sdram_setup(unsigned long ulSdramStart, 
 	unsigned long ulSdramGeneralCtrl,
 	unsigned long ulSdramTimingCtrl,
@@ -259,10 +267,12 @@ int sdram_setup(unsigned long ulSdramStart,
 				ulSdramMr = HOSTDFLT(sdram_mr);
 			}
 
+			//sim_message(". SDRAM controller:    ", disp_data, (unsigned long) ptSdram);
 			//sim_message(". SDRAM general ctrl:  ", disp_data, ulSdramGeneralCtrl);
 			//sim_message(". SDRAM timing ctrl:   ", disp_data, ulSdramTimingCtrl);
 			//sim_message(". SDRAM mode register: ", disp_data, ulSdramMr);
 			
+			uprintf("SDRAM controller:    0x%08x\n", (unsigned long) ptSdram);
 			uprintf("SDRAM general ctrl:  0x%08x\n", ulSdramGeneralCtrl);
 			uprintf("SDRAM timing ctrl:   0x%08x\n", ulSdramTimingCtrl);
 			uprintf("SDRAM mode register: 0x%08x\n", ulSdramMr);
@@ -302,6 +312,26 @@ int sdram_setup(unsigned long ulSdramStart,
 		}
 	}
 
+	g_ptSdram = ptSdram;
+
 	return iResult;
 }
 
+void sdram_show_config(void)
+{
+	unsigned long ulSdramGeneralCtrl	=	g_ptSdram->ulSdram_general_ctrl ; 
+	unsigned long ulSdramTimingCtrl		=	g_ptSdram->ulSdram_timing_ctrl  ; 
+	unsigned long ulSdramMr				=	g_ptSdram->ulSdram_mr           ; 
+	
+	//sim_message(". SDRAM controller settings:", disp_only, 0);
+	//sim_message(". SDRAM controller:    ", disp_data, (unsigned long)g_ptSdram);
+	//sim_message(". SDRAM general ctrl:  ", disp_data, ulSdramGeneralCtrl);
+	//sim_message(". SDRAM timing ctrl:   ", disp_data, ulSdramTimingCtrl);
+	//sim_message(". SDRAM mode register: ", disp_data, ulSdramMr);
+	
+	uprintf("SDRAM controller settings:\n");
+	uprintf("SDRAM controller:    0x%08x\n", (unsigned long) g_ptSdram);
+	uprintf("SDRAM general ctrl:  0x%08x\n", ulSdramGeneralCtrl);
+	uprintf("SDRAM timing ctrl:   0x%08x\n", ulSdramTimingCtrl);
+	uprintf("SDRAM mode register: 0x%08x\n", ulSdramMr);
+}
