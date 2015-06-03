@@ -57,7 +57,7 @@ int main(void)
 	
 	unsigned long ulPerfTestCases     = 0;
 	unsigned long ulTestAreaStart     = ulSdramStart;
-	unsigned long ulTestAreaSize      = 0x1000UL;
+	unsigned long ulTestAreaSize      = 0x0800UL;
 	
 	RAMTEST_PARAMETER_T tTestParams;
 	int iResult;
@@ -72,7 +72,7 @@ int main(void)
 	| RAMPERFTESTCASE_ROW_RW8 | RAMPERFTESTCASE_ROW_RW16 | RAMPERFTESTCASE_ROW_RW32 | RAMPERFTESTCASE_ROW_RW256
 	| RAMPERFTESTCASE_ROW_JUMP;
 			
-	ulPerfTestCases     =  RAMPERFTESTCASE_ROW_JUMP;
+	//ulPerfTestCases     =  RAMPERFTESTCASE_SEQ_NOP + RAMPERFTESTCASE_ROW_JUMP;
 	
 	//ulTestAreaStart     = 0x10000UL;
 	//ulTestAreaSize      = 0x1000UL;
