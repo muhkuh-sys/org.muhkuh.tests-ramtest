@@ -53,9 +53,116 @@ PERFTEST_ROW_RW32        = 0x04000000
 PERFTEST_ROW_RW256       = 0x08000000
 PERFTEST_ROW_JUMP        = 0x10000000
 
+-- The supported interfaces.
+INTERFACE_RAM            = 0
+INTERFACE_SDRAM_HIF      = 1
+INTERFACE_SDRAM_MEM      = 2
+INTERFACE_SRAM_HIF       = 3
+INTERFACE_SRAM_MEM       = 4
 
-SDRAM_INTERFACE_MEM = 1
-SDRAM_INTERFACE_HIF = 2
+
+
+local atPlatformAttributes = {
+	[romloader.ROMLOADER_CHIPTYP_NETX500] = {
+		ulAsic = 500,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0x00100140,
+				ulArea_Start = 0x80000000,
+				setup = nil
+			},
+			[INTERFACE_HIF] = {
+			}
+		},
+		sram = {
+			[INTERFACE_SRAM_HIF] = {
+			},
+			[INTERFACE_SRAM_MEM] = {
+				ulController = 0x00100100,
+				ulChipSelects = 4,
+				aulArea_Start = {
+					[0] = 0xC0000000,
+					[1] = 0xC8000000,
+					[2] = 0xD0000000,
+					[3] = 0xD8000000
+				}
+			},
+		}
+	},
+
+	[romloader.ROMLOADER_CHIPTYP_NETX100] = {
+		ulAsic = 500,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0x00100140,
+				ulArea_Start = 0x80000000,
+				setup = nil
+			},
+			[INTERFACE_SDRAM_HIF] = {
+			}
+		}
+	},
+
+	[romloader.ROMLOADER_CHIPTYP_NETX56] = {
+		ulAsic = 56,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0x101c0140,
+				ulArea_Start = 0x80000000,
+				setup = nil
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0x101c0240,
+				ulArea_Start = 0x40000000,
+				setup = setup_sdram_hif_netx56
+			}
+		}
+	},
+
+	[romloader.ROMLOADER_CHIPTYP_NETX56B] = {
+		ulAsic = 56,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0x101c0140,
+				ulArea_Start = 0x80000000,
+				setup = nil
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0x101c0240,
+				ulArea_Start = 0x40000000,
+				setup = setup_sdram_hif_netx56
+			}
+		}
+	},
+
+	[romloader.ROMLOADER_CHIPTYP_NETX50] = {
+		ulAsic = 50,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0x1c000140,
+				ulArea_Start = 0x80000000,
+				setup = nil
+			},
+			[INTERFACE_SDRAM_HIF] = {
+			}
+		}
+	},
+
+	[romloader.ROMLOADER_CHIPTYP_NETX10] = {
+		ulAsic = 10,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0x101c0140,
+				ulArea_Start = 0x80000000,
+				setup = setup_sdram_hif_netx10
+			}
+		}
+	}
+}
+
+
 
 local function printf(...) print(string.format(...)) end
 local function printf_ul(ch, ...) 
@@ -137,95 +244,7 @@ local function setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
 end
 
 
-local atPlatformAttributes = {
-	[romloader.ROMLOADER_CHIPTYP_NETX500] = {
-		ulAsic = 500,
-		sdram = {
-			[SDRAM_INTERFACE_MEM] = {
-				ulController = 0x00100140,
-				ulArea_Start = 0x80000000,
-				setup = nil
-			},
-			[SDRAM_INTERFACE_HIF] = {
-			}
-		}
-	},
-
-	[romloader.ROMLOADER_CHIPTYP_NETX100] = {
-		ulAsic = 500,
-		sdram = {
-			[SDRAM_INTERFACE_MEM] = {
-				ulController = 0x00100140,
-				ulArea_Start = 0x80000000,
-				setup = nil
-			},
-			[SDRAM_INTERFACE_HIF] = {
-			}
-		}
-	},
-
-	[romloader.ROMLOADER_CHIPTYP_NETX56] = {
-		ulAsic = 56,
-		sdram = {
-			[SDRAM_INTERFACE_MEM] = {
-				ulController = 0x101c0140,
-				ulArea_Start = 0x80000000,
-				setup = nil
-			},
-			[SDRAM_INTERFACE_HIF] = {
-				ulController = 0x101c0240,
-				ulArea_Start = 0x40000000,
-				setup = setup_sdram_hif_netx56
-			}
-		}
-	},
-
-	[romloader.ROMLOADER_CHIPTYP_NETX56B] = {
-		ulAsic = 56,
-		sdram = {
-			[SDRAM_INTERFACE_MEM] = {
-				ulController = 0x101c0140,
-				ulArea_Start = 0x80000000,
-				setup = nil
-			},
-			[SDRAM_INTERFACE_HIF] = {
-				ulController = 0x101c0240,
-				ulArea_Start = 0x40000000,
-				setup = setup_sdram_hif_netx56
-			}
-		}
-	},
-
-	[romloader.ROMLOADER_CHIPTYP_NETX50] = {
-		ulAsic = 50,
-		sdram = {
-			[SDRAM_INTERFACE_MEM] = {
-				ulController = 0x1c000140,
-				ulArea_Start = 0x80000000,
-				setup = nil
-			},
-			[SDRAM_INTERFACE_HIF] = {
-			}
-		}
-	},
-
-	[romloader.ROMLOADER_CHIPTYP_NETX10] = {
-		ulAsic = 10,
-		sdram = {
-			[SDRAM_INTERFACE_MEM] = {
-			},
-			[SDRAM_INTERFACE_HIF] = {
-				ulController = 0x101c0140,
-				ulArea_Start = 0x80000000,
-				setup = setup_sdram_hif_netx10
-			}
-		}
-	}
-}
-
-
-
-local function get_interface_attributes(tPlugin, tInterface)
+local function get_sdram_interface_attributes(tPlugin, tInterface)
 	-- Get the platform attributes for the chip type.
 	local tChipType = tPlugin:GetChiptyp()
 	local atPlatform = atPlatformAttributes[tChipType]
@@ -240,6 +259,28 @@ local function get_interface_attributes(tPlugin, tInterface)
 	local atInterface = atSdram[tInterface]
 	if atInterface==nil then
 		error("Chiptype "..tChipType.." has no SDRAM attributes for interface: ", tInterface)
+	end
+	
+	return atInterface
+end
+
+
+
+local function get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+	-- Get the platform attributes for the chip type.
+	local tChipType = tPlugin:GetChiptyp()
+	local atPlatform = atPlatformAttributes[tChipType]
+	if atPlatform==nil then
+		error("Unknown chip type: ", tChipType)
+	end
+	-- Get the interface attributes.
+	local atSram = atPlatform.sram
+	if atSram==nil then
+		error("Chiptype has no sram attributes: ", tChipType)
+	end
+	local atInterface = atSram[tInterface]
+	if atInterface==nil then
+		error("Chiptype "..tChipType.." has no SRAM attributes for interface: ", tInterface)
 	end
 	
 	return atInterface
@@ -317,7 +358,7 @@ local function compare_netx_version(tPlugin, atSdramAttributes)
 	end
 	
 	if fChipTypeMatches~=true then
-		local strError =      "The connected chip type does not match the one specified in the SDRAM parameters.\n"
+		local strError =       "The connected chip type does not match the one specified in the SDRAM parameters.\n"
 		strError = strError .. "In other words: the parameters do not work with the connected netX.\n"
 		strError = strError .. "Connected netX:     " .. tPlugin:GetChiptypName(tChipType) .. "\n"
 		strError = strError .. "Parameters are for: " .. atChipTypesStr[tRequiredChipType] .. "\n"
@@ -327,54 +368,83 @@ end
 
 
 
-function setup_sdram(tPlugin, atSdramAttributes)
-	-- Compare the chip type.
-	compare_netx_version(tPlugin, atSdramAttributes)
-	
-	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes.interface)
-	
-	-- Call the setup function for the platform and interface.
-	local pfnSetup = atInterface.setup
-	if pfnSetup~=nil then
-		pfnSetup(tPlugin, atSdramAttributes)
+function setup_ram(tPlugin, atRamAttributes)
+	local tInterface = atRamAttributes.interface
+	if tInterface==INTERFACE_RAM then
+		-- The RAM interface needs no enable/disable.
+	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
+		-- Compare the chip type.
+		compare_netx_version(tPlugin, atSdramAttributes)
+		
+		-- Get the interface attributes.
+		local atInterface = get_sdram_interface_attributes(tPlugin, atSdramAttributes.interface)
+		
+		-- Call the setup function for the platform and interface.
+		local pfnSetup = atInterface.setup
+		if pfnSetup~=nil then
+			pfnSetup(tPlugin, atSdramAttributes)
+		end
+		
+		-- Get the base address of the SDRAM controller.
+		local ulSDRamController = atInterface.ulController
+		
+		-- Combine the timing control value from the base timing and the SDRAM specific value.
+		local ulGeneralCtrl = atSdramAttributes.general_ctrl
+		local ulTimingCtrl  = atSdramAttributes.timing_ctrl
+		local ulMr = atSdramAttributes.mr
+		
+		print(string.format("SDRAM general ctrl: 0x%08x", ulGeneralCtrl))
+		print(string.format("SDRAM timing ctrl:  0x%08x", ulTimingCtrl))
+		print(string.format("SDRAM mr:           0x%08x", ulMr))
+		
+		-- Disable the SDRAM controller.
+		tPlugin:write_data32(ulSDRamController+0, 0)
+		
+		-- Setup the SDRAM controller.
+		tPlugin:write_data32(ulSDRamController+8, ulMr)
+		tPlugin:write_data32(ulSDRamController+4, ulTimingCtrl)
+		tPlugin:write_data32(ulSDRamController+0, ulGeneralCtrl)
+	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
+		local ulChipSelect = atRamAttributes.sram_chip_select
+		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+		local ulController = atInterface.ulController + 4*ulChipSelect
+		
+		-- Setup the RAM controller.
+		tPlugin:write_data32(ulController, atRamAttributes.sram_ctrl)
+	else
+		error("Unknown interface ID:"..tInterface)
 	end
-	
-	-- Get the base address of the SDRAM controller.
-	local ulSDRamController = atInterface.ulController
-	
-	-- Combine the timing control value from the base timing and the SDRAM specific value.
-	local ulGeneralCtrl = atSdramAttributes.general_ctrl
-	local ulTimingCtrl  = atSdramAttributes.timing_ctrl
-	local ulMr = atSdramAttributes.mr
-	
-	print(string.format("SDRAM general ctrl: 0x%08x", ulGeneralCtrl))
-	print(string.format("SDRAM timing ctrl:  0x%08x", ulTimingCtrl))
-	print(string.format("SDRAM mr:           0x%08x", ulMr))
-	
-	-- Disable the SDRam controller.
-	tPlugin:write_data32(ulSDRamController+0, 0)
-	
-	-- Setup the SDRam controller.
-	tPlugin:write_data32(ulSDRamController+8, ulMr)
-	tPlugin:write_data32(ulSDRamController+4, ulTimingCtrl)
-	tPlugin:write_data32(ulSDRamController+0, ulGeneralCtrl)
 end
 
 
 
-function disable_sdram(tPlugin, atSdramAttributes)
-	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes.interface)
-	
-	-- Get the base address of the SDRAM controller.
-	local ulSDRamController = atInterface.ulController
-	
-	-- Disable the SDRam controller.
-	tPlugin:write_data32(ulSDRamController+0, 0)
-	tPlugin:write_data32(ulSDRamController+4, 0)
-	tPlugin:write_data32(ulSDRamController+8, 0)
+function disable_ram(tPlugin, atRamAttributes)
+	local tInterface = atRamAttributes.interface
+	if tInterface==INTERFACE_RAM then
+		-- The RAM interface needs no enable/disable.
+	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
+		-- Get the interface attributes.
+		local atInterface = get_sdram_interface_attributes(tPlugin, tInterface)
+		
+		-- Get the base address of the SDRAM controller.
+		local ulController = atInterface.ulController
+		
+		-- Disable the SDRAM controller.
+		tPlugin:write_data32(ulController+0, 0)
+		tPlugin:write_data32(ulController+4, 0)
+		tPlugin:write_data32(ulController+8, 0)
+	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
+		local ulChipSelect = atRamAttributes.sram_chip_select
+		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+		local ulController = atInterface.ulController + 4*ulChipSelect
+		
+		-- Disable the RAM controller.
+		tPlugin:write_data32(ulController, 0x03000000)
+	else
+		error("Unknown interface ID:"..tInterface)
+	end
 end
+
 
 
 function get_sdram_geometry(tPlugin, atSdramAttributes)
@@ -411,11 +481,11 @@ function get_sdram_geometry(tPlugin, atSdramAttributes)
 
 	-- bus width, row size and size are in bytes
 	local tGeom = {
-		ulBanks    = ulBanks    ,    
-		ulRows     = ulRows     ,    
-		ulColumns  = ulColumns  ,    
-		ulBusWidth = ulBusWidth ,    
-		ulRowSize  = ulRowSize, 
+		ulBanks    = ulBanks,
+		ulRows     = ulRows,
+		ulColumns  = ulColumns,
+		ulBusWidth = ulBusWidth,
+		ulRowSize  = ulRowSize,
 		ulSize     = ulSize
 	}
 	
@@ -423,62 +493,85 @@ function get_sdram_geometry(tPlugin, atSdramAttributes)
 end
 
 
-function get_sdram_size(tPlugin, atSdramAttributes)
-	local ulSize = nil
+
+function get_ram_size(tPlugin, atRamAttributes)
+	local ulRamSize = nil
 	
-	-- Is a size specified in the attributes?
-	if atSdramAttributes.size_exponent==nil then
-		-- No -> get the size from the geometry parameters.
-		local ulGeneralCtrl = atSdramAttributes.general_ctrl
-		-- Extract the geometry parameters.
-		local ulBanks    =            bit.band(ulGeneralCtrl, 0x00000003)
-		local ulRows     = bit.rshift(bit.band(ulGeneralCtrl, 0x00000030), 4)
-		local ulColumns  = bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8)
-		local ulBusWidth = nil
-		
-		local tAsicTyp = tPlugin:GetChiptyp()
-		if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 then
-			ulBusWidth = 2
-			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-				ulBusWidth = 4
-			end
-		elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50 then
-			ulBusWidth = 2
-			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-				ulBusWidth = 4
-			end
-		elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
-			ulBusWidth = 1
-			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+	local tInterface = atRamAttributes.interface
+	if tInterface==INTERFACE_RAM then
+		ulRamSize = atRamAttributes.ram_size
+	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
+		-- Is a size specified in the attributes?
+		if atSdramAttributes.size_exponent==nil then
+			-- No -> get the size from the geometry parameters.
+			local ulGeneralCtrl = atSdramAttributes.general_ctrl
+			-- Extract the geometry parameters.
+			local ulBanks    =            bit.band(ulGeneralCtrl, 0x00000003)
+			local ulRows     = bit.rshift(bit.band(ulGeneralCtrl, 0x00000030), 4)
+			local ulColumns  = bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8)
+			local ulBusWidth = nil
+			
+			local tAsicTyp = tPlugin:GetChiptyp()
+			if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 then
 				ulBusWidth = 2
+				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+					ulBusWidth = 4
+				end
+			elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50 then
+				ulBusWidth = 2
+				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+					ulBusWidth = 4
+				end
+			elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
+				ulBusWidth = 1
+				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+					ulBusWidth = 2
+				end
+			elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B then
+				ulBusWidth = 2
+				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
+					ulBusWidth = 4
+				end
+			else
+				error("Unknown chiptyp!")
 			end
-		elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B then
-			ulBusWidth = 2
-			if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-				ulBusWidth = 4
-			end
+			
+			-- Combine the geometry parameters to the size in bytes.
+			ulRamSize = bit.lshift(2, ulBanks) * bit.lshift(256, ulColumns) * bit.lshift(2048, ulRows) * ulBusWidth
 		else
-			error("Unknown chiptyp!")
+			-- Yes -> ignore the geometry parameters.
+			ulRamSize = math.pow(2, atSdramAttributes.size_exponent)
 		end
-		
-		-- Combine the geometry parameters to the size in bytes.
-		ulSize = bit.lshift(2, ulBanks) * bit.lshift(256, ulColumns) * bit.lshift(2048, ulRows) * ulBusWidth
+	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
+		ulRamSize = atRamAttributes.sram_size
 	else
-		-- Yes -> ignore the geometry parameters.
-		ulSize = math.pow(2, atSdramAttributes.size_exponent)
+		error("Unknown interface ID:"..tInterface)
 	end
 	
-	return ulSize
+	
+	return ulRamSize
 end
 
 
 
-function get_sdram_start(tPlugin, atSdramAttributes)
-	-- Get the interface attributes.
-	local atInterface = get_interface_attributes(tPlugin, atSdramAttributes.interface)
-
-	return atInterface.ulArea_Start
+function get_ram_start(tPlugin, atRamAttributes)
+	local ulRamStart = nil
+	
+	local tInterface = atRamAttributes.interface
+	if tInterface==INTERFACE_RAM then
+		ulRamStart = atRamAttributes.ram_start
+	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
+		local atInterface = get_sdram_interface_attributes(tPlugin, tInterface)
+		ulRamStart = atInterface.ulArea_Start
+	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
+		local ulChipSelect = atRamAttributes.sram_chip_select
+		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+		ulRamStart = atInterface.aulArea_Start[ulChipSelect]
+	else
+		error("Unknown interface ID:"..tInterface)
+	end
 end
+
 
 
 -- run the ram test
