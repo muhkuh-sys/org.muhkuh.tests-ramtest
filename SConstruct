@@ -129,6 +129,7 @@ tArcList.AddFiles('lua/',
 tArcList.AddFiles('templates/',
 	'lua/attributes_template.lua',
 	'lua/ramtest_template.lua',
+	'lua/test.lua',
 	'lua/timing_phase_test_template.lua')
 tArcList.AddFiles('doc/',
 	tDoc)
