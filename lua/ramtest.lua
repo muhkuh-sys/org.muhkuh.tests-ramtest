@@ -71,7 +71,7 @@ local atPlatformAttributes = {
 				ulArea_Start = 0x80000000,
 				setup = nil
 			},
-			[INTERFACE_HIF] = {
+			[INTERFACE_SDRAM_HIF] = {
 			}
 		},
 		sram = {
@@ -548,7 +548,6 @@ function get_ram_size(tPlugin, atRamAttributes)
 		error("Unknown interface ID:"..tInterface)
 	end
 	
-	
 	return ulRamSize
 end
 
@@ -570,6 +569,8 @@ function get_ram_start(tPlugin, atRamAttributes)
 	else
 		error("Unknown interface ID:"..tInterface)
 	end
+	
+	return ulRamStart
 end
 
 
