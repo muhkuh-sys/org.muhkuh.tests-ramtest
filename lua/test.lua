@@ -144,9 +144,12 @@ function run(aParameters)
 		ulChecks = ulChecks + ulValue
 	end
 	
-	local ulLoops = aParameters["loops"]
+	local ulLoops = tonumber(aParameters["loops"])
 	
 	
+	local atRamAttributes = {
+		["interface"] = ulInterface
+	}
 	-- Check if the required parameters are present. This depends on the interface.
 	-- The RAM interface needs ram_start and ram_size.
 	if ulInterface==ramtest.INTERFACE_RAM then
@@ -154,10 +157,8 @@ function run(aParameters)
 			error("The RAM interface needs the ram_start and ram_size parameter set.")
 		end
 		
-		atRamAttributes = {
-			["ram_start"]  = aParameters["ram_start"],
-			["ram_size"]   = aParameters["ram_size"]
-		}
+		atRamAttributes["ram_start"]  = tonumber(aParameters["ram_start"])
+		atRamAttributes["ram_size"]   = tonumber(aParameters["ram_size"])
 	-- The SDRAM interfaces need sdram_general_ctrl, sdram_timing_ctrl, sdram_mr.
 	-- NOTE: The sdram_size_exponent is optional. It can be derived from the sdram_general_ctrl.
 	elseif ulInterface==ramtest.INTERFACE_SDRAM_HIF or ulInterface==ramtest.INTERFACE_SDRAM_MEM then
@@ -165,23 +166,19 @@ function run(aParameters)
 			error("The SDRAM interface needs the sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
 		end
 		
-		atRamAttributes = {
-			["general_ctrl"]  = aParameters["sdram_general_ctrl"],
-			["timing_ctrl"]   = aParameters["sdram_timing_ctrl"],
-			["mr"]            = aParameters["sdram_mr"],
-			["size_exponent"] = aParameters["sdram_size_exponent"]
-		}
+		atRamAttributes["general_ctrl"]  = tonumber(aParameters["sdram_general_ctrl"])
+		atRamAttributes["timing_ctrl"]   = tonumber(aParameters["sdram_timing_ctrl"])
+		atRamAttributes["mr"]            = tonumber(aParameters["sdram_mr"])
+		atRamAttributes["size_exponent"] = tonumber(aParameters["sdram_size_exponent"])
 	-- The SRAM interface needs sram_chip_select, sram_ctrl and sram_size.
 	elseif ulInterface==ramtest.INTERFACE_SRAM_HIF or ulInterface==ramtest.INTERFACE_SRAM_MEM then
 		if aParameters["sram_chip_select"]==nil or aParameters["sram_ctrl"]==nil or aParameters["sram_size"]==nil then
 			error("The SRAM interface needs the sram_chip_select, sram_ctrl and sram_size parameter set.")
 		end
 		
-		atRamAttributes = {
-			["sram_chip_select"]  = aParameters["sram_chip_select"],
-			["sram_ctrl"]         = aParameters["sram_ctrl"],
-			["sram_size"]         = aParameters["sram_size"]
-		}
+		atRamAttributes["sram_chip_select"]  = tonumber(aParameters["sram_chip_select"])
+		atRamAttributes["sram_ctrl"]         = tonumber(aParameters["sram_ctrl"])
+		atRamAttributes["sram_size"]         = tonumber(aParameters["sram_size"])
 	else
 		error("Unknown interface ID:"..ulInterface)
 	end
@@ -199,10 +196,10 @@ function run(aParameters)
 	
 	
 
-	local ulRAMStart = ramtest.get_ram_start(tPlugin, ulInterface)
-	local ulRAMSize  = ramtest.get_ram_size(atRamAttributes)
+	local ulRAMStart = ramtest.get_ram_start(tPlugin, atRamAttributes)
+	local ulRAMSize  = ramtest.get_ram_size(tPlugin, atRamAttributes)
 	
-	ramtest.setup_ram(tPlugin, ulInterface, atRamAttributes)
+	ramtest.setup_ram(tPlugin, atRamAttributes)
 	ramtest.test_ram(tPlugin, ulRAMStart, ulRAMSize, ulChecks, ulLoops)
 	ramtest.disable_ram(tPlugin, ulInterface)
 	
