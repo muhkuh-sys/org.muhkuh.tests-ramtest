@@ -138,7 +138,7 @@ function run(aParameters)
 	}
 	for iCnt,strElement in ipairs(astrElements) do
 		local ulValue = atTests[strElement]
-		if ulValue==nil the
+		if ulValue==nil then
 			error(string.format("Unknown check ID: %s", strElement))
 		end
 		ulChecks = ulChecks + ulValue
@@ -173,7 +173,7 @@ function run(aParameters)
 		}
 	-- The SRAM interface needs sram_chip_select, sram_ctrl and sram_size.
 	elseif ulInterface==ramtest.INTERFACE_SRAM_HIF or ulInterface==ramtest.INTERFACE_SRAM_MEM then
-		if aParameters["sram_chip_select"]==nil or aParameters["sram_ctrl"]==nil or.aParameters["sram_size"]==nil then
+		if aParameters["sram_chip_select"]==nil or aParameters["sram_ctrl"]==nil or aParameters["sram_size"]==nil then
 			error("The SRAM interface needs the sram_chip_select, sram_ctrl and sram_size parameter set.")
 		end
 		
