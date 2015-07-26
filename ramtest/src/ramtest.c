@@ -44,8 +44,6 @@ static RAMTEST_RESULT_T ram_test_databus(RAMTEST_PARAMETER_T *ptRamTestParameter
 	unsigned char errorCounter = 0;
 
 
-
-
 	pulStart = (volatile unsigned long*)(ptRamTestParameter->ulStart);
 
 	RAMTEST_RESULT_T tResult;
@@ -57,9 +55,9 @@ static RAMTEST_RESULT_T ram_test_databus(RAMTEST_PARAMETER_T *ptRamTestParameter
 
 	/*Write Walking Ones */
 	for(ulWalkingOnes = 1; ulWalkingOnes!=0; ulWalkingOnes<<=1)
-		{
+	{
 		*pulCnt++ = ulWalkingOnes;
-		}
+	}
 
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 	/* Read Back walking Ones */
@@ -68,8 +66,6 @@ static RAMTEST_RESULT_T ram_test_databus(RAMTEST_PARAMETER_T *ptRamTestParameter
 	pulCnt = pulStart;
 	for(ulWalkingOnes = 1; ulWalkingOnes != 0; ulWalkingOnes<<=1)
 	{
-
-
 		if(*pulCnt != ulWalkingOnes)
 		{
 			if(errorCounter <= 0) uprintf("! Databus Test failed !\n");
@@ -84,12 +80,10 @@ static RAMTEST_RESULT_T ram_test_databus(RAMTEST_PARAMETER_T *ptRamTestParameter
 		}
 
 		pulCnt+=1;
-
 	}
 
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 	return tResult;
-
 }
 
 
@@ -195,10 +189,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 	unsigned long ones  = 0xFFFFFFFF;
 
 	pulStart = (volatile unsigned long*) (ptRamTestParameter->ulStart);
-	pulEnd	 = (volatile unsigned long*) (ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
+	pulEnd   = (volatile unsigned long*) (ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
 
 
-    tResult = RAMTEST_RESULT_OK;
+	tResult = RAMTEST_RESULT_OK;
 
 	/*
 	 * This test covers all:
@@ -229,10 +223,12 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(pulCnt < pulEnd)
 	{
-		if(*pulCnt == zero) *pulCnt = ones;
+		if(*pulCnt == zero)
+		{
+			*pulCnt = ones;
+		}
 		else
 		{
-
 			uprintf("! Marching test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", zero);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
@@ -247,7 +243,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 
 
-	if (tResult == RAMTEST_RESULT_FAILED) return tResult;
+	if (tResult == RAMTEST_RESULT_FAILED)
+	{
+		return tResult;
+	}
 
 	/*
 	 * next code segment is not part of the marchc- test
@@ -259,7 +258,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt == ones) *pulCnt = zero;
+		if(*pulCnt == ones)
+		{
+			*pulCnt = zero;
+		}
 		else
 		{
 			uprintf("! Marching test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
@@ -283,7 +285,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 
-	if (tResult == RAMTEST_RESULT_FAILED) return tResult;
+	if (tResult == RAMTEST_RESULT_FAILED)
+	{
+		return tResult;
+	}
 
 	/* Now fill the ram with ones again in order to proceed with the MarchC- test */
 
@@ -305,22 +310,28 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(pulCnt < pulEnd)
 	{
-			if(*pulCnt == ones) *pulCnt = zero;
-			else
-			{
-				uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
-				//uprintf("! wrote value:     0x%08x\n", ones);
-				uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-				uprintf("! read back value:  0x%08x\n", *pulCnt);
-				tResult = RAMTEST_RESULT_FAILED;
-				break;
-			}
+		if(*pulCnt == ones)
+		{
+			*pulCnt = zero;
+		}
+		else
+		{
+			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
+			//uprintf("! wrote value:     0x%08x\n", ones);
+			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
+			uprintf("! read back value:  0x%08x\n", *pulCnt);
+			tResult = RAMTEST_RESULT_FAILED;
+			break;
+		}
 
 		++pulCnt;
 	}
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 
-	if (tResult == RAMTEST_RESULT_FAILED) return tResult;
+	if (tResult == RAMTEST_RESULT_FAILED)
+	{
+		return tResult;
+	}
 
 	/* 4 Read Zeros write Ones */
 
@@ -328,7 +339,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt == zero) *pulCnt = ones; // zero ones
+		if(*pulCnt == zero)
+		{
+			*pulCnt = ones; // zero ones
+		}
 		else
 		{
 			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
@@ -341,7 +355,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 	}
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 
-	if (tResult == RAMTEST_RESULT_FAILED) return tResult;
+	if (tResult == RAMTEST_RESULT_FAILED)
+	{
+		return tResult;
+	}
 
 	/* 5 Read ones write zeros */
 
@@ -349,7 +366,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt == ones) *pulCnt = zero;
+		if(*pulCnt == ones)
+		{
+			*pulCnt = zero;
+		}
 		else
 		{
 			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
@@ -363,7 +383,10 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 	}
 	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
 
-	if (tResult == RAMTEST_RESULT_FAILED) return tResult;
+	if (tResult == RAMTEST_RESULT_FAILED)
+	{
+		return tResult;
+	}
 
 	/* Last Step - Read back the zeros */
 
@@ -409,11 +432,9 @@ unsigned long pseudo_generator(unsigned long number)
 	            << 31)
 	            | (seed>>1);
 
-
 	return seed;
-
-
 }
+
 
 
 /* test byte access */
@@ -632,16 +653,10 @@ static RAMTEST_RESULT_T ram_test_burst(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 
 
 
-
-
-
-
 /*-----------------------------------*/
 
 static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, const RAMTEST_PAIR_T *ptTestPair)
 {
-
-
 	/* This test contains
 	 *     8  Bit
 	 *     16 Bit
@@ -703,7 +718,6 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
 	}
 
 
-
 	/* test 32 bit burst access */
 	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_BURST)!=0 )
 	{
@@ -717,7 +731,6 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
 		{
 			uprintf("! 32 bit burst access failed.\n");
 		}
-
 	}
 
 
@@ -732,7 +745,7 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
  *     checkerboard
  *     marching C- tests
  *
- * This test can be run only one time, because it finds all mistakes it's looking for with 100% probability
+ * This test needs to be run only one time, because it finds all mistakes it's looking for with 100% probability
  * --> 100% probability for mistakes it's looking for, doesn't find anything it's not looking for
  *
  *     databus test:
@@ -869,13 +882,8 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	/* Run test cases. */
 	ulLoopCnt = 0;
 
-
-
-
-
 	do
 	{
-
 		++ulLoopCnt;
 
 		uprintf("****************************************\n");
@@ -886,7 +894,6 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 
 		tRamTestResult = ramtest_deterministic(ptParameter);
 		if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
-
 
 
 		uprintf("****************************************\n");
@@ -908,7 +915,6 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		}
 
 
-
 		/* TODO: does it make sense to run the performance tests multiple times in a loop? */
 		if (ptParameter->ulPerfTestCases != 0)
 		{
@@ -923,7 +929,6 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		}
 
 
-
 		if( tRamTestResult==RAMTEST_RESULT_OK )
 		{
 			/* Test loop OK. */
@@ -934,8 +939,6 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			break;
 		}
-
-
 	} while(tRamTestResult==RAMTEST_RESULT_OK);
 
 	return tRamTestResult;
