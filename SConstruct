@@ -123,7 +123,8 @@ tArcList.AddFiles('netx/',
 	ramtest_netx10,
 	ramtest_netx50,
 	ramtest_netx56,
-	ramtest_netx500)
+	ramtest_netx500,
+	setup_netx56)
 tArcList.AddFiles('lua/',
 	'lua/ramtest.lua')
 tArcList.AddFiles('templates/',
