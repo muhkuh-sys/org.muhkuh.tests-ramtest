@@ -288,7 +288,7 @@ end
 
 
 
-local function compare_netx_version(tPlugin, atSdramAttributes)
+local function compare_netx_version(tPlugin, atRamAttributes)
 	local atChipTypes = {
 		[500] = {
 			romloader.ROMLOADER_CHIPTYP_NETX500,
@@ -335,7 +335,7 @@ local function compare_netx_version(tPlugin, atSdramAttributes)
 	end
 	
 	-- Get the required chip type for the parameter.
-	local tRequiredChipType = atSdramAttributes.netX
+	local tRequiredChipType = atRamAttributes.netX
 	if tRequiredChipType==nil then
 		local strError = "The SDRAM parameter have no 'netX' entry. It specifies the chip type for the parameter set.\n"
 		strError = strError .. strHelp
@@ -374,24 +374,24 @@ function setup_ram(tPlugin, atRamAttributes)
 		-- The RAM interface needs no enable/disable.
 	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
 		-- Compare the chip type.
-		compare_netx_version(tPlugin, atSdramAttributes)
+		compare_netx_version(tPlugin, atRamAttributes)
 		
 		-- Get the interface attributes.
-		local atInterface = get_sdram_interface_attributes(tPlugin, atSdramAttributes.interface)
+		local atInterface = get_sdram_interface_attributes(tPlugin, atRamAttributes.interface)
 		
 		-- Call the setup function for the platform and interface.
 		local pfnSetup = atInterface.setup
 		if pfnSetup~=nil then
-			pfnSetup(tPlugin, atSdramAttributes)
+			pfnSetup(tPlugin, atRamAttributes)
 		end
 		
 		-- Get the base address of the SDRAM controller.
 		local ulSDRamController = atInterface.ulController
 		
 		-- Combine the timing control value from the base timing and the SDRAM specific value.
-		local ulGeneralCtrl = atSdramAttributes.general_ctrl
-		local ulTimingCtrl  = atSdramAttributes.timing_ctrl
-		local ulMr = atSdramAttributes.mr
+		local ulGeneralCtrl = atRamAttributes.general_ctrl
+		local ulTimingCtrl  = atRamAttributes.timing_ctrl
+		local ulMr = atRamAttributes.mr
 		
 		print(string.format("SDRAM general ctrl: 0x%08x", ulGeneralCtrl))
 		print(string.format("SDRAM timing ctrl:  0x%08x", ulTimingCtrl))
@@ -502,9 +502,9 @@ function get_ram_size(tPlugin, atRamAttributes)
 		ulRamSize = atRamAttributes.ram_size
 	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
 		-- Is a size specified in the attributes?
-		if atSdramAttributes.size_exponent==nil then
+		if atRamAttributes.size_exponent==nil then
 			-- No -> get the size from the geometry parameters.
-			local ulGeneralCtrl = atSdramAttributes.general_ctrl
+			local ulGeneralCtrl = atRamAttributes.general_ctrl
 			-- Extract the geometry parameters.
 			local ulBanks    =            bit.band(ulGeneralCtrl, 0x00000003)
 			local ulRows     = bit.rshift(bit.band(ulGeneralCtrl, 0x00000030), 4)
@@ -540,7 +540,7 @@ function get_ram_size(tPlugin, atRamAttributes)
 			ulRamSize = bit.lshift(2, ulBanks) * bit.lshift(256, ulColumns) * bit.lshift(2048, ulRows) * ulBusWidth
 		else
 			-- Yes -> ignore the geometry parameters.
-			ulRamSize = math.pow(2, atSdramAttributes.size_exponent)
+			ulRamSize = math.pow(2, atRamAttributes.size_exponent)
 		end
 	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
 		ulRamSize = atRamAttributes.sram_size
