@@ -201,7 +201,7 @@ function run(aParameters)
 	
 	ramtest.setup_ram(tPlugin, atRamAttributes)
 	ramtest.test_ram(tPlugin, ulRAMStart, ulRAMSize, ulChecks, ulLoops)
-	ramtest.disable_ram(tPlugin, ulInterface)
+	ramtest.disable_ram(tPlugin, atRamAttributes)
 	
 	
 	print("")
