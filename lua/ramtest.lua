@@ -593,12 +593,18 @@ function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 		ulAreaSize,
 		ulChecks,
 		ulLoops,
+		0,
+		0,
+		0,
+		0,
+		0
 	}
 
 	-- Install the binary.
 	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, aulParameter)
 	return ulResult
 end
+
 
 
 -- wrapper: run ram test and abort on error
