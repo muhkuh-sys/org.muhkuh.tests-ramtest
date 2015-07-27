@@ -174,7 +174,7 @@ function run(aParameters)
 			error("The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
 		end
 		
-		atRamAttributes["netX"]          = tonumber(aParameters["netX"])
+		atRamAttributes["netX"]          = tonumber(aParameters["sdram_netx"])
 		atRamAttributes["general_ctrl"]  = tonumber(aParameters["sdram_general_ctrl"])
 		atRamAttributes["timing_ctrl"]   = tonumber(aParameters["sdram_timing_ctrl"])
 		atRamAttributes["mr"]            = tonumber(aParameters["sdram_mr"])
