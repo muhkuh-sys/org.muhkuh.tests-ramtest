@@ -31,6 +31,14 @@ CFG_aParameterDefinitions = {
 		constrains=nil
 	},
 	{
+		name="sdram_netx",
+		default=nil,
+		help="This specifies the chip type for the parameter set.",
+		mandatory=false,
+		validate=parameters.test_uint32,
+		constrains=nil
+	},
+	{
 		name="sdram_general_ctrl",
 		default=nil,
 		help="Only if interface is SDRAM: The complete value for the netX general_ctrl register.",
@@ -162,10 +170,11 @@ function run(aParameters)
 	-- The SDRAM interfaces need sdram_general_ctrl, sdram_timing_ctrl, sdram_mr.
 	-- NOTE: The sdram_size_exponent is optional. It can be derived from the sdram_general_ctrl.
 	elseif ulInterface==ramtest.INTERFACE_SDRAM_HIF or ulInterface==ramtest.INTERFACE_SDRAM_MEM then
-		if aParameters["sdram_general_ctrl"]==nil or aParameters["sdram_timing_ctrl"]==nil or aParameters["sdram_mr"]==nil then
-			error("The SDRAM interface needs the sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
+		if aParameters["sdram_netx"]==nil or aParameters["sdram_general_ctrl"]==nil or aParameters["sdram_timing_ctrl"]==nil or aParameters["sdram_mr"]==nil then
+			error("The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
 		end
 		
+		atRamAttributes["netX"]          = tonumber(aParameters["netX"])
 		atRamAttributes["general_ctrl"]  = tonumber(aParameters["sdram_general_ctrl"])
 		atRamAttributes["timing_ctrl"]   = tonumber(aParameters["sdram_timing_ctrl"])
 		atRamAttributes["mr"]            = tonumber(aParameters["sdram_mr"])
