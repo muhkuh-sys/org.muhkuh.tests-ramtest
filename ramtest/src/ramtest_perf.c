@@ -17,7 +17,7 @@ typedef RAMTEST_RESULT_T (FN_RAMPERFTEST_T) (unsigned long ulStartaddress, unsig
 
 typedef struct RAMPERFTEST_DESC_Ttag {
 	FN_RAMPERFTEST_T  *pfnTestCode;
-	char              *pszTestName;
+	const char        *pszTestName;
 	RAMPERFTESTCASE_T  tTestFlag;
 	int                iResultIndex;
 } RAMPERFTEST_DESC_T;
