@@ -100,6 +100,20 @@ local atPlatformAttributes = {
 			},
 			[INTERFACE_SDRAM_HIF] = {
 			}
+		},
+		sram = {
+			[INTERFACE_SRAM_HIF] = {
+			},
+			[INTERFACE_SRAM_MEM] = {
+				ulController = 0x00100100,
+				ulChipSelects = 4,
+				aulArea_Start = {
+					[0] = 0xC0000000,
+					[1] = 0xC8000000,
+					[2] = 0xD0000000,
+					[3] = 0xD8000000
+				}
+			},
 		}
 	},
 
