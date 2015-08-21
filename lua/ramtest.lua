@@ -9,6 +9,8 @@
 -- 05.03.15 SL * test_phase_parameters: adapted to changed function interfaces
 --               ["x"] rewritten as .x
 -- 29.04.15 SL * added performance test
+-- 19.08.15 SL * added bank size to get_sdram_geometry
+-- 21.08.15 SL * setup_sdram_hif_netx10/56 were not set in atPlatformAttributes
 
 module("ramtest", package.seeall)
 
@@ -60,6 +62,85 @@ INTERFACE_SDRAM_MEM      = 2
 INTERFACE_SRAM_HIF       = 3
 INTERFACE_SRAM_MEM       = 4
 
+
+local function printf(...) print(string.format(...)) end
+local function printf_ul(ch, ...) 
+	local str = string.format(...)
+	local line = string.rep(ch, str:len())
+	print(str)
+	print(line)
+end
+
+local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
+	local atAddressLines = {
+		[0x00000800] = 0x00000000,
+		[0x00001000] = 0x00000100,
+		[0x00002000] = 0x00000200,
+		[0x00004000] = 0x00000300,
+		[0x00008000] = 0x00000400,
+		[0x00010000] = 0x00000500,
+		[0x00020000] = 0x00000600,
+		[0x00040000] = 0x00000700,
+		[0x00080000] = 0x00000800,
+		[0x00100000] = 0x00000900,
+		[0x00200000] = 0x00000a00,
+		[0x00400000] = 0x00000b00,
+		[0x00800000] = 0x00000c00,
+		[0x01000000] = 0x00000d00,
+		[0x02000000] = 0x00000e00
+	}
+
+	-- Get the configuration value for the number of address lines.
+	ulSdramSize = get_sdram_size(atSdramAttributes)
+	ulAddressCfg = 0
+	for ulSize,ulCfg in pairs(atAddressLines) do
+		ulAddressCfg = ulCfg
+		if ulSdramSize<=ulSize then
+			break
+		end
+	end
+	print(string.format("ulAddressCfg=0x%08x", ulAddressCfg))
+	
+	-- Get the configuration value for the data bus size.
+	ulGeneralCtrl = atSdramAttributes.general_ctrl
+	if bit.band(ulGeneralCtrl,0x00010000)==0 then
+		-- The data bus has a size of 16 bits.
+		ulDataCfg = 0x00000050
+	else 
+		-- The data bus has a size of 32 bits.
+		ulDataCfg = 0x00000060
+	end
+	print(string.format("ulDataCfg=0x%08x", ulDataCfg))
+	
+	-- Install the binary.
+	strBinaryName = "netx/setup_netx56.bin"
+	ulParameter = bit.bor(ulAddressCfg, ulDataCfg)
+	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, ulParameter)
+	if ulResult~=0 then
+		error(string.format("The setup returned an error code: 0x%08x", ulResult))
+	end
+end
+
+
+
+local function setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
+	-- Generate the value for the HIF_IO_CTRL register.
+	-- This depends on the data bus width of the SDRAM device.
+	ulGeneralCtrl = atSdramAttributes.general_ctrl
+	if bit.band(ulGeneralCtrl,0x00010000)==0 then
+		-- The data bus has a size of 8 bits.
+		ulHifIoCtrl = 0x00000040
+	else 
+		-- The data bus has a size of 16 bits.
+		ulHifIoCtrl = 0x00000050
+	end
+
+	-- Read and write ASIC_CTRL access key.
+	local ulValue = tPlugin:read_data32(0x101c0070)
+	tPlugin:write_data32(0x101c0070, ulValue)
+	
+	tPlugin:write_data32(0x101c0c40, ulHifIoCtrl)
+end
 
 
 local atPlatformAttributes = {
@@ -175,87 +256,6 @@ local atPlatformAttributes = {
 		}
 	}
 }
-
-
-
-local function printf(...) print(string.format(...)) end
-local function printf_ul(ch, ...) 
-	local str = string.format(...)
-	local line = string.rep(ch, str:len())
-	print(str)
-	print(line)
-end
-
-local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
-	local atAddressLines = {
-		[0x00000800] = 0x00000000,
-		[0x00001000] = 0x00000100,
-		[0x00002000] = 0x00000200,
-		[0x00004000] = 0x00000300,
-		[0x00008000] = 0x00000400,
-		[0x00010000] = 0x00000500,
-		[0x00020000] = 0x00000600,
-		[0x00040000] = 0x00000700,
-		[0x00080000] = 0x00000800,
-		[0x00100000] = 0x00000900,
-		[0x00200000] = 0x00000a00,
-		[0x00400000] = 0x00000b00,
-		[0x00800000] = 0x00000c00,
-		[0x01000000] = 0x00000d00,
-		[0x02000000] = 0x00000e00
-	}
-
-	-- Get the configuration value for the number of address lines.
-	ulSdramSize = get_sdram_size(atSdramAttributes)
-	ulAddressCfg = 0
-	for ulSize,ulCfg in pairs(atAddressLines) do
-		ulAddressCfg = ulCfg
-		if ulSdramSize<=ulSize then
-			break
-		end
-	end
-	print(string.format("ulAddressCfg=0x%08x", ulAddressCfg))
-	
-	-- Get the configuration value for the data bus size.
-	ulGeneralCtrl = atSdramAttributes.general_ctrl
-	if bit.band(ulGeneralCtrl,0x00010000)==0 then
-		-- The data bus has a size of 16 bits.
-		ulDataCfg = 0x00000050
-	else 
-		-- The data bus has a size of 32 bits.
-		ulDataCfg = 0x00000060
-	end
-	print(string.format("ulDataCfg=0x%08x", ulDataCfg))
-	
-	-- Install the binary.
-	strBinaryName = "netx/setup_netx56.bin"
-	ulParameter = bit.bor(ulAddressCfg, ulDataCfg)
-	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, ulParameter)
-	if ulResult~=0 then
-		error(string.format("The setup returned an error code: 0x%08x", ulResult))
-	end
-end
-
-
-
-local function setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
-	-- Generate the value for the HIF_IO_CTRL register.
-	-- This depends on the data bus width of the SDRAM device.
-	ulGeneralCtrl = atSdramAttributes.general_ctrl
-	if bit.band(ulGeneralCtrl,0x00010000)==0 then
-		-- The data bus has a size of 8 bits.
-		ulHifIoCtrl = 0x00000040
-	else 
-		-- The data bus has a size of 16 bits.
-		ulHifIoCtrl = 0x00000050
-	end
-
-	-- Read and write ASIC_CTRL access key.
-	local ulValue = tPlugin:read_data32(0x101c0070)
-	tPlugin:write_data32(0x101c0070, ulValue)
-	
-	tPlugin:write_data32(0x101c0c40, ulHifIoCtrl)
-end
 
 
 local function get_sdram_interface_attributes(tPlugin, tInterface)
@@ -468,7 +468,7 @@ function get_sdram_geometry(tPlugin, atSdramAttributes)
 	local ulRows     = bit.lshift(2048, bit.rshift(bit.band(ulGeneralCtrl, 0x00000070), 4))
 	local ulColumns  = bit.lshift(256,  bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8))
 	local ulBusWidth = bit.lshift(1,    bit.rshift(bit.band(ulGeneralCtrl, 0x00010000), 16))
-	
+
 	local tAsicTyp = tPlugin:GetChiptyp()
 	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50
@@ -480,17 +480,19 @@ function get_sdram_geometry(tPlugin, atSdramAttributes)
 		error("Unknown chiptyp!")
 	end
 	
-	local ulRowSize = ulColumns * ulBusWidth
-	local ulSize    = ulRowSize * ulRows * ulBanks
+	local ulRowSize  = ulColumns * ulBusWidth
+	local ulBankSize = ulRows * ulRowSize
+	local ulSize     = ulBanks * ulBankSize
 	
 	print()
 	print("Geometry:")
-	printf("Banks    : %d",       ulBanks    )
-	printf("Rows     : %d",       ulRows     )
-	printf("Columns  : %d bytes", ulColumns  )
-	printf("BusWidth : %d bytes", ulBusWidth )
-	printf("RowSize  : %d bytes", ulRowSize  )
-	printf("Size     : %d bytes", ulSize     )
+	printf("Banks    : %d",           ulBanks    )
+	printf("Rows     : %d",           ulRows     )
+	printf("Columns  : %d",           ulColumns  )
+	printf("BusWidth : %d bytes",     ulBusWidth )
+	printf("RowSize  : 0x%08x bytes", ulRowSize  )
+	printf("Bank Size: 0x%08x bytes", ulBankSize )
+	printf("Size     : 0x%08x bytes", ulSize     )
 	print()
 
 	-- bus width, row size and size are in bytes
@@ -500,6 +502,7 @@ function get_sdram_geometry(tPlugin, atSdramAttributes)
 		ulColumns  = ulColumns,
 		ulBusWidth = ulBusWidth,
 		ulRowSize  = ulRowSize,
+		ulBankSize = ulBankSize,
 		ulSize     = ulSize
 	}
 	
