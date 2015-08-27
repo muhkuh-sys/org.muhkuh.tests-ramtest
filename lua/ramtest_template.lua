@@ -11,8 +11,8 @@ end
 ${SDRAM_ATTRIBUTES}
 
 
-ulSDRAMStart = ramtest.get_sdram_start(tPlugin, atSdramAttributes)
-ulSDRAMSize  = ramtest.get_sdram_size(tPlugin, atSdramAttributes)
+ulSDRAMStart = ramtest.get_ram_start(tPlugin, atSdramAttributes)
+ulSDRAMSize  = ramtest.get_ram_size(tPlugin, atSdramAttributes)
 
 ulChecks     = 0
 ulChecks     = ulChecks + ramtest.CHECK_08BIT
@@ -26,9 +26,9 @@ ulChecks     = ulChecks + ramtest.CHECK_CHECKERBOARD
 ulLoops      = 0x1
 
 
-ramtest.setup_sdram(tPlugin, atSdramAttributes)
+ramtest.setup_ram(tPlugin, atSdramAttributes)
 ramtest.test_ram(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
-ramtest.disable_sdram(tPlugin, atSdramAttributes)
+ramtest.disable_ram(tPlugin, atSdramAttributes)
 
 
 print("")
