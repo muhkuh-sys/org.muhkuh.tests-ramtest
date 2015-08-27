@@ -26,6 +26,10 @@ install:
 # This is the command to build the whole project and pack the results in a distributable form.
 script:
   - python mbs/mbs
+
+
+# Deploy the artifact to Bintray.
+after_success:
   - python ivy/deploy.py targets/artifacts.xml
 
 
