@@ -29,6 +29,10 @@ import os.path
 SConscript('mbs/SConscript')
 Import('env_default')
 
+# Add the local builders.
+import ram_test_template
+ram_test_template.ApplyToEnv(env_default)
+
 
 #----------------------------------------------------------------------------
 #
@@ -166,3 +170,16 @@ Command('targets/testbench/netx/setup_netx56.bin',  setup_netx56,  Copy("$TARGET
 
 # Copy all LUA scripts.
 Command('targets/testbench/lua/ramtest.lua',                        'lua/ramtest.lua',                            Copy("$TARGET", "$SOURCE"))
+
+# Install some demo tests.
+# NOTE: Place hexadecimal values in quotes to prevent conversion to decimal.
+aAttr = {'CHIP_TYPE':             56,
+         'REGISTER_GENERAL_CTRL': '0x030D0001',
+         'REGISTER_TIMING_CTRL':  '0x00A13251',
+         'REGISTER_MODE':         '0x00000033',
+         'SIZE_EXPONENT':         23,
+         'INTERFACE':             'MEM'}
+tP0 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr)
+tR0 = env_default.RamTestTemplate('targets/demo_scripts/ramtest_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0})
+tT0 = env_default.RamTestTemplate('targets/demo_scripts/timing_phase_test_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0})
+
