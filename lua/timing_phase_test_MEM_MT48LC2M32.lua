@@ -50,10 +50,11 @@ local atSdramAttributes = {
 --	["netX"]          = 50,
 --	["netX"]          = 10,
 
-	["general_ctrl"]  = 0x030d0001,
-	["timing_ctrl"]   = 0x00012151,
-	["mr"]            = 0x00000033,
-	["size_exponent"] = 23
+	general_ctrl  = 0x030d0001,
+	timing_ctrl   = 0x00012151,
+	mr            = 0x00000033,
+	size_exponent = 23,
+	interface     = ramtest.INTERFACE_SDRAM_MEM
 }
 
 ramtest.test_phase_parameters(tPlugin, atSdramAttributes, 2)
