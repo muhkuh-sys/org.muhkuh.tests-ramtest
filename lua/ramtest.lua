@@ -651,8 +651,8 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 	
 	-- define test parameters
 	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0x000fffff)
-	local ulSDRAMStart     = get_sdram_start(tPlugin, atSdramAttributes)
-	local ulSDRAMSize      = get_sdram_size(tPlugin, atSdramAttributes)
+	local ulSDRAMStart     = get_ram_start(tPlugin, atSdramAttributes)
+	local ulSDRAMSize      = get_ram_size(tPlugin, atSdramAttributes)
 	local ulChecks         = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
 	
 	-- init the result matrix, define print function
@@ -708,8 +708,8 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 					-- 23    MEM_SDCLK_SSNEG 1
 					-- 26:24 DATA_SAMPLE_PHASE 0-5
 					local ulTiming =
-						iClockPhase * 0x100000
-						+ 0x800000
+						iClockPhase *     0x100000
+						+                 0x800000
 						+ iSamplePhase * 0x1000000
 					atSdramAttributes.timing_ctrl = timing_ctrl_base + ulTiming
 					
@@ -719,10 +719,10 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 					printf("======================================================================================")
 					printf(" ")
 
-					setup_sdram(tPlugin, atSdramAttributes)
+					setup_ram(tPlugin, atSdramAttributes)
 					ulResult = test_ram_noerror(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
 					aiTestResults[iClockPhase][iSamplePhase] = ulResult
-					disable_sdram(tPlugin, atSdramAttributes)
+					disable_ram(tPlugin, atSdramAttributes)
 
 					printf("Clock phase: %d   Sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
 					printResults()
