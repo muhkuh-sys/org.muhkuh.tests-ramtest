@@ -11,7 +11,7 @@ local atSdramAttributes_500 = {
 	timing_ctrl   = 0x03C13251,
 	mr            = 0x00000033,
 	size_exponent = 23,
-	interface     = ramtest.SDRAM_INTERFACE_MEM
+	interface     = ramtest.INTERFACE_SDRAM_MEM
 }
 
 
@@ -23,7 +23,7 @@ local atSdramAttributes_50 = {
 	timing_ctrl   = 0x00A13251,
 	mr            = 0x00000033,
 	size_exponent = 23,
-	interface     = ramtest.SDRAM_INTERFACE_MEM
+	interface     = ramtest.INTERFACE_SDRAM_MEM
 }
 
 
@@ -35,7 +35,7 @@ local atSdramAttributes_56 = {
 	timing_ctrl   = 0x00A13251,
 	mr            = 0x00000033,
 	size_exponent = 23,
-	interface     = ramtest.SDRAM_INTERFACE_MEM
+	interface     = ramtest.INTERFACE_SDRAM_MEM
 }
 
 
