@@ -817,6 +817,66 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 	return tResult;
 }
 
+/* If the test area is in SDRAM, print the controller settings. */
+void ramtest_show_sdram_config(unsigned long ulSdramStart)
+{
+	unsigned long ulSdramGeneralCtrl;
+	unsigned long ulSdramTimingCtrl;
+	unsigned long ulSdramMr;
+#if ASIC_TYP==500
+	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
+#else
+	HOSTADEF(SDRAM) *ptSdram;
+#endif
+
+	/* Get the SDRAM controller address from the test area address. */
+	ptSdram = NULL;
+#if ASIC_TYP==500
+	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
+	{
+		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
+	}
+#elif ASIC_TYP==50
+	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
+	{
+		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
+	}
+#elif ASIC_TYP==56
+	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_sdram_end) )
+	{
+		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
+	}
+	else if( ulSdramStart>=HOSTADDR(hif_sdram_lite) && ulSdramStart<=HOSTADR(hif_sdram_lite_sdram_end) )
+	{
+		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(hif_sdram_ctrl);
+	}
+#elif ASIC_TYP==10
+	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
+	{
+		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
+	}
+#endif
+
+	if( ptSdram!=NULL )
+	{
+		ulSdramGeneralCtrl	= ptSdram->ulSdram_general_ctrl ; 
+		ulSdramTimingCtrl	= ptSdram->ulSdram_timing_ctrl  ; 
+		ulSdramMr			= ptSdram->ulSdram_mr           ; 
+		
+		//sim_message(". SDRAM controller:    ", disp_data, (unsigned long) ptSdram);
+		//sim_message(". SDRAM general ctrl:  ", disp_data, ulSdramGeneralCtrl);
+		//sim_message(". SDRAM timing ctrl:   ", disp_data, ulSdramTimingCtrl);
+		//sim_message(". SDRAM mode register: ", disp_data, ulSdramMr);
+		
+		uprintf("\n");
+		uprintf(". SDRAM controller:    0x%08x\n", (unsigned long) ptSdram);
+		uprintf(". SDRAM general ctrl:  0x%08x\n", ulSdramGeneralCtrl);
+		uprintf(". SDRAM timing ctrl:   0x%08x\n", ulSdramTimingCtrl);
+		uprintf(". SDRAM mode register: 0x%08x\n", ulSdramMr);
+		uprintf("\n");
+	}
+}
+
 
 RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 {
@@ -830,6 +890,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	/* Show welcome message. */
 	uprintf(". Ram start address:      0x%08x\n", ptParameter->ulStart);
 	uprintf(". Ram size in bytes:      0x%08x\n", ptParameter->ulSize);
+	ramtest_show_sdram_config( ptParameter->ulStart);
 	uprintf(". Test cases:\n");
 	ulCases = ptParameter->ulCases;
 
@@ -940,6 +1001,8 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			break;
 		}
 	} while(tRamTestResult==RAMTEST_RESULT_OK);
+
+	ramtest_show_sdram_config( ptParameter->ulStart);
 
 	return tRamTestResult;
 }
