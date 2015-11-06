@@ -794,7 +794,7 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		}
 		else
 		{
-			uprintf("! Checkerboard test OK.\n");
+			uprintf("! Checkerboard test failed.\n");
 		}
 	}
 
