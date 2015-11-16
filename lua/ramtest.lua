@@ -418,6 +418,15 @@ function setup_ram(tPlugin, atRamAttributes)
 		tPlugin:write_data32(ulSDRamController+8, ulMr)
 		tPlugin:write_data32(ulSDRamController+4, ulTimingCtrl)
 		tPlugin:write_data32(ulSDRamController+0, ulGeneralCtrl)
+		
+		local ulGeneralCtrl_Readback
+		local bReady
+		repeat
+			local ulGeneralCtrl_Readback = tPlugin:read_data32(ulSDRamController+0)
+			local bReady = bit.band(bit.rshift(ulGeneralCtrl_Readback, 30), 1)
+			printf("SDRAM ready: %d", bReady)
+		until bReady == 1
+		
 	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
 		local ulChipSelect = atRamAttributes.sram_chip_select
 		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
@@ -617,6 +626,7 @@ function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 		0
 	}
 
+
 	-- Install the binary.
 	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, aulParameter)
 	return ulResult
@@ -746,6 +756,7 @@ end
 -- ulLoops
 function run_ramtest(par)
 	-- Get the platform attributes for the chip type.
+	local tPlugin = par.tPlugin
 	local tChipType = tPlugin:GetChiptyp()
 	local atPlatformAttributes = atPlatformAttributes[tChipType]
 	if atPlatformAttributes==nil then
