@@ -76,12 +76,12 @@ typedef struct RAMTEST_PARAMETER_STRUCT
 
 
 RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter);
-RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter);
+RAMTEST_RESULT_T ramtest_run_deterministic(RAMTEST_PARAMETER_T *ptParameter);
 RAMTEST_RESULT_T ramtest_run_performance_tests(RAMTEST_PARAMETER_T *ptParameter);
 void ramtest_print_performance_tests(RAMTEST_PARAMETER_T *ptParameter);
 void ram_perftest_init_netx(void);
-
 unsigned long pseudo_generator(unsigned long number);
+void ramtest_show_sdram_config(unsigned long ulSdramStart);
 
 
 #endif  /* __RAMTEST_H__ */
