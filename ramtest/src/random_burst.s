@@ -76,7 +76,7 @@ fill_loop:
 	mov	r4, r0				@ init the loop adr with the start address
 	mov	r3, r2				@ first random_input is the seed value
 
-
+	mov r0, #0				@ assume success
 readback_loop:
 	ldmia	r4!, {r6, r7, r8, r9}  @ read back
 	
@@ -87,41 +87,32 @@ readback_loop:
 	rrxs r5, r5        @ shift bit 0 into carry
 	rrx r3, r3         @ shift right and shift carry into bit 31
 	cmp	r6, r3
-	bne	test_failed
+	movne r0, #1       @ test failed
 	
 	eor r5, r5, r3, LSR#31
 	rrxs r5, r5
 	rrx r3, r3
 	cmp	r7, r3
-	bne	test_failed
+	movne r0, #1       @ test failed
 
 	eor r5, r5, r3, LSR#31
 	rrxs r5, r5
 	rrx r3, r3
 	cmp	r8, r3
-	bne	test_failed
+	movne r0, #1       @ test failed
 
 	eor r5, r5, r3, LSR#31
 	rrxs r5, r5
 	rrx r3, r3
 	cmp	r9, r3
-	bne	test_failed
+	movne r0, #1       @ test failed
 
 	cmp	r4, r1				@ reached the endaddress
 	blo	readback_loop
-
 	
-	@ test ok!
-	mov	r0, #0				@ set return value to 0
 	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
 	bx	lr
 
-
-	@ test failed!
-test_failed:
-	mov	r0, #1				@ set return value to 1
-	ldmfd	sp!, {r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
-	bx	lr
 
 .endfunc
 
