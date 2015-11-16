@@ -91,7 +91,7 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	}
 
 	-- Get the configuration value for the number of address lines.
-	ulSdramSize = get_sdram_size(atSdramAttributes)
+	ulSdramSize = get_ram_size(tPlugin, atSdramAttributes)
 	ulAddressCfg = 0
 	for ulSize,ulCfg in pairs(atAddressLines) do
 		ulAddressCfg = ulCfg
