@@ -509,17 +509,17 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	memcpy(&tSerialVectors, &tSerialVectors_Uart, sizeof(SERIAL_COMM_UI_FN_T));
 
 #if ASIC_TYP==56
-        /* Get the chip subtype from mem_a18 and mem_a19:
-         *  18 19
-         *   0  0  netX50
-         *   1  0  netX51
-         *   0  1  netX52
-         *   1  1  reserved
-         */
-        ulValue = ptAsicCtrlArea->ulSample_at_nres;
-        ulChipSubType  = (ulValue&HOSTMSK(sample_at_nres_sar_mem_a18))>> HOSTSRT(sample_at_nres_sar_mem_a18);
-        ulChipSubType |= (ulValue&HOSTMSK(sample_at_nres_sar_mem_a19))>>(HOSTSRT(sample_at_nres_sar_mem_a19)-1);
-        tChipSubTyp = (CHIP_SUBTYP_T)ulChipSubType;
+	/* Get the chip subtype from mem_a18 and mem_a19:
+	 *  18 19
+	 *   0  0  netX50
+	 *   1  0  netX51
+	 *   0  1  netX52
+	 *   1  1  reserved
+	 */
+	ulValue = ptAsicCtrlArea->ulSample_at_nres;
+	ulChipSubType  = (ulValue&HOSTMSK(sample_at_nres_sar_mem_a18))>> HOSTSRT(sample_at_nres_sar_mem_a18);
+	ulChipSubType |= (ulValue&HOSTMSK(sample_at_nres_sar_mem_a19))>>(HOSTSRT(sample_at_nres_sar_mem_a19)-1);
+	tChipSubTyp = (CHIP_SUBTYP_T)ulChipSubType;
 
 	/* netX51 and netX52 have different default UART pins. */
 	if( tChipSubTyp==CHIP_SUBTYP_NETX52 )
@@ -541,20 +541,30 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	/*
 	 * Set the RAM test configuration.
 	 */
+	memset(&tTestParams, 0, sizeof(tTestParams));
+	
 	/* Set the start of the test area. */
 	tTestParams.ulStart = ptBootBlock->s.ulUserData;
-
+	
 	/* Set the size of the SDRAM from the geometry. */
 	ulSdramGeneralCtrl = ptBootBlock->s.uMemoryCtrl.sSDRam.ulGeneralCtrl;
 	tTestParams.ulSize = sdram_get_size(ulSdramGeneralCtrl);
-
+	
 	/* Run all test cases. */
-	tTestParams.ulCases = RAMTESTCASE_08BIT | RAMTESTCASE_16BIT | RAMTESTCASE_32BIT | RAMTESTCASE_BURST
-							| RAMTESTCASE_DATABUS | RAMTESTCASE_MARCHC | RAMTESTCASE_CHECKERBOARD;
-
+	tTestParams.ulCases  = RAMTESTCASE_08BIT;
+	tTestParams.ulCases |= RAMTESTCASE_16BIT;
+	tTestParams.ulCases |= RAMTESTCASE_32BIT;
+	tTestParams.ulCases |= RAMTESTCASE_BURST;
+	tTestParams.ulCases |= RAMTESTCASE_DATABUS;
+	tTestParams.ulCases |= RAMTESTCASE_MARCHC;
+	tTestParams.ulCases |= RAMTESTCASE_CHECKERBOARD;
+	
 	/* Loop endless. */
 	tTestParams.ulLoops = 0;
-
+	
+	/* Do not run the performance tests. */
+	tTestParams.ulPerfTestCases = 0;
+	
 	/* Set the progress callback. */
 #if ASIC_TYP==56
 	ulValue = ptBootBlock->s.uMemoryCtrl.sSDRam.aulReserved[0];
