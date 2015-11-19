@@ -74,6 +74,7 @@ env_default.Version('targets/version/version.h', 'templates/version.h')
 #
 SConscript('ramtest/SConscript')
 Import('ramtest_netx500', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
 
 SConscript('setup_hif_io/SConscript')
 Import('setup_netx56')
@@ -129,6 +130,11 @@ tArcList.AddFiles('netx/',
 	ramtest_netx56,
 	ramtest_netx500,
 	setup_netx56)
+tArcList.AddFiles('standalone/',
+	ramtest_standalone_netx500,
+	ramtest_standalone_netx56,
+	ramtest_standalone_netx50,
+	ramtest_standalone_netx10)
 tArcList.AddFiles('lua/',
 	'lua/ramtest.lua')
 tArcList.AddFiles('templates/',
@@ -171,8 +177,11 @@ Command('targets/testbench/netx/setup_netx56.bin',  setup_netx56,  Copy("$TARGET
 # Copy all LUA scripts.
 Command('targets/testbench/lua/ramtest.lua',                        'lua/ramtest.lua',                            Copy("$TARGET", "$SOURCE"))
 
-# Install some demo tests.
+#----------------------------------------------------------------------------
+#
+# Install a demo test.
 # NOTE: Place hexadecimal values in quotes to prevent conversion to decimal.
+#
 aAttr = {'CHIP_TYPE':             56,
          'REGISTER_GENERAL_CTRL': '0x030D0001',
          'REGISTER_TIMING_CTRL':  '0x00A13251',
