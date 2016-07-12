@@ -825,13 +825,26 @@ void ramtest_show_sdram_config(unsigned long ulSdramStart)
 	unsigned long ulSdramMr;
 #if ASIC_TYP==500
 	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
+#elif ASIC_TYP==4000
+	NX4000_EXT_SDRAM_CTRL_AREA_T *ptSdram;
 #else
 	HOSTADEF(SDRAM) *ptSdram;
 #endif
 
 	/* Get the SDRAM controller address from the test area address. */
 	ptSdram = NULL;
-#if ASIC_TYP==500
+#if ASIC_TYP==4000
+
+	if( ulSdramStart>=HOSTADDR(mem_sdram) && ulSdramStart<=HOSTADR(mem_sdram_sdram_end) )
+	{
+		ptSdram = (NX4000_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
+	}
+	else 	if( ulSdramStart>=HOSTADDR(hif_sdram) && ulSdramStart<=HOSTADR(hif_sdram_sdram_end) )
+	{
+		ptSdram = (NX4000_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(hif_sdram_ctrl);
+	}
+	
+#elif ASIC_TYP==500
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);

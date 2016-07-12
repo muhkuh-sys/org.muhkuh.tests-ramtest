@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Data>
+			<File name="@tElf" />
+		</Data>
+		<Execute>
+			<File name="@tElf" />
+		</Execute>
+	</Chunks>
+</HBootImage>
+

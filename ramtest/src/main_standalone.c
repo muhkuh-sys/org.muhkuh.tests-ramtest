@@ -69,6 +69,15 @@ static const UART_CONFIGURATION_T tUartCfg =
 {
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
+#elif ASIC_TYP==4000
+static const UART_CONFIGURATION_T tUartCfg =
+{
+        .uc_rx_mmio = 26U,
+        .uc_tx_mmio = 27U,
+        .uc_rts_mmio = 0xffU,
+        .uc_cts_mmio = 0xffU,
+        .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
+}; 
 #endif
 
 
@@ -136,7 +145,7 @@ static unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 	ulColumns >>= HOSTSRT(sdram_general_ctrl_columns);
 	ulColumns   = 2048U << ulColumns;
 
-#if ASIC_TYP==500 || ASIC_TYP==50 || ASIC_TYP==56
+#if ASIC_TYP==4000 || ASIC_TYP==500 || ASIC_TYP==50 || ASIC_TYP==56
 	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus32))!=0 )
 	{
 		/* 32 bit bus. */
@@ -291,6 +300,8 @@ static int sdram_setup(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 {
 #if ASIC_TYP==500
 	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
+#elif ASIC_TYP==4000
+	NX4000_EXT_SDRAM_CTRL_AREA_T *ptSdram;
 #else
 	HOSTADEF(SDRAM) *ptSdram;
 #endif
@@ -356,6 +367,7 @@ static int sdram_setup(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 		else
 		{
 			/* Get the SDRAM parameter from the boot block. */
+			/* This will not work on netx 4000. */
 			ulSdramGeneralCtrl = ptBootBlock->s.uMemoryCtrl.sSDRam.ulGeneralCtrl;
 			ulSdramTimingCtrl  = ptBootBlock->s.uMemoryCtrl.sSDRam.ulTimingCtrl;
 			ulSdramMr          = ptBootBlock->s.uMemoryCtrl.sSDRam.ulModeRegister;

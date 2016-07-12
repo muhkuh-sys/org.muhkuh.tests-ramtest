@@ -25,8 +25,8 @@
 # Import all required objects.
 #
 Import('env_default')
-Import('env_netx500_default', 'env_netx56_default', 'env_netx50_default', 'env_netx10_default')
-Import('platform_lib_netx500', 'platform_lib_netx56', 'platform_lib_netx50', 'platform_lib_netx10')
+Import('env_netx4000_default', 'env_netx500_default', 'env_netx56_default', 'env_netx50_default', 'env_netx10_default')
+Import('platform_lib_netx4000', 'platform_lib_netx500', 'platform_lib_netx56', 'platform_lib_netx50', 'platform_lib_netx10')
 
 
 #----------------------------------------------------------------------------
@@ -73,6 +73,13 @@ sources_sim = """
 #
 aCppPath = ['src', '#platform/src', '#platform/src/lib', '#targets/version']
 
+env_netx4000_t = env_netx4000_default.Clone()
+env_netx4000_t.Replace(LDFILE = 'src/netx4000/netx4000.ld')
+env_netx4000_t.Append(CPPPATH = aCppPath)
+src_netx4000_t = env_netx4000_t.SetBuildPath('targets/netx4000/muhkuh_test', 'src', sources_common+sources_test)
+elf_netx4000_t = env_netx4000_t.Elf('targets/netx4000/muhkuh_test/ramtest.elf', src_netx4000_t + platform_lib_netx4000)
+ramtest_netx4000 = env_netx4000_t.ObjCopy('targets/netx4000/muhkuh_test/ramtest_netx4000.bin', elf_netx4000_t)
+
 env_netx500_t = env_netx500_default.Clone()
 env_netx500_t.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_t.Append(CPPPATH = aCppPath)
@@ -109,13 +116,21 @@ src_netx10_t = env_netx10_t.SetBuildPath('targets/netx10/muhkuh_test', 'src', so
 elf_netx10_t = env_netx10_t.Elf('targets/netx10/muhkuh_test/ramtest.elf', src_netx10_t + platform_lib_netx10)
 ramtest_netx10 = env_netx10_t.ObjCopy('targets/netx10/muhkuh_test/ramtest_netx10.bin', elf_netx10_t)
 
-Export('ramtest_netx500', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Export('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 
 
 #----------------------------------------------------------------------------
 #
 # Build the standalone version.
 #
+#env_netx4000_s = env_netx4000_default.Clone()
+#env_netx4000_s.Replace(LDFILE = 'src/netx4000/netx4000.ld')
+#env_netx4000_s.Append(CPPPATH = aCppPath)
+#src_netx4000_s = env_netx4000_s.SetBuildPath('targets/netx4000/standalone', 'src', sources_common+sources_standalone)
+#elf_netx4000_s = env_netx4000_s.Elf('targets/netx4000/standalone/ramtest_netx4000.elf', src_netx4000_s + platform_lib_netx4000)
+#ramtest_standalone_netx4000 = env_netx4000_s.HBootImage('targets/netx4000/standalone/ramtest_standalone_netx4000.bin', 'src/netx4000/DEFAULT_to_INTRAM.xml', KNOWN_FILES=dict({'tElf': elf_netx4000_s[0]}))
+
+
 env_netx500_s = env_netx500_default.Clone()
 env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_s.Append(CPPPATH = aCppPath)
@@ -148,6 +163,7 @@ elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest_netx10.elf', 
 ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ramtest_standalone_netx10.bin', elf_netx10_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
 Export('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
+#Export('ramtest_standalone_netx4000')
 
 
 #----------------------------------------------------------------------------
