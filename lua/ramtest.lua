@@ -11,6 +11,7 @@
 -- 29.04.15 SL * added performance test
 -- 19.08.15 SL * added bank size to get_sdram_geometry
 -- 21.08.15 SL * setup_sdram_hif_netx10/56 were not set in atPlatformAttributes
+-- 11.07.17 SL * added netX 4000
 
 module("ramtest", package.seeall)
 
@@ -71,6 +72,80 @@ local function printf_ul(ch, ...)
 	print(line)
 end
 
+
+-- only tested with 32 bit SDRAM
+local function setup_sdram_hif_netx4000(tPlugin, atSdramAttributes)
+	local tGeom = get_sdram_geometry(tPlugin, atSdramAttributes)
+	print_sdram_geometry(tGeom)
+	
+	-- get the number of required address signals
+	local numRowLines = 10+tGeom.ulRowBits
+	local numColumnLines = 8+tGeom.ulColumnBits
+	-- line A10 is not useable as column address signal.
+	if numColumnLines>=11 then
+		numColumnLines = numColumnLines + 1
+	end
+	local numAddrLines = math.max(numRowLines, numColumnLines)
+	
+	assert( tGeom.ulBusWidthBits == 0 or numAddrLines<=18, 
+		"Bus width and number of address lines are incompatible")
+	assert( numAddrLines <= 25, 
+		"More than 25 address lines are not supported")
+		
+	local sel_mem_d         = 0 -- 27 - 24   32 bit on HIF MI
+	local sel_mem_a_width   = 0 -- 22 - 20   A0-A10
+	local en_mem_sdram_mi   = 0 --      18   disable
+	local mem_mi_cfg        = 3 --           MEM MI disabled
+	local en_hif_rdy_pio_mi = 0 --      12
+	local sel_hif_a_width   = 0 -- 11 -  8   A0..A10
+	local en_hif_sdram_mi   = 0 --  7        disable
+	local hif_mi_cfg        = 3 --  6 -  5   HIF MI disabled
+	-- 
+	if atSdramAttributes.interface == INTERFACE_SDRAM_MEM then
+	
+		sel_mem_d         = 3 -- 32 bit on MEM MI
+		sel_mem_a_width   = math.max(numAddrLines - 18, 0)
+		en_mem_sdram_mi   = 1 -- enable
+		mem_mi_cfg        = tGeom.ulBusWidthBits + 1  -- 0 (16 bits) -> 01, 1 (32 bits) -> 10
+		en_hif_rdy_pio_mi = 0
+		sel_hif_a_width   = 0 -- A0..A10
+		en_hif_sdram_mi   = 0 -- disable
+		hif_mi_cfg        = 3 -- 11 HIF MI disabled
+	
+	elseif atSdramAttributes.interface == INTERFACE_SDRAM_HIF then
+	
+		sel_mem_d         = 0 -- 32 bit on HIF MI
+		sel_mem_a_width   = 0
+		en_mem_sdram_mi   = 0
+		mem_mi_cfg        = 3 -- 11 MEM MI is disabled.
+		en_hif_rdy_pio_mi = 0
+		sel_hif_a_width   = math.max(numAddrLines - 11, 0)
+		en_hif_sdram_mi   = 1 -- enable
+		hif_mi_cfg        = tGeom.ulBusWidthBits + 1  -- 0 (16 bits) -> 01, 1 (32 bits) -> 10
+	end
+	
+	local ulVal_HIF_IO_CFG = 
+			2^24 * sel_mem_d        
+		+ 2^20 * sel_mem_a_width  
+		+ 2^18 * en_mem_sdram_mi  
+		+ 2^16 * mem_mi_cfg       
+		+ 2^12 * en_hif_rdy_pio_mi
+		+ 2^8  * sel_hif_a_width  
+		+ 2^7  * en_hif_sdram_mi  
+		+ 2^5  * hif_mi_cfg          
+
+	printf("HIF_IO_CFG: 0x%08x", ulVal_HIF_IO_CFG)
+	
+	local Addr_ASIC_CTRL_ACCESS_KEY = 0xf408017c
+	local ulValue = tPlugin:read_data32(Addr_ASIC_CTRL_ACCESS_KEY)
+	tPlugin:write_data32(Addr_ASIC_CTRL_ACCESS_KEY, ulValue)
+
+	local Addr_HIF_IO_CFG = 0xf4080200
+	tPlugin:write_data32(Addr_HIF_IO_CFG, ulVal_HIF_IO_CFG)
+end
+
+
+
 local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	local atAddressLines = {
 		[0x00000800] = 0x00000000,
@@ -91,6 +166,7 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	}
 
 	-- Get the configuration value for the number of address lines.
+	-- bits 11-8 sel_hif_a_width
 	ulSdramSize = get_ram_size(tPlugin, atSdramAttributes)
 	ulAddressCfg = 0
 	for ulSize,ulCfg in pairs(atAddressLines) do
@@ -102,6 +178,7 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	print(string.format("ulAddressCfg=0x%08x", ulAddressCfg))
 	
 	-- Get the configuration value for the data bus size.
+	-- bits 5-4 hif_mi_cfg
 	ulGeneralCtrl = atSdramAttributes.general_ctrl
 	if bit.band(ulGeneralCtrl,0x00010000)==0 then
 		-- The data bus has a size of 16 bits.
@@ -144,6 +221,22 @@ end
 
 
 local atPlatformAttributes = {
+	[romloader.ROMLOADER_CHIPTYP_NETX4000] = {
+		ulAsic = 4000,
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0xf40c0140, 
+				ulArea_Start = 0x30000000,
+				setup = setup_sdram_hif_netx4000 
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0xf40c0240,
+				ulArea_Start = 0x20000000,
+				setup = setup_sdram_hif_netx4000
+			}
+		},
+	},
+
 	[romloader.ROMLOADER_CHIPTYP_NETX500] = {
 		ulAsic = 500,
 		sdram = {
@@ -304,6 +397,9 @@ end
 
 local function compare_netx_version(tPlugin, atRamAttributes)
 	local atChipTypes = {
+		[4000] = {
+			romloader.ROMLOADER_CHIPTYP_NETX4000,
+		},
 		[500] = {
 			romloader.ROMLOADER_CHIPTYP_NETX500,
 			romloader.ROMLOADER_CHIPTYP_NETX100
@@ -461,18 +557,32 @@ end
 
 
 
-function get_sdram_geometry(tPlugin, atSdramAttributes)
-	local ulGeneralCtrl = atSdramAttributes.general_ctrl
-	-- Extract the geometry parameters.
-	local ulBanks    = bit.lshift(2,               bit.band(ulGeneralCtrl, 0x00000003))
-	local ulRows     = bit.lshift(2048, bit.rshift(bit.band(ulGeneralCtrl, 0x00000070), 4))
-	local ulColumns  = bit.lshift(256,  bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8))
-	local ulBusWidth = bit.lshift(1,    bit.rshift(bit.band(ulGeneralCtrl, 0x00010000), 16))
 
-	local tAsicTyp = tPlugin:GetChiptyp()
+-- Note: the geometry fields have slightly different definitions:
+--           netx 500/100/50                  netx 10                          netx 56/4000                
+-- width    1 bit,  0..1     = 16..32        1 bit,  0..1     = 8..16        1 bit,  0..1     = 16..32
+-- columns  3 bits, 000..110 = 256..16k      3 bits, 000..100 = 256..4k      3 bits, 000..100 = 256..4k   
+-- rows     3 bits, 000..101 = 2k..64k       3 bits, 000..011 = 2k..16k      2 bits, 000..011 = 2k..16k  
+-- banks    2 bits, 00..10   = 2..8          2 bits, 00..01   = 2..4         2 bits, 00..01   = 2..4      
+
+-- Extract the geometry parameters.
+function decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
+	
+	local ulBankBits     =            bit.band(ulGeneralCtrl, 0x00000003)
+	local ulRowBits      = bit.rshift(bit.band(ulGeneralCtrl, 0x00000070), 4)
+	local ulColumnBits   = bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8)
+	local ulBusWidthBits = bit.rshift(bit.band(ulGeneralCtrl, 0x00010000), 16)
+	
+	local ulBanks    = bit.lshift(2,    ulBankBits)
+	local ulRows     = bit.lshift(2048, ulRowBits)
+	local ulColumns  = bit.lshift(256,  ulColumnBits)
+	local ulBusWidth = bit.lshift(1,    ulBusWidthBits)
+
 	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50
-	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B then
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B 
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000
+	then
 		ulBusWidth = ulBusWidth * 2
 	elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
 		ulBusWidth = ulBusWidth
@@ -484,110 +594,90 @@ function get_sdram_geometry(tPlugin, atSdramAttributes)
 	local ulBankSize = ulRows * ulRowSize
 	local ulSize     = ulBanks * ulBankSize
 	
-	print()
-	print("Geometry:")
-	printf("Banks    : %d",           ulBanks    )
-	printf("Rows     : %d",           ulRows     )
-	printf("Columns  : %d",           ulColumns  )
-	printf("BusWidth : %d bytes",     ulBusWidth )
-	printf("RowSize  : 0x%08x bytes", ulRowSize  )
-	printf("Bank Size: 0x%08x bytes", ulBankSize )
-	printf("Size     : 0x%08x bytes", ulSize     )
-	print()
-
 	-- bus width, row size and size are in bytes
 	local tGeom = {
-		ulBanks    = ulBanks,
-		ulRows     = ulRows,
-		ulColumns  = ulColumns,
-		ulBusWidth = ulBusWidth,
-		ulRowSize  = ulRowSize,
-		ulBankSize = ulBankSize,
-		ulSize     = ulSize
+		ulBankBits     = ulBankBits,
+		ulRowBits      = ulRowBits,
+		ulColumnBits   = ulColumnBits,
+		ulBusWidthBits = ulBusWidthBits,
+	
+		ulBanks        = ulBanks,
+		ulRows         = ulRows,
+		ulColumns      = ulColumns,
+		ulBusWidth     = ulBusWidth,
+		
+		ulRowSize      = ulRowSize,
+		ulBankSize     = ulBankSize,
+		ulSize         = ulSize
 	}
 	
 	return tGeom
 end
 
+function print_sdram_geometry(tGeom)
+	print()
+	print("Geometry:")
+	printf("Banks    : %d",           tGeom.ulBanks    )
+	printf("Rows     : %d",           tGeom.ulRows     )
+	printf("Columns  : %d",           tGeom.ulColumns  )
+	printf("BusWidth : %d bytes",     tGeom.ulBusWidth )
+	printf("RowSize  : 0x%08x bytes", tGeom.ulRowSize  )
+	printf("Bank Size: 0x%08x bytes", tGeom.ulBankSize )
+	printf("Size     : 0x%08x bytes", tGeom.ulSize     )
+	print()
+end
 
+function get_sdram_geometry(tPlugin, atSdramAttributes)
+	local ulGeneralCtrl = atSdramAttributes.general_ctrl
+	local tAsicTyp = tPlugin:GetChiptyp()
+	local tGeom = decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
+	return tGeom
+end
 
-function get_ram_size(tPlugin, atRamAttributes)
+function get_ram_area(tPlugin, atRamAttributes)
+	local ulRamStart = nil
 	local ulRamSize = nil
 	
 	local tInterface = atRamAttributes.interface
+	
 	if tInterface==INTERFACE_RAM then
+		ulRamStart = atRamAttributes.ram_start
 		ulRamSize = atRamAttributes.ram_size
+		
 	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
-		-- Is a size specified in the attributes?
+		local atInterface = get_sdram_interface_attributes(tPlugin, tInterface)
+		ulRamStart = atInterface.ulArea_Start
+		
 		if atRamAttributes.size_exponent==nil then
 			-- No -> get the size from the geometry parameters.
-			local ulGeneralCtrl = atRamAttributes.general_ctrl
-			-- Extract the geometry parameters.
-			local ulBanks    =            bit.band(ulGeneralCtrl, 0x00000003)
-			local ulRows     = bit.rshift(bit.band(ulGeneralCtrl, 0x00000030), 4)
-			local ulColumns  = bit.rshift(bit.band(ulGeneralCtrl, 0x00000700), 8)
-			local ulBusWidth = nil
-			
-			local tAsicTyp = tPlugin:GetChiptyp()
-			if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 then
-				ulBusWidth = 2
-				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-					ulBusWidth = 4
-				end
-			elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50 then
-				ulBusWidth = 2
-				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-					ulBusWidth = 4
-				end
-			elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
-				ulBusWidth = 1
-				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-					ulBusWidth = 2
-				end
-			elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B then
-				ulBusWidth = 2
-				if bit.band(ulGeneralCtrl, 0x00010000)~=0 then
-					ulBusWidth = 4
-				end
-			else
-				error("Unknown chiptyp!")
-			end
-			
-			-- Combine the geometry parameters to the size in bytes.
-			ulRamSize = bit.lshift(2, ulBanks) * bit.lshift(256, ulColumns) * bit.lshift(2048, ulRows) * ulBusWidth
+			local tGeom = get_sdram_geometry(tPlugin, atRamAttributes)
+			ulRamSize = tGeom.ulSize
 		else
 			-- Yes -> ignore the geometry parameters.
 			ulRamSize = math.pow(2, atRamAttributes.size_exponent)
 		end
-	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
-		ulRamSize = atRamAttributes.sram_size
-	else
-		error("Unknown interface ID:"..tInterface)
-	end
-	
-	return ulRamSize
-end
-
-
-
-function get_ram_start(tPlugin, atRamAttributes)
-	local ulRamStart = nil
-	
-	local tInterface = atRamAttributes.interface
-	if tInterface==INTERFACE_RAM then
-		ulRamStart = atRamAttributes.ram_start
-	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
-		local atInterface = get_sdram_interface_attributes(tPlugin, tInterface)
-		ulRamStart = atInterface.ulArea_Start
+		
 	elseif tInterface==INTERFACE_SRAM_HIF or tInterface==INTERFACE_SRAM_MEM then
 		local ulChipSelect = atRamAttributes.sram_chip_select
 		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
 		ulRamStart = atInterface.aulArea_Start[ulChipSelect]
+		ulRamSize = atRamAttributes.sram_size
+		
 	else
 		error("Unknown interface ID:"..tInterface)
 	end
 	
+	return ulRamStart, ulRamSize
+end
+
+function get_ram_start(tPlugin, atRamAttributes)
+	local ulRamStart, ulRamSize = get_ram_area(tPlugin, atRamAttributes)
 	return ulRamStart
+end
+
+function get_ram_size(tPlugin, atRamAttributes)
+	local ulRamStart, ulRamSize = get_ram_area(tPlugin, atRamAttributes)
+	return ulRamSize
 end
 
 
