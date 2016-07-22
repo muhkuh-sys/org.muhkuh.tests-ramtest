@@ -67,14 +67,22 @@ sources_sim = """
 	src/performance_test.S
 """
 
+# special files for netX 4000 bootup
+sources_cr7_openfirewalls = """
+	src/netx4000/cr7_open_netx4000_firewalls.S
+"""
+
 #----------------------------------------------------------------------------
 #
 # Build the muhkuh test version.
 #
 aCppPath = ['src', '#platform/src', '#platform/src/lib', '#targets/version']
 
+
+
+
 env_netx4000_t = env_netx4000_default.Clone()
-env_netx4000_t.Replace(LDFILE = 'src/netx4000/netx4000.ld')
+env_netx4000_t.Replace(LDFILE = 'src/netx4000/netx4000_cr7_intram.ld')
 env_netx4000_t.Append(CPPPATH = aCppPath)
 src_netx4000_t = env_netx4000_t.SetBuildPath('targets/netx4000/muhkuh_test', 'src', sources_common+sources_test)
 elf_netx4000_t = env_netx4000_t.Elf('targets/netx4000/muhkuh_test/ramtest.elf', src_netx4000_t + platform_lib_netx4000)
@@ -120,6 +128,51 @@ Export('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx56', 'ramtest_netx50'
 
 
 #----------------------------------------------------------------------------
+#
+# Build the standalone version.
+#
+
+# open firewalls from RAP into netX area at netX 4000
+env_netx4000_cr7_openfirewalls = env_netx4000_default.Clone()
+env_netx4000_cr7_openfirewalls.Replace(LDFILE = 'src/netx4000/netx4000_cr7_intram.ld')
+env_netx4000_cr7_openfirewalls.Append(CPPPATH = aCppPath)
+src_netx4000_cr7_openfirewalls = env_netx4000_cr7_openfirewalls.SetBuildPath('targets/netx4000_openfirewalls', 'src', sources_cr7_openfirewalls)
+elf_netx4000_cr7_openfirewalls = env_netx4000_cr7_openfirewalls.Elf('targets/netx4000_openfirewalls/netx4000_cr7_openfirewalls.elf', src_netx4000_cr7_openfirewalls + platform_lib_netx4000)
+txt_netx4000_cr7_openfirewalls = env_netx4000_cr7_openfirewalls.ObjDump('targets/netx4000_openfirewalls/netx4000_cr7_openfirewalls.txt', elf_netx4000_cr7_openfirewalls, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
+
+# ramtest for the CR7.
+env_netx4000_ramtest_cr7 = env_netx4000_default.Clone()
+env_netx4000_ramtest_cr7.Replace(LDFILE = 'src/netx4000/netx4000_cr7_intram.ld')
+env_netx4000_ramtest_cr7.Append(CPPPATH = aCppPath)
+src_netx4000_ramtest_cr7 = env_netx4000_ramtest_cr7.SetBuildPath('targets/netx4000_cr7', 'src', sources_common+sources_standalone)
+elf_netx4000_ramtest_cr7 = env_netx4000_ramtest_cr7.Elf('targets/netx4000_cr7/netx4000_ramtest_cr7.elf', src_netx4000_ramtest_cr7 + platform_lib_netx4000)
+txt_netx4000_ramtest_cr7 = env_netx4000_ramtest_cr7.ObjDump('targets/netx4000_cr7/netx4000_ramtest_cr7.txt', elf_netx4000_ramtest_cr7, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
+
+# ramtest for one of the CA9 cores.
+env_netx4000_ramtest_ca9 = env_netx4000_default.Clone()
+env_netx4000_ramtest_ca9.Replace(LDFILE = 'src/netx4000/netx4000_ca9_intram.ld')
+env_netx4000_ramtest_ca9.Append(CPPPATH = aCppPath)
+env_netx4000_ramtest_ca9.Append(CPPPATH = ['src/netx4000'])
+env_netx4000_ramtest_ca9.Append(CPPDEFINES = [['CFG_USE_RAP_UART', '1']])
+src_netx4000_ramtest_ca9 = env_netx4000_ramtest_ca9.SetBuildPath('targets/netx4000_ca9', 'src', sources_common+sources_standalone)
+elf_netx4000_ramtest_ca9 = env_netx4000_ramtest_ca9.Elf('targets/netx4000_ca9/netx4000_ramtest_ca9.elf', src_netx4000_ramtest_ca9 + platform_lib_netx4000)
+txt_netx4000_ramtest_ca9 = env_netx4000_ramtest_ca9.ObjDump('targets/netx4000_ca9/netx4000_ramtest_ca9.txt', elf_netx4000_ramtest_ca9, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
+
+# Build 3 hboot images to be loaded into netX 4000
+# hboot image: RUN ramtest at CR7
+bb0_netx4000_intram = env_netx4000_ramtest_cr7.HBootImage('targets/ramtest_netx4000_cr7_spi_intram.bin', 'src/netx4000/CR7_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7': elf_netx4000_ramtest_cr7[0]}))
+bb1_netx4000_intram = env_netx4000_ramtest_cr7.HBootImage('targets/mmc/netx4000/cr7/netx.rom', 'src/netx4000/CR7_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7': elf_netx4000_ramtest_cr7[0]}))
+
+# hboot image: open firewalls from RAP into netX area; RUN ramtest at CR9 core 0; keep CR7 inside endless loop
+bb2_netx4000_intram = env_netx4000_ramtest_ca9.HBootImage('targets/ramtest_netx4000_ca9core0_spi_intram.bin', 'src/netx4000/CA9core0_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0], 'tElfCA9core0': elf_netx4000_ramtest_ca9[0]}))
+bb3_netx4000_intram = env_netx4000_ramtest_ca9.HBootImage('targets/mmc/netx4000/ca9core0/netx.rom', 'src/netx4000/CA9core0_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0], 'tElfCA9core0': elf_netx4000_ramtest_ca9[0]}))
+
+# hboot image: open firewalls from RAP into netX area; RUN ramtest at CR9 core 1; keep CR7 inside endless loop
+bb4_netx4000_intram = env_netx4000_ramtest_ca9.HBootImage('targets/ramtest_netx4000_ca9core1_spi_intram.bin', 'src/netx4000/CA9core1_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0], 'tElfCA9core1': elf_netx4000_ramtest_ca9[0]}))
+bb5_netx4000_intram = env_netx4000_ramtest_ca9.HBootImage('targets/mmc/netx4000/ca9core1/netx.rom', 'src/netx4000/CA9core1_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0], 'tElfCA9core1': elf_netx4000_ramtest_ca9[0]}))
+
+
+
 #
 # Build the standalone version.
 #
