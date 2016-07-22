@@ -8,6 +8,14 @@
 	.global start
 	.global stack_top
 
+	@ optional can be used by python script to define individual entry points for cortex CA9 core0/1
+#if ASIC_TYP==4000
+	@ define entry point for CA9_core0
+	.global start_core0
+	@ define entry point for CA9_core1
+	.global start_core1
+#endif
+
 #if ASIC_TYP==500 || ASIC_TYP==100
 	.equ Adr_dTCM_base,			0x10000000
 #endif
@@ -15,6 +23,14 @@
 @--------------------------------------
 
   .func start_init_s
+
+	@ optional can be used by python script to define individual entry points for cortex CA9 core0/1
+#if ASIC_TYP==4000
+	@ define entry point for CA9_core0
+start_core0:
+	@ define entry point for CA9_core1
+start_core1:
+#endif 
 
 start:
 	stmfd	sp!, {r0, r1, r2, lr}
