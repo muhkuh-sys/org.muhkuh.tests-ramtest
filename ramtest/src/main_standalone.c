@@ -555,13 +555,23 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	 */
 	memset(&tTestParams, 0, sizeof(tTestParams));
 	
+#if ASIC_TYP==4000
+	/* On netx 4000, set hardcoded parameters for the moment. */
+	/* Set the start of the test area. */
+	tTestParams.ulStart = 0x40000000;
+	
+	/* Set the size of the SDRAM from the geometry. */
+	ulSdramGeneralCtrl = 0xffffffff;
+	tTestParams.ulSize = 0x40010000;
+
+#else
 	/* Set the start of the test area. */
 	tTestParams.ulStart = ptBootBlock->s.ulUserData;
 	
 	/* Set the size of the SDRAM from the geometry. */
 	ulSdramGeneralCtrl = ptBootBlock->s.uMemoryCtrl.sSDRam.ulGeneralCtrl;
 	tTestParams.ulSize = sdram_get_size(ulSdramGeneralCtrl);
-	
+#endif
 	/* Run all test cases. */
 	tTestParams.ulCases  = RAMTESTCASE_08BIT;
 	tTestParams.ulCases |= RAMTESTCASE_16BIT;
