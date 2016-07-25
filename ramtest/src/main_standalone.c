@@ -562,7 +562,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	
 	/* Set the size of the SDRAM from the geometry. */
 	ulSdramGeneralCtrl = 0xffffffff;
-	tTestParams.ulSize = 0x40010000;
+	tTestParams.ulSize = 0x00010000;
 
 #else
 	/* Set the start of the test area. */
