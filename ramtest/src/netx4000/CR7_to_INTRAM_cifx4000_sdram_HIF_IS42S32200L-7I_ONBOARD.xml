@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Options>
+			<Option id="hif_hif_io">
+				<U32>0x000300c0</U32>
+			</Option>
+
+			<Option id="netx_hif_sdram">
+				<U32>0x030d0001</U32>    <!-- SDRAM general_ctrl register -->
+				<U32>0x02A23251</U32>    <!-- SDRAM timing_ctrl register -->
+				<U32>0x00000033</U32>    <!-- SDRAM mr register -->
+				<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
+			</Option>
+		</Options>
+
+		<!-- Activate the SDRAM. -->
+		<MemoryDeviceUp device="MEMDEV_SDRAM_H"/>
+		
+		<!-- Write ramtest parameters 
+			unsigned 32 bit values as bytes in little endian order -->
+		<Data>
+			<Hex address="0x0003ffc0">
+				00 00 00 20 <!-- 0x20000000 Start address of HIF SDRAM -->
+				00 00 80 00 <!-- 0x00800000 Size in bytes -->
+				7f 00 00 00 <!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+			</Hex>
+		</Data>
+		
+		<!-- Load Programm for CR7 and start afterwards -->
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		
+		<Execute>
+			<File name="@tElfCR7" />
+			<R0>0x0003ffc0</R0> <!-- address of parameter block -->
+		</Execute>
+	</Chunks>
+</HBootImage>
+

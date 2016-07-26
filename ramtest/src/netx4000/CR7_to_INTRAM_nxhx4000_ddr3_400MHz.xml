@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Options>
+			<Option id="ddr">
+				<U32>10000</U32>   <!-- The number of ticks to wait for the power up. -->
+				<DDR>
+					<!-- IF voltage and software reset release. -->
+					<WritePhy register="0"  data="0x00000101"/>
+
+					<!-- DLL control mode setting.
+					     SDLY control from MDLL,
+					     self-reset mode,
+					     normal mode,
+					     SRCLK/HRCLK frequency range setting and
+					     MDLL standby. -->
+					<WritePhy register="1"  data="0x00000006"/>
+
+					<!-- Initialize the FIFOs. -->
+					<WritePhy register="6"  data="0x00000101"/>
+
+					<!-- ZQ calibration setting.
+					     DFICLK frequency range setting,
+					     calibration execution intervals setting,
+					     mode settings,
+					     beginning value settings and
+					     ZQ calibration resets. -->
+					<WritePhy register="2"  data="0x00000576"/>
+
+					<!-- Delay for 100us or more. -->
+					<Delay ticks="2000"/>
+
+					<!-- Command/Address output phase setting,
+					     I/F FIFO mode setting,
+					     I/F FIFO read pointer value setting,
+					     driver impedance setting,
+					     slew rate setting,
+					     ODT use/unuse setting,
+					     DNV mode setting and
+					     DRAM I/F setting. -->
+					<WritePhy register="3"  data="0xeaaa8051"/>
+
+					<!-- Delay for 200us or more. -->
+					<Delay ticks="4000"/>
+
+					<!-- ODT timing setting,
+					     BEN (receiver bias enable) timing setting and
+					     IEN (receiver input enable) timing setting. -->
+					<WritePhy register="4"  data="0xe747e742"/>
+
+					<!-- Read reclocking timing setting,
+					     command and DQ output mode setting. -->
+					<WritePhy register="5"  data="0x000001b2"/>
+
+					<!-- BL/RL/WL setting,
+					     output setting at DFIDATABYTEDISABLE mode,
+					     MRESETB output enable settings,
+					     MCKE,
+					     MODT output enable setting,
+					     address and command output enable setting. -->
+					<WritePhy register="7"  data="0x1e060707"/>
+
+					<!-- Release the reset. -->
+					<WritePhy register="2"  data="0x00000577"/>
+
+					<!-- Wait for calibration done. -->
+					<PollPhy  register="2"  mask="0x40000000" data="0x40000000" ticks="1000000"/>
+
+					<!-- Delay for 500us or more. -->
+					<Delay ticks="10000"/>
+
+					<!-- Configure the DDR control registers. -->
+					<WriteCtrl register="0"   data="0x00000600"/>
+					<WriteCtrl register="1"   data="0x00000000"/>
+					<WriteCtrl register="2"   data="0x00000004"/>
+					<WriteCtrl register="3"   data="0x00000000"/>
+					<WriteCtrl register="4"   data="0x00000000"/>
+					<WriteCtrl register="5"   data="0x00000000"/>
+					<WriteCtrl register="6"   data="0x00013880"/>
+					<WriteCtrl register="7"   data="0x00030d40"/>
+					<WriteCtrl register="8"   data="0x00000000"/>
+					<WriteCtrl register="9"   data="0x12000200"/>
+					<WriteCtrl register="10"  data="0x04040005"/>
+					<WriteCtrl register="11"  data="0x040e1404"/>
+					<WriteCtrl register="12"  data="0x04041006"/>
+					<WriteCtrl register="13"  data="0x006db00c"/>
+					<WriteCtrl register="14"  data="0x06000503"/>
+					<WriteCtrl register="15"  data="0x01000006"/>
+					<WriteCtrl register="16"  data="0x06030c01"/>
+					<WriteCtrl register="17"  data="0x00010000"/>
+					<WriteCtrl register="18"  data="0x00010000"/>
+					<WriteCtrl register="19"  data="0x0c280068"/>
+					<WriteCtrl register="20"  data="0x00000000"/>
+					<WriteCtrl register="21"  data="0x000a0003"/>
+					<WriteCtrl register="22"  data="0x00000000"/>
+					<WriteCtrl register="23"  data="0x006c0200"/>
+					<WriteCtrl register="24"  data="0x00010000"/>
+					<WriteCtrl register="25"  data="0x00050500"/>
+					<WriteCtrl register="26"  data="0x00000000"/>
+					<WriteCtrl register="27"  data="0x00000000"/>
+					<WriteCtrl register="28"  data="0x00000000"/>
+					<WriteCtrl register="29"  data="0x00000000"/>
+
+					<WriteCtrl register="31"  data="0x00000000"/>
+					<WriteCtrl register="32"  data="0x00460420"/>
+					<WriteCtrl register="33"  data="0x00000000"/>
+					<WriteCtrl register="34"  data="0x00000000"/>
+					<WriteCtrl register="35"  data="0x00000000"/>
+					<WriteCtrl register="36"  data="0x00000000"/>
+					<WriteCtrl register="37"  data="0x00000000"/>
+					<WriteCtrl register="38"  data="0x00000000"/>
+					<WriteCtrl register="39"  data="0x00000000"/>
+					<WriteCtrl register="40"  data="0x00000000"/>
+					<WriteCtrl register="41"  data="0x00000000"/>
+					<WriteCtrl register="42"  data="0x00000000"/>
+					<WriteCtrl register="43"  data="0x00000000"/>
+					<WriteCtrl register="44"  data="0x00000000"/>
+					<WriteCtrl register="45"  data="0x00000000"/>
+					<WriteCtrl register="46"  data="0x00000000"/>
+					<WriteCtrl register="47"  data="0x00000000"/>
+					<WriteCtrl register="48"  data="0x00000000"/>
+					<WriteCtrl register="49"  data="0x01000200"/>
+					<WriteCtrl register="50"  data="0x02000040"/>
+					<WriteCtrl register="51"  data="0x00000040"/>
+					<WriteCtrl register="52"  data="0x00000000"/>
+					<WriteCtrl register="53"  data="0x01000000"/>
+					<WriteCtrl register="54"  data="0x01ffff0a"/>
+					<WriteCtrl register="55"  data="0x01010101"/>
+					<WriteCtrl register="56"  data="0x01000001"/>
+					<WriteCtrl register="57"  data="0x00000103"/>
+					<WriteCtrl register="58"  data="0x00000c00"/>
+					<WriteCtrl register="59"  data="0x00000000"/>
+					<WriteCtrl register="60"  data="0x00000001"/>
+					<WriteCtrl register="61"  data="0x00000000"/>
+					<WriteCtrl register="62"  data="0x00000000"/>
+					<WriteCtrl register="63"  data="0x00000000"/>
+					<WriteCtrl register="64"  data="0x00000000"/>
+					<WriteCtrl register="65"  data="0x00000000"/>
+					<WriteCtrl register="66"  data="0x00000000"/>
+					<WriteCtrl register="67"  data="0x00000000"/>
+					<WriteCtrl register="68"  data="0x00000000"/>
+					<WriteCtrl register="69"  data="0x00000000"/>
+					<WriteCtrl register="70"  data="0x01000604"/>
+					<WriteCtrl register="71"  data="0x00000000"/>
+					<WriteCtrl register="72"  data="0x00000000"/>
+					<WriteCtrl register="73"  data="0x00000200"/>
+					<WriteCtrl register="74"  data="0x00000000"/>
+					<WriteCtrl register="75"  data="0x00000000"/>
+					<WriteCtrl register="76"  data="0x00000000"/>
+					<WriteCtrl register="77"  data="0x00000000"/>
+					<WriteCtrl register="78"  data="0x280d0000"/>
+					<WriteCtrl register="79"  data="0x00000000"/>
+					<WriteCtrl register="80"  data="0x00000000"/>
+					<WriteCtrl register="81"  data="0x00010001"/>
+					<WriteCtrl register="82"  data="0x00010001"/>
+					<WriteCtrl register="83"  data="0x00000001"/>
+					<WriteCtrl register="84"  data="0x00000000"/>
+					<WriteCtrl register="85"  data="0x00000000"/>
+					<WriteCtrl register="86"  data="0x00000000"/>
+					<WriteCtrl register="87"  data="0x00000000"/>
+					<WriteCtrl register="88"  data="0x00012121"/>
+					<WriteCtrl register="89"  data="0x00000000"/>
+					<WriteCtrl register="90"  data="0x00000000"/>
+					<WriteCtrl register="91"  data="0x00212100"/>
+					<WriteCtrl register="92"  data="0x00000001"/>
+					<WriteCtrl register="93"  data="0x00000000"/>
+					<WriteCtrl register="94"  data="0x00000000"/>
+					<WriteCtrl register="95"  data="0x00012121"/>
+					<WriteCtrl register="96"  data="0x00000000"/>
+					<WriteCtrl register="97"  data="0x00000000"/>
+					<WriteCtrl register="98"  data="0x00212100"/>
+					<WriteCtrl register="99"  data="0x00000001"/>
+					<WriteCtrl register="100" data="0x00000000"/>
+					<WriteCtrl register="101" data="0x00000000"/>
+					<WriteCtrl register="102" data="0x00012121"/>
+					<WriteCtrl register="103" data="0x00020200"/>
+					<WriteCtrl register="104" data="0x02000202"/>
+					<WriteCtrl register="105" data="0x02020002"/>
+					<WriteCtrl register="106" data="0x00020200"/>
+					<WriteCtrl register="107" data="0x05050000"/>
+					<WriteCtrl register="108" data="0x00000505"/>
+					<WriteCtrl register="109" data="0x04040064"/>
+					<WriteCtrl register="110" data="0x00010404"/>
+					<WriteCtrl register="111" data="0x03030064"/>
+					<WriteCtrl register="112" data="0x00020303"/>
+					<WriteCtrl register="113" data="0x02020064"/>
+					<WriteCtrl register="114" data="0x00030202"/>
+					<WriteCtrl register="115" data="0x01010064"/>
+					<WriteCtrl register="116" data="0x00040101"/>
+					<WriteCtrl register="117" data="0x00000064"/>
+					<WriteCtrl register="118" data="0x00000000"/>
+					<WriteCtrl register="119" data="0x00000d00"/>
+					<WriteCtrl register="120" data="0x00185000"/>
+					<WriteCtrl register="121" data="0x02000200"/>
+					<WriteCtrl register="122" data="0x02000200"/>
+					<WriteCtrl register="123" data="0x00001850"/>
+					<WriteCtrl register="124" data="0x00007990"/>
+					<WriteCtrl register="125" data="0x00020605"/>
+					<WriteCtrl register="126" data="0x000a0a01"/>
+					<WriteCtrl register="127" data="0x00000000"/>
+					<WriteCtrl register="128" data="0x00000000"/>
+					<WriteCtrl register="129" data="0x04038000"/>
+					<WriteCtrl register="130" data="0x07030a07"/>
+					<WriteCtrl register="131" data="0x00ffff1e"/>
+					<WriteCtrl register="132" data="0x000f0010"/>
+					<WriteCtrl register="133" data="0x00000000"/>
+					<WriteCtrl register="134" data="0x00000000"/>
+					<WriteCtrl register="135" data="0x00000000"/>
+					<WriteCtrl register="136" data="0x00000000"/>
+					<WriteCtrl register="137" data="0x00000000"/>
+					<WriteCtrl register="138" data="0x00000000"/>
+					<WriteCtrl register="139" data="0x00000204"/>
+					<WriteCtrl register="140" data="0x00000000"/>
+					<WriteCtrl register="141" data="0x00000000"/>
+					<WriteCtrl register="142" data="0x00000001"/>
+
+					<WriteCtrl register="152" data="0x00000000"/>
+					<WriteCtrl register="153" data="0x00000001"/>
+
+					<!-- Start the DDR controller. -->
+					<WriteCtrl register="0"   data="0x00000600 | MSK_NX4000_DDR_CTRL_CTL0_START"/>
+					<PollCtrl  register="61"  mask="0x100" data="0x100" ticks="1000000"/>
+					<WriteCtrl register="62"  data="0x100"/>
+					<WriteCtrl register="63"  data="0x3fff87"/>
+				</DDR>
+			</Option>
+		</Options>
+
+		<!-- Activate the DDR RAM. -->
+		<MemoryDeviceUp device="MEMDEV_DDR"/>
+
+		<!-- Write ramtest parameters 
+			unsigned 32 bit values as bytes in little endian order -->
+		<Data>
+			<Hex address="0x0003ffc0">
+				00 00 00 40 <!-- 0x20000000 Start address of HIF SDRAM -->
+				00 00 00 40 <!-- 0x40000000 Size in bytes -->
+				7f 00 00 00 <!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+			</Hex>
+		</Data>
+		
+		<!-- Load Programm for CR7 and start afterwards -->
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		
+		<Execute>
+			<File name="@tElfCR7" />
+			<R0>0x0003ffc0</R0> <!-- address of parameter block -->
+		</Execute>
+
+	</Chunks>
+</HBootImage>
