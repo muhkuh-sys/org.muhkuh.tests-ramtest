@@ -40,19 +40,22 @@ sources_common = """
 	src/performance_test.S
 """
 
-
 sources_test = """
 	src/init_netx_test.S
 	src/main_test.c
 	src/netx_test.c
 """
 
-
 sources_standalone = """
 	src/init_standalone.S
 	src/main_standalone.c
 """
 
+sources_standalone_netx4000 = """
+	src/init_standalone.S
+	src/main_standalone_netx4000.c
+	src/main_standalone_common.c
+"""
 
 sources_debugger = """
 	src/init_debugger.S
@@ -77,8 +80,6 @@ sources_cr7_openfirewalls = """
 # Build the muhkuh test version.
 #
 aCppPath = ['src', '#platform/src', '#platform/src/lib', '#targets/version']
-
-
 
 
 env_netx4000_t = env_netx4000_default.Clone()
@@ -172,18 +173,20 @@ bb4_netx4000_intram = env_netx4000_ramtest_ca9.HBootImage('targets/ramtest_netx4
 bb5_netx4000_intram = env_netx4000_ramtest_ca9.HBootImage('targets/mmc/netx4000/ca9core1/netx.rom', 'src/netx4000/CA9core1_to_INTRAM.xml', KNOWN_FILES=dict({'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0], 'tElfCA9core1': elf_netx4000_ramtest_ca9[0]}))
 
 
+# Build pre-configured boot images for cifx 4000 SDRAM and NXHX4000 DDR-RAM
+env_netx4000_s = env_netx4000_default.Clone()
+env_netx4000_s.Replace(LDFILE = 'src/netx4000/netx4000_cr7_intram.ld')
+env_netx4000_s.Append(CPPPATH = aCppPath)
+src_netx4000_s = env_netx4000_s.SetBuildPath('targets/netx4000/standalone', 'src', sources_common+sources_standalone_netx4000)
+elf_netx4000_s = env_netx4000_s.Elf('targets/netx4000/standalone/ramtest_netx4000.elf', src_netx4000_s + platform_lib_netx4000)
 
-#
-# Build the standalone version.
-#
-#env_netx4000_s = env_netx4000_default.Clone()
-#env_netx4000_s.Replace(LDFILE = 'src/netx4000/netx4000.ld')
-#env_netx4000_s.Append(CPPPATH = aCppPath)
-#src_netx4000_s = env_netx4000_s.SetBuildPath('targets/netx4000/standalone', 'src', sources_common+sources_standalone)
-#elf_netx4000_s = env_netx4000_s.Elf('targets/netx4000/standalone/ramtest_netx4000.elf', src_netx4000_s + platform_lib_netx4000)
-#ramtest_standalone_netx4000 = env_netx4000_s.HBootImage('targets/netx4000/standalone/ramtest_standalone_netx4000.bin', 'src/netx4000/DEFAULT_to_INTRAM.xml', KNOWN_FILES=dict({'tElf': elf_netx4000_s[0]}))
+ramtest_standalone_cifx4000_sdram = env_netx4000_s.HBootImage('targets/netx4000/standalone/ramtest_standalone_cifx4000_sdram.bin', 'src/netx4000/CR7_to_INTRAM_cifx4000_sdram_HIF_IS42S32200L-7I_ONBOARD.xml', KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s[0]}))
+
+ramtest_standalone_nxhx4000_ddr3_400MHz = env_netx4000_s.HBootImage('targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz.bin', 'src/netx4000/CR7_to_INTRAM_nxhx4000_ddr3_400MHz.xml', KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s[0]}))
 
 
+
+# netx 500, 50, 10, 51, 52
 env_netx500_s = env_netx500_default.Clone()
 env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_s.Append(CPPPATH = aCppPath)
@@ -215,9 +218,10 @@ src_netx10_s = env_netx10_s.SetBuildPath('targets/netx10/standalone', 'src', sou
 elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest_netx10.elf', src_netx10_s + platform_lib_netx10)
 ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ramtest_standalone_netx10.bin', elf_netx10_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
-Export('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
-#Export('ramtest_standalone_netx4000')
 
+Export('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
+Export('ramtest_standalone_cifx4000_sdram')
+Export('ramtest_standalone_nxhx4000_ddr3_400MHz')
 
 #----------------------------------------------------------------------------
 #
