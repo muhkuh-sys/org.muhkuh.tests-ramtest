@@ -109,6 +109,15 @@ void ramtest_init_uart(void)
 	uart_init(IO_UART_UNIT, &tUartCfg);
 }
 
+void ramtest_clear_serial_vectors(void)
+{
+	tSerialVectors.fn.fnGet   = NULL;
+	tSerialVectors.fn.fnPut   = NULL;
+	tSerialVectors.fn.fnPeek  = NULL;
+	tSerialVectors.fn.fnFlush = NULL;
+}
+
+
 /*-------------------------------------------------------------------------*/
 
 
