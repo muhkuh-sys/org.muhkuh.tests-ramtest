@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HBootSnippet>
+	<Info artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0">
+		<License name="PROPRIETARY"/>
+		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
+		<Description>
+		MMIO configuration for the Hilscher NXHX 4000+ R1 board.
+		UART RXD on MMIO 26, TXD on 27. All other MMIOs are PIO.
+		</Description>
+		<Category>netx4000</Category>
+		<Category>MMIO</Category>
+		<Category>hardware configuration</Category>
+	</Info>
+	<Snippet>
+		&lt;Options&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x12bc&quot;&gt;
+				&lt;U08&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 0 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 1 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 2 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 3 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 4 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 5 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 6 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 7 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 8 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 9 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 10 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 11 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 12 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 13 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 14 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 15 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 16 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 17 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 18 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 19 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 20 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 21 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 22 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 23 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 24 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 25 --&gt;
+					MMIO_CFG_UART0_RXD,  &lt;!-- MMIO 26 netx UART 0 RXD--&gt;
+					MMIO_CFG_UART0_TXD,  &lt;!-- MMIO 27 netx UART 0 TXD--&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 28 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 29 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 30 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 31 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 32 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 33 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 34 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 35 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 36 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 37 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 38 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 39 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 40 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 41 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 42 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 43 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 44 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 45 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 46 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 47 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 48 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 49 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 50 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 51 CH0_Link --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 52 CH0_Act --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 53 CH1_Link--&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 54 CH1_Act--&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 55 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 56 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 57 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 58 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 59 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 60 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 61 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 62 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 63 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 64 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 65 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 66 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 67 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 68 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 69 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 70 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 71 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 72 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 73 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 74 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 75 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 76 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 77 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 78 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 79 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 80 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 81 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 82 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 83 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 84 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 85 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 86 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 87 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 88 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 89 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 90 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 91 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 92 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 93 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 94 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 95 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 96 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 97 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 98 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 99 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 100 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 101 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 102 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 103 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 104 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 105 --&gt;
+					MMIO_CFG_PIO    &lt;!-- MMIO 106 --&gt;
+				&lt;/U08&gt;
+			&lt;/Option&gt;
+		&lt;/Options&gt;
+</Snippet>
+</HBootSnippet>

@@ -1,0 +1,57 @@
+
+<HBootSnippet>
+	<Info artifact="Run_DDR_Ramtest_CA9core0" group="com.hilscher.hboot.sniplib" version="1.0.0">
+		<License name="PROPRIETARY"/>
+		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
+		<Description>
+		Run the DDR ram test on CA9 core 0.
+		Open the firewalls, load ram test configuration, load and run the ram test.
+		</Description>
+		<Category>netx4000</Category>
+	</Info>
+	<Snippet>
+		&lt;!-- R7: Open the firewalls --&gt;
+		&lt;Data&gt;
+			&lt;File name=&quot;@tElfCR7OpenFirewalls&quot; /&gt;
+		&lt;/Data&gt;
+		&lt;Execute&gt;
+			&lt;File name=&quot;@tElfCR7OpenFirewalls&quot; /&gt;
+		&lt;/Execute&gt;
+		
+			&lt;!-- R7: Write the ramtest parameters for R7 and A9
+				core              CA9 core 0
+				test area start   0x40000000
+				test area end     0x7fffffff
+				test area size    0x40000000
+				unsigned 32 bit values as bytes in little endian order --&gt;
+		&lt;!-- CA9 core 0 parameters --&gt;
+		&lt;Data&gt;
+			&lt;Hex address=&quot;0x0501ffc0&quot;&gt;
+				00 00 00 40 &lt;!-- 0x4c000000 Start address of DDR RAM --&gt;
+				00 00 00 40 &lt;!-- 0x1a000000 Size in bytes --&gt;
+				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				00 00 00 00 &lt;!-- Loops --&gt;
+				00 00 00 00 &lt;!-- PerfTestCases --&gt;
+				00 00 33 34 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
+		
+		&lt;!-- R7: load ram test for A9 --&gt;
+		&lt;Data&gt;
+			&lt;File name=&quot;@tElfCA9core0&quot; /&gt;
+		&lt;/Data&gt;
+		
+		&lt;!-- A9: run ram test --&gt;
+		&lt;ExecuteCA9&gt;
+			&lt;Core0&gt;
+				&lt;File name=&quot;@tElfCA9core0&quot; start=&quot;start_core0&quot; /&gt;
+				&lt;R0&gt;0x0501ffc0&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
+			&lt;/Core0&gt;
+		&lt;/ExecuteCA9&gt; 
+		
+		&lt;!-- On CR7 jump to the WFE loop in ROM. --&gt;
+		&lt;Execute&gt;
+			&lt;Address&gt;WFE_Loop&lt;/Address&gt;
+		&lt;/Execute&gt; 		
+</Snippet>
+</HBootSnippet>

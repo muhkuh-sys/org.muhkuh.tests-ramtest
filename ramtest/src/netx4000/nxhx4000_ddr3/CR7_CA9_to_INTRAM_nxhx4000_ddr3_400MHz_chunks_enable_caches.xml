@@ -228,28 +228,246 @@
 
 		<!-- Activate the DDR RAM. -->
 		<MemoryDeviceUp device="MEMDEV_DDR"/>
-
-		<!-- Write ramtest parameters 
-			unsigned 32 bit values as bytes in little endian order -->
+		
+		
+		<Options>
+			<Option id="RAW" offset="0x12bc">
+				<U08>
+					MMIO_CFG_PIO,   <!-- MMIO 0 -->
+					MMIO_CFG_PIO,   <!-- MMIO 1 -->
+					MMIO_CFG_PIO,   <!-- MMIO 2 -->
+					MMIO_CFG_PIO,   <!-- MMIO 3 -->
+					MMIO_CFG_PIO,   <!-- MMIO 4 -->
+					MMIO_CFG_PIO,   <!-- MMIO 5 -->
+					MMIO_CFG_PIO,   <!-- MMIO 6 -->
+					MMIO_CFG_PIO,   <!-- MMIO 7 -->
+					MMIO_CFG_PIO,   <!-- MMIO 8 -->
+					MMIO_CFG_PIO,   <!-- MMIO 9 -->
+					MMIO_CFG_PIO,   <!-- MMIO 10 -->
+					MMIO_CFG_PIO,   <!-- MMIO 11 -->
+					MMIO_CFG_PIO,   <!-- MMIO 12 -->
+					MMIO_CFG_PIO,   <!-- MMIO 13 -->
+					MMIO_CFG_PIO,   <!-- MMIO 14 -->
+					MMIO_CFG_PIO,   <!-- MMIO 15 -->
+					MMIO_CFG_PIO,   <!-- MMIO 16 -->
+					MMIO_CFG_PIO,   <!-- MMIO 17 -->
+					MMIO_CFG_PIO,   <!-- MMIO 18 -->
+					MMIO_CFG_PIO,   <!-- MMIO 19 -->
+					MMIO_CFG_PIO,   <!-- MMIO 20 -->
+					MMIO_CFG_PIO,   <!-- MMIO 21 -->
+					MMIO_CFG_PIO,   <!-- MMIO 22 -->
+					MMIO_CFG_PIO,   <!-- MMIO 23 -->
+					MMIO_CFG_PIO,   <!-- MMIO 24 -->
+					MMIO_CFG_PIO,   <!-- MMIO 25 -->
+					MMIO_CFG_UART0_RXD,  <!-- MMIO 26 netx UART 0 RXD-->
+					MMIO_CFG_UART0_TXD,  <!-- MMIO 27 netx UART 0 TXD-->
+					MMIO_CFG_PIO,   <!-- MMIO 28 -->
+					MMIO_CFG_PIO,   <!-- MMIO 29 -->
+					MMIO_CFG_PIO,   <!-- MMIO 30 -->
+					MMIO_CFG_PIO,   <!-- MMIO 31 -->
+					MMIO_CFG_PIO,   <!-- MMIO 32 -->
+					MMIO_CFG_PIO,   <!-- MMIO 33 -->
+					MMIO_CFG_PIO,   <!-- MMIO 34 -->
+					MMIO_CFG_PIO,   <!-- MMIO 35 -->
+					MMIO_CFG_PIO,   <!-- MMIO 36 -->
+					MMIO_CFG_PIO,   <!-- MMIO 37 -->
+					MMIO_CFG_PIO,   <!-- MMIO 38 -->
+					MMIO_CFG_PIO,   <!-- MMIO 39 -->
+					MMIO_CFG_PIO,   <!-- MMIO 40 -->
+					MMIO_CFG_PIO,   <!-- MMIO 41 -->
+					MMIO_CFG_PIO,   <!-- MMIO 42 -->
+					MMIO_CFG_PIO,   <!-- MMIO 43 -->
+					MMIO_CFG_PIO,   <!-- MMIO 44 -->
+					MMIO_CFG_PIO,   <!-- MMIO 45 -->
+					MMIO_CFG_PIO,   <!-- MMIO 46 -->
+					MMIO_CFG_PIO,   <!-- MMIO 47 -->
+					MMIO_CFG_PIO,   <!-- MMIO 48 -->
+					MMIO_CFG_PIO,   <!-- MMIO 49 -->
+					MMIO_CFG_PIO,   <!-- MMIO 50 -->
+					MMIO_CFG_PIO,   <!-- MMIO 51 CH0_Link -->
+					MMIO_CFG_PIO,   <!-- MMIO 52 CH0_Act -->
+					MMIO_CFG_PIO,   <!-- MMIO 53 CH1_Link-->
+					MMIO_CFG_PIO,   <!-- MMIO 54 CH1_Act-->
+					MMIO_CFG_PIO,   <!-- MMIO 55 -->
+					MMIO_CFG_PIO,   <!-- MMIO 56 -->
+					MMIO_CFG_PIO,   <!-- MMIO 57 -->
+					MMIO_CFG_PIO,   <!-- MMIO 58 -->
+					MMIO_CFG_PIO,   <!-- MMIO 59 -->
+					MMIO_CFG_PIO,   <!-- MMIO 60 -->
+					MMIO_CFG_PIO,   <!-- MMIO 61 -->
+					MMIO_CFG_PIO,   <!-- MMIO 62 -->
+					MMIO_CFG_PIO,   <!-- MMIO 63 -->
+					MMIO_CFG_PIO,   <!-- MMIO 64 -->
+					MMIO_CFG_PIO,   <!-- MMIO 65 -->
+					MMIO_CFG_PIO,   <!-- MMIO 66 -->
+					MMIO_CFG_PIO,   <!-- MMIO 67 -->
+					MMIO_CFG_PIO,   <!-- MMIO 68 -->
+					MMIO_CFG_PIO,   <!-- MMIO 69 -->
+					MMIO_CFG_PIO,   <!-- MMIO 70 -->
+					MMIO_CFG_PIO,   <!-- MMIO 71 -->
+					MMIO_CFG_PIO,   <!-- MMIO 72 -->
+					MMIO_CFG_PIO,   <!-- MMIO 73 -->
+					MMIO_CFG_PIO,   <!-- MMIO 74 -->
+					MMIO_CFG_PIO,   <!-- MMIO 75 -->
+					MMIO_CFG_PIO,   <!-- MMIO 76 -->
+					MMIO_CFG_PIO,   <!-- MMIO 77 -->
+					MMIO_CFG_PIO,   <!-- MMIO 78 -->
+					MMIO_CFG_PIO,   <!-- MMIO 79 -->
+					MMIO_CFG_PIO,   <!-- MMIO 80 -->
+					MMIO_CFG_PIO,   <!-- MMIO 81 -->
+					MMIO_CFG_PIO,   <!-- MMIO 82 -->
+					MMIO_CFG_PIO,   <!-- MMIO 83 -->
+					MMIO_CFG_PIO,   <!-- MMIO 84 -->
+					MMIO_CFG_PIO,   <!-- MMIO 85 -->
+					MMIO_CFG_PIO,   <!-- MMIO 86 -->
+					MMIO_CFG_PIO,   <!-- MMIO 87 -->
+					MMIO_CFG_PIO,   <!-- MMIO 88 -->
+					MMIO_CFG_PIO,   <!-- MMIO 89 -->
+					MMIO_CFG_PIO,   <!-- MMIO 90 -->
+					MMIO_CFG_PIO,   <!-- MMIO 91 -->
+					MMIO_CFG_PIO,   <!-- MMIO 92 -->
+					MMIO_CFG_PIO,   <!-- MMIO 93 -->
+					MMIO_CFG_PIO,   <!-- MMIO 94 -->
+					MMIO_CFG_PIO,   <!-- MMIO 95 -->
+					MMIO_CFG_PIO,   <!-- MMIO 96 -->
+					MMIO_CFG_PIO,   <!-- MMIO 97 -->
+					MMIO_CFG_PIO,   <!-- MMIO 98 -->
+					MMIO_CFG_PIO,   <!-- MMIO 99 -->
+					MMIO_CFG_PIO,   <!-- MMIO 100 -->
+					MMIO_CFG_PIO,   <!-- MMIO 101 -->
+					MMIO_CFG_PIO,   <!-- MMIO 102 -->
+					MMIO_CFG_PIO,   <!-- MMIO 103 -->
+					MMIO_CFG_PIO,   <!-- MMIO 104 -->
+					MMIO_CFG_PIO,   <!-- MMIO 105 -->
+					MMIO_CFG_PIO    <!-- MMIO 106 -->
+				</U08>
+			</Option>
+		</Options>
+		
+		
+		<!-- R7: Open the firewalls -->
+		<Data>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Execute>
+		
+		<!-- Enable caches on A9 -->
+		<!--
+ 		<Data>
+			<File name="@tElfCA9InitCache" />
+		</Data>
+		
+		<ExecuteCA9>
+			<Core0>
+				<File name="@tElfCA9InitCache" start="start" />
+			</Core0>
+			<Core1>
+				<File name="@tElfCA9InitCache" start="start" />
+			</Core1>
+		</ExecuteCA9> 
+		-->
+		
+		<!-- R7: wait for flag from A9 (both a9's overwrite their firmware vectors with 0x11UL, 0x22UL, 0x33UL, 0x44UL) -->
+		<!--
+		<Data>
+			<File name="@tElfCR7SyncA9" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7SyncA9" />
+		</Execute>
+		-->
+		
+			<!-- R7: Write the ramtest parameters for R7 and A9
+				test area start   0x40000000    0x4c000000    0x66000000       
+				test area end     0x4bffffff    0x65ffffff    0x7fffffff
+				test area size    0x0c000000    0x1a000000    0x1a000000
+				unsigned 32 bit values as bytes in little endian order -->
+		<!-- CR7 parameters -->
 		<Data>
 			<Hex address="0x0003ffc0">
-				00 00 00 40 <!-- 0x20000000 Start address of HIF SDRAM -->
-				00 00 00 40 <!-- 0x40000000 Size in bytes -->
+				00 00 00 40 <!-- 0x40000000 Start address of DDR RAM -->
+				00 00 00 01 <!-- 0x0c000000 Size in bytes -->
 				7f 00 00 00 <!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test -->
 				00 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+			</Hex>
+		</Data>
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ffc0">
+				00 00 00 4c <!-- 0x4c000000 Start address of DDR RAM -->
+				00 00 00 01 <!-- 0x1a000000 Size in bytes -->
+				7f 00 00 00 <!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0503ffc0">
+				00 00 00 66 <!-- 0x66000000 Start address of DDR RAM -->
+				00 00 00 01 <!-- 0x1a000000 Size in bytes -->
+				7f 00 00 00 <!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
 			</Hex>
 		</Data>
 		
-		<!-- Load Programm for CR7 and start afterwards -->
+		<!-- R7: load ram test for A9 -->
+		<Data>
+			<File name="@tElfCA9core0" />
+		</Data>
+		
+		<Data>
+			<File name="@tElfCA9core1" />
+		</Data>
+		
+		<!-- R7: load/run enable cache -->
+		<!--
+ 		<Data>
+			<File name="@tElfCR7InitCache" />
+		</Data>
+		<Execute>
+				<File name="@tElfCR7InitCache" start="start" />
+		</Execute> 
+		-->
+		
+		<!-- R7: load ram test for R7 -->
 		<Data>
 			<File name="@tElfCR7" />
 		</Data>
 		
+		
+		
+		<!-- A9: run ram test -->
+		<!-- R7: jump to the WFE loop in ROM. -->
+		<ExecuteCA9>
+			<Core0>
+				<File name="@tElfCA9core0" start="start_core0" />
+				<R0>0x0501ffc0</R0> <!-- address of parameter block -->
+			</Core0>
+			<Core1>
+				<File name="@tElfCA9core1" start="start_core1" />
+				<R0>0x0503ffc0</R0> 
+			</Core1>
+		</ExecuteCA9> 
+		
+		<!-- R7: run ram test -->
 		<Execute>
 			<File name="@tElfCR7" />
 			<R0>0x0003ffc0</R0> <!-- address of parameter block -->
 		</Execute>
-
+		
+		<!--
+		<Execute>
+			<Address>WFE_Loop</Address>
+		</Execute> 
+		-->
+		
 	</Chunks>
 </HBootImage>

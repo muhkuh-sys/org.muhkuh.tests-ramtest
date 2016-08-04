@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+	
+		<Snip artifact="DDR_parameter_NXHX4000_R1_600MHz" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+
+		<!-- Activate the DDR RAM. -->
+		<MemoryDeviceUp device="MEMDEV_DDR"/>
+		
+		<!-- Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/ -->
+		
+		<Snip artifact="Run_DDR_Ramtest_CA9core0" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+		
+	</Chunks>
+</HBootImage>

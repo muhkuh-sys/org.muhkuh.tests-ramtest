@@ -1,0 +1,96 @@
+
+<HBootSnippet>
+	<Info artifact="Run_DDR_Ramtest_CR7_CA9" group="com.hilscher.hboot.sniplib" version="1.0.0">
+		<License name="PROPRIETARY"/>
+		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
+		<Description>
+		Run the DDR ram test on CR7, CA9 core 0 and CA9 core 1.
+		Open the firewalls, load ram test configurations, load and run ram tests.
+		</Description>
+		<Category>netx4000</Category>
+		<Category>MMIO</Category>
+		<Category>hardware configuration</Category>
+	</Info>
+	<Snippet>
+		&lt;!-- R7: Open the firewalls --&gt;
+		&lt;Data&gt;
+			&lt;File name=&quot;@tElfCR7OpenFirewalls&quot; /&gt;
+		&lt;/Data&gt;
+		&lt;Execute&gt;
+			&lt;File name=&quot;@tElfCR7OpenFirewalls&quot; /&gt;
+		&lt;/Execute&gt;
+		
+			&lt;!-- R7: Write the ramtest parameters for R7 and A9
+				core              CR7           CA9 core 0    CA9 core 1
+				test area start   0x40000000    0x4c000000    0x6000000       
+				test area end     0x4bffffff    0x65ffffff    0x7fffffff
+				test area size    0x0c000000    0x1a000000    0x1a000000
+				unsigned 32 bit values as bytes in little endian order --&gt;
+		&lt;!-- CR7 parameters --&gt;
+		&lt;Data&gt;
+			&lt;Hex address=&quot;0x0003ffc0&quot;&gt;
+				00 00 00 40 &lt;!-- 0x40000000 Start address of DDR RAM --&gt;
+				00 00 00 0c &lt;!-- 0x0c000000 Size in bytes --&gt;
+				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				00 00 00 00 &lt;!-- Loops --&gt;
+				00 00 00 00 &lt;!-- PerfTestCases --&gt;
+				00 00 00 00 &lt;!-- Status LED MMIO numbers --&gt;
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
+		&lt;!-- CA9 core 0 parameters --&gt;
+		&lt;Data&gt;
+			&lt;Hex address=&quot;0x0501ffc0&quot;&gt;
+				00 00 00 4c &lt;!-- 0x4c000000 Start address of DDR RAM --&gt;
+				00 00 00 1a &lt;!-- 0x1a000000 Size in bytes --&gt;
+				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				00 00 00 00 &lt;!-- Loops --&gt;
+				00 00 00 00 &lt;!-- PerfTestCases --&gt;
+				00 00 33 34 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
+		&lt;Data&gt;
+			&lt;!-- CA9 core 1 parameters --&gt;
+			&lt;Hex address=&quot;0x0503ffc0&quot;&gt;
+				00 00 00 66 &lt;!-- 0x66000000 Start address of DDR RAM --&gt;
+				00 00 00 1a &lt;!-- 0x1a000000 Size in bytes --&gt;
+				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				00 00 00 00 &lt;!-- Loops --&gt;
+				00 00 00 00 &lt;!-- PerfTestCases --&gt;
+				00 00 35 36 &lt;!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) --&gt;
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
+		
+		&lt;!-- R7: load ram test for A9 --&gt;
+		&lt;Data&gt;
+			&lt;File name=&quot;@tElfCA9core0&quot; /&gt;
+		&lt;/Data&gt;
+		
+		&lt;Data&gt;
+			&lt;File name=&quot;@tElfCA9core1&quot; /&gt;
+		&lt;/Data&gt;
+		
+		&lt;!-- R7: load ram test for R7 --&gt;
+		&lt;Data&gt;
+			&lt;File name=&quot;@tElfCR7&quot; /&gt;
+		&lt;/Data&gt;
+		
+		
+		&lt;!-- A9: run ram test --&gt;
+		&lt;ExecuteCA9&gt;
+			&lt;Core0&gt;
+				&lt;File name=&quot;@tElfCA9core0&quot; start=&quot;start_core0&quot; /&gt;
+				&lt;R0&gt;0x0501ffc0&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
+			&lt;/Core0&gt;
+			&lt;Core1&gt;
+				&lt;File name=&quot;@tElfCA9core1&quot; start=&quot;start_core1&quot; /&gt;
+				&lt;R0&gt;0x0503ffc0&lt;/R0&gt; 
+			&lt;/Core1&gt;
+		&lt;/ExecuteCA9&gt; 
+		
+		&lt;!-- R7: run ram test --&gt;
+		&lt;Execute&gt;
+			&lt;File name=&quot;@tElfCR7&quot; /&gt;
+			&lt;R0&gt;0x0003ffc0&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
+		&lt;/Execute&gt;
+</Snippet>
+</HBootSnippet>
