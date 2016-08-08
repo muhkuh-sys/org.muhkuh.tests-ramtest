@@ -27,8 +27,8 @@
 		&lt;!-- CA9 core 0 parameters --&gt;
 		&lt;Data&gt;
 			&lt;Hex address=&quot;0x0501ffc0&quot;&gt;
-				00 00 00 40 &lt;!-- 0x4c000000 Start address of DDR RAM --&gt;
-				00 00 00 40 &lt;!-- 0x1a000000 Size in bytes --&gt;
+				00 00 00 40 &lt;!-- 0x40000000 Start address of DDR RAM --&gt;
+				00 00 00 40 &lt;!-- 0x40000000 Size in bytes --&gt;
 				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
