@@ -89,6 +89,7 @@ typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 	unsigned long ulLoops;
 	unsigned long ulPerfTestCases;
 	unsigned long ulStatusLedMmioNr;
+	unsigned long ulUseUart;
 } RAMTEST_STANDALONE_NETX4000_PARAMETER_T; 
 
 
@@ -97,14 +98,20 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 {
 	RAMTEST_PARAMETER_T tTestParams;
 	RAMTEST_RESULT_T tRes;
-	
+
 #ifdef CPU_CR7
 	systime_init();
-	ramtest_init_uart();
 #endif
-#ifdef CPU_CA9
-	ramtest_clear_serial_vectors();
-#endif
+
+	if (ptParam->ulUseUart == 1)
+	{
+		ramtest_init_uart();
+	}
+	else
+	{
+		ramtest_clear_serial_vectors();
+	}
+	
 	
 	uprintf("\f. *** RAM test by cthelen@hilscher.com ***\n");
 	uprintf("V" VERSION_ALL "\n\n");

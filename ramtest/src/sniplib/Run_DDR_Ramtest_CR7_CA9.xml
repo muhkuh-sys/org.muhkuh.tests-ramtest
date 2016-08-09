@@ -35,6 +35,7 @@
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 00 00 &lt;!-- Status LED MMIO numbers --&gt;
+				01 00 00 00 &lt;!-- Enable UART --&gt;
 			&lt;/Hex&gt;
 		&lt;/Data&gt;
 		&lt;!-- CA9 core 0 parameters --&gt;
@@ -46,6 +47,7 @@
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 33 34 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
+				00 00 00 00 &lt;!-- Do not use UART --&gt;
 			&lt;/Hex&gt;
 		&lt;/Data&gt;
 		&lt;Data&gt;
@@ -57,6 +59,7 @@
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 35 36 &lt;!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) --&gt;
+				00 00 00 00 &lt;!-- Do not use UART --&gt;
 			&lt;/Hex&gt;
 		&lt;/Data&gt;
 		
