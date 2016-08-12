@@ -81,6 +81,13 @@ void ramtest_mmio_led_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParamet
 }
 
 
+void systime_wait_ms(unsigned long ulDelay_ms);
+void systime_wait_ms(unsigned long ulDelay_ms)
+{
+	unsigned long ulStart = systime_get_ms();
+	while (!systime_elapsed(ulStart, ulDelay_ms)) {}
+}
+
 typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 {
 	unsigned long ulStart;
@@ -106,6 +113,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	if (ptParam->ulUseUart == 1)
 	{
 		ramtest_init_uart();
+		systime_wait_ms(1);
+		//__asm__("dsb");
 	}
 	else
 	{
