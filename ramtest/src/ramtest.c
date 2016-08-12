@@ -41,6 +41,7 @@ static RAMTEST_RESULT_T ram_test_databus(RAMTEST_PARAMETER_T *ptRamTestParameter
 	volatile unsigned long *pulStart;
 	volatile unsigned long *pulCnt;
 	unsigned long ulWalkingOnes;
+	unsigned long ulReadback;
 	unsigned char errorCounter = 0;
 
 
@@ -66,14 +67,15 @@ static RAMTEST_RESULT_T ram_test_databus(RAMTEST_PARAMETER_T *ptRamTestParameter
 	pulCnt = pulStart;
 	for(ulWalkingOnes = 1; ulWalkingOnes != 0; ulWalkingOnes<<=1)
 	{
-		if(*pulCnt != ulWalkingOnes)
+		ulReadback = *pulCnt;
+		if(ulReadback != ulWalkingOnes)
 		{
 			if(errorCounter <= 0) uprintf("! Databus Test failed !\n");
 			uprintf("                     DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD \n");
 			uprintf("                     3322222222221111111111           \n");
 			uprintf("                     10987654321098765432109876543210 \n");
 			uprintf("! wrote     value: 0b%032b\n", ulWalkingOnes);
-			uprintf("! read back value: 0b%032b\n", *pulCnt);
+			uprintf("! read back value: 0b%032b\n", ulReadback);
 
 			errorCounter ++;
 			tResult = RAMTEST_RESULT_FAILED;
@@ -125,7 +127,6 @@ static RAMTEST_RESULT_T ram_test_checkerboard_1pass(RAMTEST_PARAMETER_T *ptRamTe
 
 	pulCnt     = pulStart;
 	ulValue = ulPattern;
-
 	while(pulCnt < pulEnd)
 	{
 		ulReadBack = *pulCnt;
@@ -183,7 +184,7 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 	volatile unsigned long *pulStart;
 	volatile unsigned long *pulEnd;
 	volatile unsigned long *pulCnt;
-
+	unsigned long ulReadBack;
 
 	unsigned long zero  = 0x00000000;
 	unsigned long ones  = 0xFFFFFFFF;
@@ -223,7 +224,8 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(pulCnt < pulEnd)
 	{
-		if(*pulCnt == zero)
+		ulReadBack = *pulCnt;
+		if(ulReadBack == zero)
 		{
 			*pulCnt = ones;
 		}
@@ -232,7 +234,7 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 			uprintf("! Marching test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", zero);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value: 0x%08x\n", *pulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -258,7 +260,8 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt == ones)
+		ulReadBack = *pulCnt;
+		if(ulReadBack == ones)
 		{
 			*pulCnt = zero;
 		}
@@ -267,17 +270,18 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 			uprintf("! Marching test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", ones);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value: 0x%08x\n", *pulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
 
-		if(*pulCnt != zero)
+		ulReadBack = *pulCnt;
+		if(ulReadBack != zero)
 		{
 			uprintf("! Marching test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", zero);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value: 0x%08x\n", *pulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -310,7 +314,8 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(pulCnt < pulEnd)
 	{
-		if(*pulCnt == ones)
+		ulReadBack = *pulCnt;
+		if(ulReadBack == ones)
 		{
 			*pulCnt = zero;
 		}
@@ -319,7 +324,7 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", ones);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value:  0x%08x\n", *pulCnt);
+			uprintf("! read back value:  0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -339,7 +344,8 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt == zero)
+		ulReadBack = *pulCnt;
+		if(ulReadBack == zero)
 		{
 			*pulCnt = ones; // zero ones
 		}
@@ -348,7 +354,7 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", zero);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value: 0x%08x\n", *pulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -366,7 +372,8 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt == ones)
+		ulReadBack = *pulCnt;
+		if(ulReadBack == ones)
 		{
 			*pulCnt = zero;
 		}
@@ -375,7 +382,7 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", ones);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value: 0x%08x\n", *pulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -394,12 +401,13 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 	while(--pulCnt >= pulStart)
 	{
-		if(*pulCnt != zero)
+		ulReadBack = *pulCnt;
+		if(ulReadBack != zero)
 		{
 			uprintf("! Marching test test failed at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			//uprintf("! wrote value:     0x%08x\n", zero);
 			uprintf("! Wrote 0xFFFFFFFF or 0x00000000\n");
-			uprintf("! read back value: 0x%08x\n", *pulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
