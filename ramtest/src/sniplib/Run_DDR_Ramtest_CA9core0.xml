@@ -18,7 +18,7 @@
 			&lt;File name=&quot;@tElfCR7OpenFirewalls&quot; /&gt;
 		&lt;/Execute&gt;
 		
-			&lt;!-- R7: Write the ramtest parameters for R7 and A9
+			&lt;!-- R7: Write the ramtest parameters for A9
 				core              CA9 core 0
 				test area start   0x40000000
 				test area end     0x7fffffff
@@ -26,14 +26,16 @@
 				unsigned 32 bit values as bytes in little endian order --&gt;
 		&lt;!-- CA9 core 0 parameters --&gt;
 		&lt;Data&gt;
-			&lt;Hex address=&quot;0x0501ffc0&quot;&gt;
+			&lt;Hex address=&quot;0x0501ff80&quot;&gt;
 				00 00 00 40 &lt;!-- 0x40000000 Start address of DDR RAM --&gt;
 				00 00 00 40 &lt;!-- 0x40000000 Size in bytes --&gt;
-				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				80 00 00 00 &lt;!-- Test Cases: sequence test --&gt;
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 33 34 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
 				01 00 00 00 &lt;!-- Enable UART --&gt;
+				00 00 00 ff &lt;!-- tag mask --&gt;
+				00 00 00 22 &lt;!-- tag value --&gt;
 			&lt;/Hex&gt;
 		&lt;/Data&gt;
 		
@@ -46,7 +48,7 @@
 		&lt;ExecuteCA9&gt;
 			&lt;Core0&gt;
 				&lt;File name=&quot;@tElfCA9core0&quot; start=&quot;start_core0&quot; /&gt;
-				&lt;R0&gt;0x0501ffc0&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
+				&lt;R0&gt;0x0501ff80&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
 			&lt;/Core0&gt;
 		&lt;/ExecuteCA9&gt; 
 		

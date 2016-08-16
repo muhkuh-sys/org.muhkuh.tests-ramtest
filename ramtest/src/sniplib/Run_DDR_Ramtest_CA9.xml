@@ -26,28 +26,40 @@
 				unsigned 32 bit values as bytes in little endian order --&gt;
 		&lt;!-- CA9 core 0 parameters --&gt;
 		&lt;Data&gt;
-			&lt;Hex address=&quot;0x0501ffc0&quot;&gt;
+			&lt;Hex address=&quot;0x0501ff80&quot;&gt;
 				00 00 00 40 &lt;!-- 0x40000000 Start address of DDR RAM --&gt;
 				00 00 00 20 &lt;!-- 0x20000000 Size in bytes --&gt;
-				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				80 00 00 00 &lt;!-- Test Cases: sequence test --&gt;
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 33 34 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
 				01 00 00 00 &lt;!-- Enable UART --&gt;
+				00 00 00 ff &lt;!-- tag mask --&gt;
+				00 00 00 22 &lt;!-- tag value --&gt;
 			&lt;/Hex&gt;
 		&lt;/Data&gt;
 		&lt;Data&gt;
-			&lt;Hex address=&quot;0x0503ffc0&quot;&gt;
+			&lt;Hex address=&quot;0x0503ff80&quot;&gt;
 				00 00 00 60 &lt;!-- 0x60000000 Start address of DDR RAM --&gt;
 				00 00 00 20 &lt;!-- 0x20000000 Size in bytes --&gt;
-				7f 00 00 00 &lt;!-- Test Cases: 8/16/32 bit, Burst, Databus test, MarchC test, checkerboard test --&gt;
+				80 00 00 00 &lt;!-- Test Cases: sequence test --&gt;
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 35 36 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
 				00 00 00 00 &lt;!-- Do not use UART --&gt;
+				00 00 00 ff &lt;!-- tag mask --&gt;
+				00 00 00 44 &lt;!-- tag value --&gt;
 			&lt;/Hex&gt;
 		&lt;/Data&gt;
 		
+		&lt;!-- Clear core 0/core 1 sync flags --&gt;
+		&lt;Data&gt;
+			&lt;Hex address=&quot;0x0501ffe0&quot;&gt;
+				00 00 00 00 
+				00 00 00 00 
+				00 00 00 00 
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
 		
 		&lt;!-- R7: load ram test for A9 --&gt;
 		&lt;Data&gt;
@@ -61,11 +73,11 @@
 		&lt;ExecuteCA9&gt;
 			&lt;Core0&gt;
 				&lt;File name=&quot;@tElfCA9core0&quot; start=&quot;start_core0&quot; /&gt;
-				&lt;R0&gt;0x0501ffc0&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
+				&lt;R0&gt;0x0501ff80&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
 			&lt;/Core0&gt;
 			&lt;Core1&gt;
 				&lt;File name=&quot;@tElfCA9core1&quot; start=&quot;start_core1&quot; /&gt;
-				&lt;R0&gt;0x0503ffc0&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
+				&lt;R0&gt;0x0503ff80&lt;/R0&gt; &lt;!-- address of parameter block --&gt;
 			&lt;/Core1&gt;
 		&lt;/ExecuteCA9&gt; 
 		
