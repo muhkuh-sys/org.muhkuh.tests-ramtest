@@ -26,6 +26,7 @@ CHECK_32BIT              = 0x00000008
 CHECK_MARCHC             = 0x00000010
 CHECK_CHECKERBOARD       = 0x00000020
 CHECK_BURST              = 0x00000040
+CHECK_SEQUENCE           = 0x00000080
 
 -- Flags for performance tests
 PERFTEST_SEQ_R8          = 0x00000001

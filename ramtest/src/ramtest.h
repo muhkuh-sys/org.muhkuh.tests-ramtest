@@ -18,7 +18,8 @@ typedef enum
 	RAMTESTCASE_32BIT              = 0x00000008,
 	RAMTESTCASE_MARCHC             = 0x00000010,
 	RAMTESTCASE_CHECKERBOARD       = 0x00000020,
-	RAMTESTCASE_BURST              = 0x00000040
+	RAMTESTCASE_BURST              = 0x00000040,
+	RAMTESTCASE_SEQUENCE           = 0x00000080
 } RAMTESTCASE_T;
 
 
@@ -71,6 +72,9 @@ typedef struct RAMTEST_PARAMETER_STRUCT
 	PFN_RAMTEST_PROGRESS_T pfnProgress;
 	unsigned long ulProgress;
 	unsigned long ulTimes[32];
+	
+	unsigned long ulTagMask;
+	unsigned long ulTagValue;
 } RAMTEST_PARAMETER_T;
 
 

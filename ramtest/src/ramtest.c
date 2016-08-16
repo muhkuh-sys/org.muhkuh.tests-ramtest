@@ -5,6 +5,10 @@
 
 int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, unsigned long ulSeed);
 
+void ramtest_show_sdram_config(unsigned long ulSdramStart);
+unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue);
+void hexdump_32bit(volatile unsigned long *pulAddr);
+static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter);
 
 
 typedef struct RAMTEST_PAIR_STRUCT
@@ -422,6 +426,107 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 }
 
 
+
+/* Tag a 32 bit value using a mask and value from test parameters.
+   Example: ulValue = 0xdeadbeef, tag mask = 0xff000000, tag value = 0x11000000 -> return value = 0x11adbeef */
+unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue)
+{
+	return (ulValue & (~ptRamTestParameter->ulTagMask)) | ptRamTestParameter->ulTagValue;
+}
+
+/* Print the surrounding of an error location. */
+void hexdump_32bit(volatile unsigned long *pulAddr)
+{
+	unsigned int iOffset;
+	
+	for (iOffset = 0; iOffset < 112; iOffset++)
+	{
+		if ((iOffset & 3UL) == 0)
+		{
+			uprintf("0x%08x: ", (unsigned long) (pulAddr+iOffset));
+		}
+		uprintf(" 0x%08x", pulAddr[iOffset]);
+		if ((iOffset & 3UL) == 3) 
+		{
+			uprintf("\n");
+		}
+	}
+}
+
+
+
+
+/* Test access sequence. 
+   mem[addr] = tag(addr, core_number), e.g. mem[0x40123456] := 0x11123456 on CR7
+*/
+static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter)
+{
+	RAMTEST_RESULT_T tResult;
+	volatile unsigned long *pulStart;
+	volatile unsigned long *pulEnd;
+	volatile unsigned long *pulCnt;
+	unsigned long ulCnt;
+	unsigned long ulReadBack;
+
+	tResult = RAMTEST_RESULT_OK;
+	pulStart = (volatile unsigned long*)(ptRamTestParameter->ulStart);
+	pulEnd   = (volatile unsigned long*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
+
+
+	/* fill ram */
+
+	pulCnt = pulStart;
+	while(pulCnt<pulEnd)
+	{
+		ulCnt = (unsigned long) pulCnt;
+		*(pulCnt) = ram_test_tag_value(ptRamTestParameter, ulCnt);
+		++pulCnt;
+	}
+	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
+
+
+	/* Read back and compare */
+
+	pulCnt = pulStart;
+	while (pulCnt<pulEnd)
+	{
+		ulCnt = (unsigned long) pulCnt;
+		ulReadBack = *pulCnt;
+
+		if (ulReadBack != ram_test_tag_value(ptRamTestParameter, ulCnt))
+		{
+			uprintf("! 32 bit access at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
+			uprintf("! wrote value:     0x%08x\n", ram_test_tag_value(ptRamTestParameter, ulCnt));
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
+			
+			{
+				unsigned long ulAddr = (unsigned long) pulCnt;
+				volatile unsigned long *pulAddr;
+				ulAddr = (ulAddr - 128) & 0xFFFFFFF0UL;
+				pulAddr = (volatile unsigned long *) ulAddr;
+
+				if (pulAddr < pulStart) 
+				{
+					pulAddr = pulStart;
+				}
+				hexdump_32bit(pulAddr);
+				hexdump_32bit(pulAddr);
+			}
+			
+			tResult = RAMTEST_RESULT_FAILED;
+			break;
+		}
+		++pulCnt;
+	}
+
+	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
+
+	return tResult;
+}
+
+
+
+
 unsigned long pseudo_generator(unsigned long number)
 {
 	/* Works with a LFSR (linear feedback left shift register)
@@ -821,6 +926,22 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		}
 	}
 
+	/* test access sequence */
+	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
+	{
+		uprintf(". Testing Access Sequence...\n");
+//		tResult = ram_test_count_32bit(ptParameter);
+		tResult = ram_test_count_addr_32bit(ptParameter);
+		if( tResult==RAMTEST_RESULT_OK )
+		{
+			uprintf(". Access Sequence test OK\n");
+		}
+		else
+		{
+			uprintf("! Access Sequence test failed.\n");
+		}
+	}
+	
 
 	return tResult;
 }
@@ -915,6 +1036,10 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	uprintf(". Test cases:\n");
 	ulCases = ptParameter->ulCases;
 
+	if( ulCases==0 )
+	{
+		uprintf("    none\n");
+	}
 	if( (ulCases&RAMTESTCASE_DATABUS)!=0 )
 	{
 		uprintf("     Databus\n");
@@ -927,9 +1052,9 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	{
 		uprintf("     Checkerboard\n");
 	}
-	if( ulCases==0 )
+	if( (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
 	{
-		uprintf("    none\n");
+		uprintf("     Access sequence\n");
 	}
 	if( (ulCases&RAMTESTCASE_08BIT)!=0 )
 	{

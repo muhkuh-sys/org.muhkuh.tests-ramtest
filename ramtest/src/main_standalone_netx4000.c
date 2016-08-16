@@ -88,6 +88,7 @@ void systime_wait_ms(unsigned long ulDelay_ms)
 	while (!systime_elapsed(ulStart, ulDelay_ms)) {}
 }
 
+
 typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 {
 	unsigned long ulStart;
@@ -97,6 +98,8 @@ typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 	unsigned long ulPerfTestCases;
 	unsigned long ulStatusLedMmioNr;
 	unsigned long ulUseUart;
+	unsigned long ulTagMask;
+	unsigned long ulTagValue;
 } RAMTEST_STANDALONE_NETX4000_PARAMETER_T; 
 
 
@@ -125,6 +128,19 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	uprintf("\f. *** RAM test by cthelen@hilscher.com ***\n");
 	uprintf("V" VERSION_ALL "\n\n");
 	
+	volatile unsigned long *pulBootmode = (volatile unsigned long*) Adr_NX4000_RAP_SYSCTRL_RAP_SYSCTRL_BOOTMODE;
+	volatile unsigned long   ulBootmode = *pulBootmode;
+	
+	uprintf("Bootstrap status register: 0x%08x\n", ulBootmode);
+	if ((ulBootmode & MSK_NX4000_RAP_SYSCTRL_BOOTMODE_SET_PLL_1200) == 0)
+	{
+		uprintf("PLL speed: 800 MHz\n");
+	}
+	else
+	{
+		uprintf("PLL speed: 1200 MHz\n");
+	}
+	
 	/*
 	 * Set the RAM test configuration.
 	 */
@@ -134,7 +150,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	tTestParams.ulCases         = ptParam->ulCases;
 	tTestParams.ulLoops         = ptParam->ulLoops;
 	tTestParams.ulPerfTestCases = ptParam->ulPerfTestCases;
-	
+	tTestParams.ulTagMask       = ptParam->ulTagMask;
+	tTestParams.ulTagValue      = ptParam->ulTagValue;
 		
 	/* Set the progress callback. */
 	if (ptParam->ulStatusLedMmioNr == 0)
@@ -147,6 +164,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 		tTestParams.pfnProgress = ramtest_mmio_led_progress;
 		tTestParams.ulProgress = ptParam->ulStatusLedMmioNr;
 	}
+	
+	uprintf("tag mask: 0x%08x  tag value: 0x%08x \n", tTestParams.ulTagMask, tTestParams.ulTagValue );
 	
 	/*
 	 * Run the RAM test.
