@@ -26,6 +26,7 @@ MEMORY
 /*	SERIALVECTORS(rw): ORIGIN = 0x0003fff0, LENGTH = 0x00000010*/
 	CODE(rx)         : ORIGIN = 0x05020000, LENGTH = 0x0001ff00
 	SERIALVECTORS(rw): ORIGIN = 0x0503fff0, LENGTH = 0x00000010
+	FLAGS(rw)        : ORIGIN = 0x0501ffe0, LENGTH = 0x00000010 /* same address on core 0 and 1 */
 }
 
 
@@ -45,7 +46,6 @@ SECTIONS
 		*(.igot.plt)
 	} >ASSERT_EMPTY
 	
-
 	.code :
 	{
 		load_address = . ;
@@ -54,6 +54,11 @@ SECTIONS
 		KEEP( *(.version_info) )
 		*(.init_code)
 		*(.text* .rodata*)
+	} >CODE
+
+	.parameter ALIGN(0x04000) :
+	{
+		*(.mmu_table)
 	} >CODE
 
 	.parameter ALIGN(0x0100) :
@@ -81,7 +86,12 @@ SECTIONS
 		PROVIDE (stack_top = .);
 	} >CODE
 
-
+	/* Sync flags */
+	.sync_flags :
+	{
+		*(.sync_flags)
+	} >FLAGS
+	
 	/* The serial vectors are at the end of the DTCM */
 	.serial_vectors ORIGIN(SERIALVECTORS) :
 	{
