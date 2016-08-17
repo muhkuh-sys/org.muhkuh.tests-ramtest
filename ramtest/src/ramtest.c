@@ -8,6 +8,7 @@ int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, u
 void ramtest_show_sdram_config(unsigned long ulSdramStart);
 unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue);
 void hexdump_32bit(volatile unsigned long *pulAddr);
+void hexdump_32bit_buffered(volatile unsigned long *pulAddr);
 static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter);
 
 
@@ -454,6 +455,32 @@ void hexdump_32bit(volatile unsigned long *pulAddr)
 }
 
 
+#define HEXDUMP_BUF_SIZE 112
+/* Print the surrounding of an error location. 
+   Copy the data to a buffer and then print the buffer. */
+void hexdump_32bit_buffered(volatile unsigned long *pulAddr)
+{
+	unsigned int iOffset;
+	unsigned long ulBuf[HEXDUMP_BUF_SIZE];
+	
+	for (iOffset = 0; iOffset < HEXDUMP_BUF_SIZE; iOffset++)
+	{
+		ulBuf[iOffset] = pulAddr[iOffset];
+	}
+	
+	for (iOffset = 0; iOffset < HEXDUMP_BUF_SIZE; iOffset++)
+	{
+		if ((iOffset & 3UL) == 0)
+		{
+			uprintf("0x%08x: ", (unsigned long) (pulAddr+iOffset));
+		}
+		uprintf(" 0x%08x", ulBuf[iOffset]);
+		if ((iOffset & 3UL) == 3) 
+		{
+			uprintf("\n");
+		}
+	}
+}
 
 
 /* Test access sequence. 
@@ -509,8 +536,8 @@ static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTest
 				{
 					pulAddr = pulStart;
 				}
-				hexdump_32bit(pulAddr);
-				hexdump_32bit(pulAddr);
+				hexdump_32bit_buffered(pulAddr);
+				hexdump_32bit_buffered(pulAddr);
 			}
 			
 			tResult = RAMTEST_RESULT_FAILED;
