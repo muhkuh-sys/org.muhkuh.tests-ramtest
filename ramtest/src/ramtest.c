@@ -6,10 +6,116 @@
 int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, unsigned long ulSeed);
 
 void ramtest_show_sdram_config(unsigned long ulSdramStart);
-unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue);
-void hexdump_32bit(volatile unsigned long *pulAddr);
-void hexdump_32bit_buffered(volatile unsigned long *pulAddr);
 static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter);
+
+unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue);
+void hexdump_read_multi(volatile unsigned long* pulAddr, int iNumPasses);
+volatile unsigned long* adjust_hexdump_addr(volatile unsigned long* pulAddr, volatile unsigned long* pulStart, volatile unsigned long* pulEnd, size_t sizDwords);
+void hexdump32(unsigned long *pulBuffer, volatile unsigned long* pulAddr, size_t sizDwords);
+#define HEXDUMP_BUF_SIZE 112
+void memcpy32(volatile unsigned long* pulDest, volatile unsigned long *pulSrc, size_t sizDwords);
+
+
+/********************************************************************
+                      helper functions
+ ********************************************************************/
+
+/* Tag a 32 bit value using a mask and value from test parameters.
+   Example: ulValue = 0xdeadbeef, tag mask = 0xff000000, tag value = 0x11000000 -> return value = 0x11adbeef */
+unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue)
+{
+	return (ulValue & (~ptRamTestParameter->ulTagMask)) | ptRamTestParameter->ulTagValue;
+}
+
+
+/* sizDwords = size in dwords */
+void memcpy32(volatile unsigned long* pulDest, volatile unsigned long *pulSrc, size_t sizDwords)
+{
+	unsigned int iOffset;
+	for (iOffset = 0; iOffset < sizDwords; iOffset++)
+	{
+		pulDest[iOffset] = pulSrc[iOffset];
+	}
+}
+
+void hexdump32(unsigned long *pulBuffer, volatile unsigned long* pulAddr, size_t sizDwords)
+{
+	unsigned int iOffset;
+	
+	for (iOffset = 0; iOffset < sizDwords; iOffset++)
+	{
+		if ((iOffset & 3UL) == 0)
+		{ 
+			uprintf("0x%08x: ", (unsigned long) (pulAddr+iOffset));
+		}
+		uprintf(" 0x%08x", pulBuffer[iOffset]);
+		if ((iOffset & 3UL) == 3) 
+		{
+			uprintf("\n");
+		}
+	}
+}
+
+
+volatile unsigned long* adjust_hexdump_addr(volatile unsigned long* pulAddr, volatile unsigned long* pulStart, volatile unsigned long* pulEnd, size_t sizDwords)
+{
+	unsigned long ulAddr;
+	
+	if (pulAddr - sizDwords < pulStart) 
+	{
+		pulAddr = pulStart;
+	}
+	else if (pulAddr + sizDwords > pulEnd) 
+	{
+		pulAddr = pulEnd - sizDwords;
+	}
+	else
+	{
+		pulAddr = pulAddr - sizDwords;
+	}
+	
+	ulAddr = (unsigned long) pulAddr;
+	ulAddr = ulAddr & 0xFFFFFFF0UL;
+	pulAddr = (volatile unsigned long *) ulAddr;
+	
+	return pulAddr;
+}
+
+/* Read the area and print a hexdump. 
+   Re-read it 10 times, compare with the original buffer each time and print the area containing the differences. */
+void hexdump_read_multi(volatile unsigned long* pulAddr, int iNumPasses)
+{
+	unsigned long ulBuf1[HEXDUMP_BUF_SIZE];
+	unsigned long ulBuf2[HEXDUMP_BUF_SIZE];
+	unsigned int uiDiffStart;
+	unsigned int uiDiffEnd;
+	int iPass;
+	
+	memcpy32(ulBuf1, pulAddr, HEXDUMP_BUF_SIZE);
+	hexdump32(ulBuf1, pulAddr, HEXDUMP_BUF_SIZE);
+	
+	for (iPass=1; iPass<=iNumPasses; iPass++)
+	{
+		memcpy32(ulBuf2, pulAddr, HEXDUMP_BUF_SIZE);
+		for (uiDiffStart = 0; uiDiffStart < HEXDUMP_BUF_SIZE && ulBuf1[uiDiffStart] == ulBuf2[uiDiffStart]; ++uiDiffStart);
+		if (uiDiffStart == HEXDUMP_BUF_SIZE)
+		{
+			uprintf("Read pass %d: equal\n", iPass);
+		}
+		else
+		{
+			for (uiDiffEnd = HEXDUMP_BUF_SIZE-1; uiDiffEnd >0 && ulBuf1[uiDiffEnd] == ulBuf2[uiDiffEnd]; --uiDiffEnd);
+			
+			uprintf("Read pass %d: differences in dwords 0x%08x .. 0x%08x \n", iPass, uiDiffStart, uiDiffEnd);
+			uiDiffStart &= 0xfffffffc;
+			uiDiffEnd = (uiDiffEnd + 3) & 0xfffffffc;
+			hexdump32(ulBuf2, pulAddr+uiDiffStart, uiDiffEnd-uiDiffStart);
+		}
+	}
+}
+
+
+
 
 
 typedef struct RAMTEST_PAIR_STRUCT
@@ -428,59 +534,6 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 
 
 
-/* Tag a 32 bit value using a mask and value from test parameters.
-   Example: ulValue = 0xdeadbeef, tag mask = 0xff000000, tag value = 0x11000000 -> return value = 0x11adbeef */
-unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue)
-{
-	return (ulValue & (~ptRamTestParameter->ulTagMask)) | ptRamTestParameter->ulTagValue;
-}
-
-/* Print the surrounding of an error location. */
-void hexdump_32bit(volatile unsigned long *pulAddr)
-{
-	unsigned int iOffset;
-	
-	for (iOffset = 0; iOffset < 112; iOffset++)
-	{
-		if ((iOffset & 3UL) == 0)
-		{
-			uprintf("0x%08x: ", (unsigned long) (pulAddr+iOffset));
-		}
-		uprintf(" 0x%08x", pulAddr[iOffset]);
-		if ((iOffset & 3UL) == 3) 
-		{
-			uprintf("\n");
-		}
-	}
-}
-
-
-#define HEXDUMP_BUF_SIZE 112
-/* Print the surrounding of an error location. 
-   Copy the data to a buffer and then print the buffer. */
-void hexdump_32bit_buffered(volatile unsigned long *pulAddr)
-{
-	unsigned int iOffset;
-	unsigned long ulBuf[HEXDUMP_BUF_SIZE];
-	
-	for (iOffset = 0; iOffset < HEXDUMP_BUF_SIZE; iOffset++)
-	{
-		ulBuf[iOffset] = pulAddr[iOffset];
-	}
-	
-	for (iOffset = 0; iOffset < HEXDUMP_BUF_SIZE; iOffset++)
-	{
-		if ((iOffset & 3UL) == 0)
-		{
-			uprintf("0x%08x: ", (unsigned long) (pulAddr+iOffset));
-		}
-		uprintf(" 0x%08x", ulBuf[iOffset]);
-		if ((iOffset & 3UL) == 3) 
-		{
-			uprintf("\n");
-		}
-	}
-}
 
 
 /* Test access sequence. 
@@ -526,19 +579,8 @@ static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTest
 			uprintf("! wrote value:     0x%08x\n", ram_test_tag_value(ptRamTestParameter, ulCnt));
 			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			
-			{
-				unsigned long ulAddr = (unsigned long) pulCnt;
-				volatile unsigned long *pulAddr;
-				ulAddr = (ulAddr - 128) & 0xFFFFFFF0UL;
-				pulAddr = (volatile unsigned long *) ulAddr;
-
-				if (pulAddr < pulStart) 
-				{
-					pulAddr = pulStart;
-				}
-				hexdump_32bit_buffered(pulAddr);
-				hexdump_32bit_buffered(pulAddr);
-			}
+			volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
+			hexdump_read_multi(pulAddr, 10);
 			
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
