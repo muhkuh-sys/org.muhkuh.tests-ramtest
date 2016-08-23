@@ -57,8 +57,12 @@ sources_standalone_netx4000 = """
 	src/main_standalone_common.c
 """
 
+#	src/netx4000/init_standalone_a9_cache_enable.S
 sources_standalone_netx4000_ca9_cached = """
-	src/netx4000/init_standalone_a9_cache_enable.S
+	src/netx4000/CA9/ca9_init.S
+	src/netx4000/CA9/v7a.S
+	src/netx4000/CA9/mmu.c
+	src/netx4000/CA9/MP_SCU.s
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
 """
@@ -227,7 +231,7 @@ env_netx4000_s_ca9_core1.Append(CPPDEFINES = [['CPU_CA9', '1']])
 src_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.SetBuildPath('targets/netx4000_ca9_core1', 'src', sources_common+sources_standalone_netx4000)
 elf_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.Elf(         'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.elf', src_netx4000_s_ca9_core1 + platform_lib_netx4000)
 txt_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.ObjDump(     'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.txt', elf_netx4000_s_ca9_core1, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
-bin_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.ObjCopy(         'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.bin', elf_netx4000_s_ca9_core1)
+bin_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.ObjCopy(     'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.bin', elf_netx4000_s_ca9_core1)
 
 # ramtest for the CR7, cache is enabled in init.s
 env_netx4000_s_cr7_cached = env_netx4000_default.Clone()
@@ -243,7 +247,7 @@ bin_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.ObjCopy(     'targets/netx
 env_netx4000_s_ca9_core0_cached = env_netx4000_default.Clone()
 env_netx4000_s_ca9_core0_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca9_core0_intram.ld')
 env_netx4000_s_ca9_core0_cached.Append(CPPPATH = aCppPath)
-env_netx4000_s_ca9_core0_cached.Append(CPPPATH = ['src/netx4000'])
+env_netx4000_s_ca9_core0_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_core0_cached.Append(CPPDEFINES = [['CPU_CA9']])
 src_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.SetBuildPath('targets/netx4000_ca9_core0_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.Elf(         'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.elf', src_netx4000_s_ca9_core0_cached + platform_lib_netx4000)
@@ -254,7 +258,7 @@ bin_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.ObjCopy(     '
 env_netx4000_s_ca9_core1_cached = env_netx4000_default.Clone()
 env_netx4000_s_ca9_core1_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca9_core1_intram.ld')
 env_netx4000_s_ca9_core1_cached.Append(CPPPATH = aCppPath)
-env_netx4000_s_ca9_core1_cached.Append(CPPPATH = ['src/netx4000'])
+env_netx4000_s_ca9_core1_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_core1_cached.Append(CPPDEFINES = [['CPU_CA9']])
 src_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.SetBuildPath('targets/netx4000_ca9_core1_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.Elf(         'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.elf', src_netx4000_s_ca9_core1_cached + platform_lib_netx4000)
@@ -299,6 +303,87 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_cached = env_netx4000_s_cr7.HBootIma
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_cached, elf_netx4000_s_cr7_cached)
 
+
+# NXHX 4000 DDR RAM 600 MHz CA9 core0 uncached
+ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0 = env_netx4000_s_ca9_core0.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0.bin', 
+	'src/netx4000/nxhx4000_ddr3/CA9core0_to_INTRAM_nxhx4000_ddr3_400MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCA9core0': elf_netx4000_s_ca9_core0[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_ca9_core0)
+
+# NXHX 4000 DDR RAM 400 MHz CA9 core0 cached
+ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0_cached = env_netx4000_s_ca9_core0_cached.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0_cached.bin', 
+	'src/netx4000/nxhx4000_ddr3/CA9core0_to_INTRAM_nxhx4000_ddr3_400MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCA9core0': elf_netx4000_s_ca9_core0_cached[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0_cached, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_ca9_core0_cached)
+
+	
+# NXHX 4000 DDR RAM 400 MHz CA9 core0/1 uncached
+ramtest_standalone_nxhx4000_ddr3_400MHz_ca9 = env_netx4000_s_ca9_core0.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_ca9.bin', 
+	'src/netx4000/nxhx4000_ddr3/CA9_to_INTRAM_nxhx4000_ddr3_400MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCA9core0': elf_netx4000_s_ca9_core0[0],
+	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_ca9_core0 +
+	elf_netx4000_s_ca9_core1)
+
+
+# NXHX 4000 DDR RAM 400 MHz CA9 core0/1 cached
+ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached = env_netx4000_s_ca9_core0_cached.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached.bin', 
+	'src/netx4000/nxhx4000_ddr3/CA9_to_INTRAM_nxhx4000_ddr3_400MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCA9core0': elf_netx4000_s_ca9_core0_cached[0],
+	'tElfCA9core1': elf_netx4000_s_ca9_core1_cached[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_ca9_core0_cached +
+	elf_netx4000_s_ca9_core1_cached)
+	
+# NXHX 4000 DDR RAM 400 MHz uncached, on all CPUs. 
+ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9 = env_netx4000_s_cr7.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9.bin', 
+	'src/netx4000/nxhx4000_ddr3/CR7_CA9_to_INTRAM_nxhx4000_ddr3_400MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCR7'             : elf_netx4000_s_cr7[0],
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0[0],
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_cr7 +
+	elf_netx4000_s_ca9_core0 +
+	elf_netx4000_s_ca9_core1)
+
 # NXHX 4000 DDR RAM 400 MHz with caches enabled, on all CPUs. 
 ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached = env_netx4000_s_cr7.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached.bin', 
@@ -324,7 +409,9 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cache
 ramtest_standalone_nxhx4000_ddr3_600MHz_cr7 = env_netx4000_s_cr7.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_cr7.bin', 
 	'src/netx4000/nxhx4000_ddr3/CR7_to_INTRAM_nxhx4000_ddr3_600MHz.xml', 
-	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7[0]}), 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7': elf_netx4000_s_cr7[0]
+	}), 
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7, elf_netx4000_s_cr7)
@@ -343,6 +430,22 @@ env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core
 	elf_netx4000_cr7_openfirewalls +
 	elf_netx4000_s_ca9_core0)
 
+	
+# NXHX 4000 DDR RAM 600 MHz CA9 core1 uncached
+ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core1 = env_netx4000_s_ca9_core1.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core1.bin', 
+	'src/netx4000/nxhx4000_ddr3/CA9core1_to_INTRAM_nxhx4000_ddr3_600MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_ca9_core1.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core1, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_ca9_core1)
+
+
 # NXHX 4000 DDR RAM 600 MHz CA9 core0/1 uncached
 ramtest_standalone_nxhx4000_ddr3_600MHz_ca9 = env_netx4000_s_ca9_core0.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_ca9.bin', 
@@ -359,6 +462,38 @@ env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9,
 	elf_netx4000_s_ca9_core0 +
 	elf_netx4000_s_ca9_core1)
 
+# NXHX 4000 DDR RAM 600 MHz CR7 + CA9 core0 uncached
+ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core0 = env_netx4000_s_cr7.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core0.bin', 
+	'src/netx4000/nxhx4000_ddr3/CR7_CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCR7': elf_netx4000_s_cr7[0],
+	'tElfCA9core0': elf_netx4000_s_ca9_core0[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core0, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_cr7 +
+	elf_netx4000_s_ca9_core0)
+	
+# NXHX 4000 DDR RAM 600 MHz CR7 + CA9 core1 uncached
+ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core1 = env_netx4000_s_cr7.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core1.bin', 
+	'src/netx4000/nxhx4000_ddr3/CR7_CA9core1_to_INTRAM_nxhx4000_ddr3_600MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCR7': elf_netx4000_s_cr7[0],
+	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core1, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_cr7 +
+	elf_netx4000_s_ca9_core1)
+	
 # NXHX 4000 DDR RAM 600 MHz CR7 + CA9 core0/1 uncached
 ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9 = env_netx4000_s_cr7.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9.bin', 
