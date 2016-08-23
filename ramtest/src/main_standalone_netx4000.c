@@ -102,13 +102,44 @@ typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 	unsigned long ulTagValue;
 } RAMTEST_STANDALONE_NETX4000_PARAMETER_T; 
 
+void print_ddr_config(void);
+void print_ddr_config(void)
+{
+	HOSTDEF(ptDdrCtrlArea);
+	unsigned long ulDdrCtrl009 = ptDdrCtrlArea->aulDDR_CTRL_CTL[9];
+	unsigned long ulDdrCtrl010 = ptDdrCtrlArea->aulDDR_CTRL_CTL[10];
+	unsigned long ulDdrCtrl058 = ptDdrCtrlArea->aulDDR_CTRL_CTL[58];
+	unsigned long ulDdrCtrl125 = ptDdrCtrlArea->aulDDR_CTRL_CTL[125];
+	unsigned long ulDdrCtrl152 = ptDdrCtrlArea->aulDDR_CTRL_CTL[152];
+	
+	uprintf("\n");
+	uprintf("DDR controller config:\n");
+	uprintf("DDR_CTRL_009 = 0x%08x\n", ulDdrCtrl009);
+	uprintf("    CASLAT_LIN = %d\n",         (ulDdrCtrl009 & MSK_NX4000_DDR_CTRL_CTL9_CASLAT_LIN)    >> SRT_NX4000_DDR_CTRL_CTL9_CASLAT_LIN);
+
+	uprintf("DDR_CTRL_010 = 0x%08x\n", ulDdrCtrl010);
+	uprintf("    WRLAT = %d\n",              (ulDdrCtrl010 & MSK_NX4000_DDR_CTRL_CTL10_WRLAT)        >> SRT_NX4000_DDR_CTRL_CTL10_WRLAT);
+	uprintf("    ADDITIVE_LAT = %d\n",       (ulDdrCtrl010 & MSK_NX4000_DDR_CTRL_CTL10_ADDITIVE_LAT) >> SRT_NX4000_DDR_CTRL_CTL10_ADDITIVE_LAT);
+	
+	uprintf("DDR_CTRL_058 = 0x%08x\n", ulDdrCtrl058);
+	uprintf("    REDUC = %d\n",              (ulDdrCtrl058 & MSK_NX4000_DDR_CTRL_CTL58_REDUC)        >> SRT_NX4000_DDR_CTRL_CTL58_REDUC);
+	
+	uprintf("DDR_CTRL_125 = 0x%08x\n", ulDdrCtrl125);
+	uprintf("    WRLAT_ADJ = %d\n",          (ulDdrCtrl125 & MSK_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ)   >> SRT_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ);
+	uprintf("    RDLAT_ADJ = %d\n",          (ulDdrCtrl125 & MSK_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ)   >> SRT_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ);
+	
+	uprintf("DDR_CTRL_152 = 0x%08x\n", ulDdrCtrl152);
+	uprintf("\n");
+}
 
 void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam) __attribute__ ((noreturn));
 void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 {
 	RAMTEST_PARAMETER_T tTestParams;
 	RAMTEST_RESULT_T tRes;
-
+	HOSTDEF(ptDdrCtrlArea);
+	unsigned long fDdrCtrlReduc;
+	
 #ifdef CPU_CR7
 	systime_init();
 #endif
@@ -141,6 +172,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 		uprintf("PLL speed: 1200 MHz\n");
 	}
 	
+	print_ddr_config();
+	
 	/*
 	 * Set the RAM test configuration.
 	 */
@@ -153,6 +186,18 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	tTestParams.ulTagMask       = ptParam->ulTagMask;
 	tTestParams.ulTagValue      = ptParam->ulTagValue;
 		
+	/* Override the test case selection: use only the address sequence test */
+	//tTestParams.ulCases         = 0x80;
+		
+	/* If the DDR ctrl is configured for 16 bit, divide the start offsets and sizes by two. */
+	fDdrCtrlReduc = (ptDdrCtrlArea->aulDDR_CTRL_CTL[58] & MSK_NX4000_DDR_CTRL_CTL58_REDUC) >> SRT_NX4000_DDR_CTRL_CTL58_REDUC;
+	if (fDdrCtrlReduc) 
+	{
+		uprintf("Adjusting area start/size for 16 bit DDR mode.\n");
+		tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
+		tTestParams.ulSize /= 2;
+	}
+	
 	/* Set the progress callback. */
 	if (ptParam->ulStatusLedMmioNr == 0)
 	{
