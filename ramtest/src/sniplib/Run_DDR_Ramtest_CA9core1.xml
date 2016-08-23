@@ -30,7 +30,7 @@
 			&lt;Hex address=&quot;0x0503ff80&quot;&gt;
 				00 00 00 40 &lt;!-- 0x40000000 Start address of DDR RAM --&gt;
 				00 00 00 40 &lt;!-- 0x40000000 Size in bytes --&gt;
-				80 00 00 00 &lt;!-- Test Cases: sequence test --&gt;
+				ff 00 00 00 &lt;!-- Test Cases --&gt;
 				00 00 00 00 &lt;!-- Loops --&gt;
 				00 00 00 00 &lt;!-- PerfTestCases --&gt;
 				00 00 35 36 &lt;!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) --&gt;
