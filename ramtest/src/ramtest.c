@@ -2,11 +2,11 @@
 #include "ramtest.h"
 #include "systime.h"
 #include "uprintf.h"
+#include "string.h"
 
 int random_burst(unsigned long* pulStartaddress, unsigned long *pulEndAddress, unsigned long ulSeed);
 
 void ramtest_show_sdram_config(unsigned long ulSdramStart);
-static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter);
 
 unsigned long ram_test_tag_value(RAMTEST_PARAMETER_T *ptRamTestParameter, unsigned long ulValue);
 void hexdump_read_multi(volatile unsigned long* pulAddr, int iNumPasses);
@@ -594,6 +594,130 @@ static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTest
 }
 
 
+/*
+ * Memcopy test
+ * Uses two buffers (2 KB) in Intram/LLRAM
+ * Prepare test data in buffer 1
+ * copy into DDR RAM using memcpy
+ * copy from DDR RAM to buffer 2
+ * compare the buffers
+ *
+ *  2 KBytes inside a 4 KB block
+ *  2 KBytes across a 4 KB block boundary
+ * 32 dwords inside a 4 KB block
+ * 32 dwords across a 4 KB block boundary
+ *
+ * Data: bits 31..24: CPU 
+ *            24..16: test number
+ *            15..0:  address in DDR RAM
+ */
+
+static RAMTEST_RESULT_T ram_test_memcpy_pass(
+	RAMTEST_PARAMETER_T *ptRamTestParameter, 
+	unsigned char* pucDestAddr, 
+	size_t sizDwordSize, 
+	unsigned long* pulBuf1, 
+	unsigned long* pulBuf2, 
+	unsigned char ucTag);
+
+static RAMTEST_RESULT_T ram_test_memcpy(RAMTEST_PARAMETER_T *ptRamTestParameter);
+static RAMTEST_RESULT_T ram_test_memcpy(RAMTEST_PARAMETER_T *ptRamTestParameter)
+{
+	RAMTEST_RESULT_T tResult;
+	unsigned char* pucStart;
+	unsigned char* pucEnd;
+	unsigned char* pucAddr4K;
+	unsigned long aulBuf1[512];
+	unsigned long aulBuf2[512];
+	
+	tResult = RAMTEST_RESULT_OK;
+	pucStart = (unsigned char*)(ptRamTestParameter->ulStart);
+	pucEnd   = (unsigned char*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
+	pucAddr4K = pucStart;
+	
+	if ((pucEnd - pucStart) < 8192)
+	{
+		uprintf("Cannot execute memcopy test - test area is too small.\n");
+		tResult = RAMTEST_RESULT_FAILED;
+	}
+	
+	if (tResult == RAMTEST_RESULT_OK)
+	{
+		uprintf(". 2 KB inside 4 KB block\n");
+		tResult = ram_test_memcpy_pass(ptRamTestParameter, pucAddr4K + 0x0400UL, 0x0200UL, aulBuf1, aulBuf2, 0x11);
+	}
+	
+	if (tResult == RAMTEST_RESULT_OK)
+	{
+		uprintf(". 32 dwords inside 4 KB block\n");
+		tResult = ram_test_memcpy_pass(ptRamTestParameter, pucAddr4K + 0x03c0UL, 32,       aulBuf1, aulBuf2, 0x22);
+	}
+	
+	if (tResult == RAMTEST_RESULT_OK)
+	{
+		uprintf(". 2 KB crossing 4 KB block boundary\n");
+		tResult = ram_test_memcpy_pass(ptRamTestParameter, pucAddr4K + 0x0c00UL, 0x0200UL, aulBuf1, aulBuf2, 0x33);
+	}
+	
+	if (tResult == RAMTEST_RESULT_OK)
+	{
+		uprintf(". 32 dwords crossing 4 KB block boundary\n");
+		tResult = ram_test_memcpy_pass(ptRamTestParameter, pucAddr4K + 0x0fc0UL, 32,       aulBuf1, aulBuf2, 0x44);
+	}
+	
+	return tResult;
+}
+
+static RAMTEST_RESULT_T ram_test_memcpy_pass(
+	RAMTEST_PARAMETER_T *ptRamTestParameter, 
+	unsigned char* pucDestAddr, 
+	size_t sizDwordSize, 
+	unsigned long* pulBuf1, 
+	unsigned long* pulBuf2, 
+	unsigned char ucTag)
+{
+	RAMTEST_RESULT_T tResult;
+	unsigned long ulTagValue;
+	unsigned long ulTagMask;
+	unsigned long ulDestAddr;
+	unsigned long ulValue;
+	size_t sizOffset;
+	
+	tResult = RAMTEST_RESULT_OK;
+	ulDestAddr = (unsigned long) pucDestAddr;
+	
+	/* generate address sequence in buffer 1 */
+	ulTagValue = ((unsigned long) ucTag) << 16;
+	ulTagMask  = 0x00ff0000UL;
+	
+	for (sizOffset=0; sizOffset<sizDwordSize; sizOffset++)
+	{
+		ulValue = ulDestAddr + sizOffset * sizeof(unsigned long);
+		ulValue = (ulValue & ~ulTagMask) | ulTagValue;
+		ulValue = ram_test_tag_value(ptRamTestParameter, ulValue);
+		pulBuf1[sizOffset] = ulValue;
+	}
+	
+	/* copy the sequence to DDR RAM and read back to buffer2 */
+	memcpy(pucDestAddr, pulBuf1, sizeof(unsigned long) * sizDwordSize);
+	
+	memcpy(pulBuf2, pucDestAddr, sizeof(unsigned long) * sizDwordSize);
+	
+	/* compare the buffers 1 and 2 */
+	for (sizOffset=0; sizOffset<sizDwordSize; sizOffset++)
+	{
+		if (pulBuf1[sizOffset] != pulBuf2[sizOffset])
+		{
+			uprintf("! 32 bit memcpy test at address 0x%08x failed (offset 0x%08x)\n", ulDestAddr+sizOffset*sizeof(unsigned long), (unsigned long)sizOffset);
+			uprintf("! wrote value:     0x%08x\n", pulBuf1[sizOffset]);
+			uprintf("! read back value: 0x%08x\n", pulBuf2[sizOffset]);
+			tResult = RAMTEST_RESULT_FAILED;
+			break;
+		}
+	}
+	
+	return tResult;
+}
 
 
 unsigned long pseudo_generator(unsigned long number)
@@ -1011,6 +1135,21 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		}
 	}
 	
+	/* test memcpy */
+	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_MEMCPY)!=0 )
+	{
+		uprintf(". Testing memcpy...\n");
+//		tResult = ram_test_count_32bit(ptParameter);
+		tResult = ram_test_memcpy(ptParameter);
+		if( tResult==RAMTEST_RESULT_OK )
+		{
+			uprintf(". memcpy test OK\n");
+		}
+		else
+		{
+			uprintf("! memcpy test failed.\n");
+		}
+	}
 
 	return tResult;
 }
@@ -1124,6 +1263,10 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	if( (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
 	{
 		uprintf("     Access sequence\n");
+	}
+	if( (ulCases&RAMTESTCASE_MEMCPY)!=0 )
+	{
+		uprintf("     memcpy\n");
 	}
 	if( (ulCases&RAMTESTCASE_08BIT)!=0 )
 	{
