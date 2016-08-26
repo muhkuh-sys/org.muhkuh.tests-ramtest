@@ -708,7 +708,7 @@ static RAMTEST_RESULT_T ram_test_memcpy_pass(
 	{
 		if (pulBuf1[sizOffset] != pulBuf2[sizOffset])
 		{
-			uprintf("! 32 bit memcpy test at address 0x%08x failed (offset 0x%08x)\n", ulDestAddr+sizOffset*sizeof(unsigned long), (unsigned long)sizOffset);
+			uprintf("! memcpy test at address 0x%08x failed (offset 0x%08x)\n", ulDestAddr+sizOffset*sizeof(unsigned long), (unsigned long)sizOffset);
 			uprintf("! wrote value:     0x%08x\n", pulBuf1[sizOffset]);
 			uprintf("! read back value: 0x%08x\n", pulBuf2[sizOffset]);
 			tResult = RAMTEST_RESULT_FAILED;
