@@ -243,27 +243,38 @@ elf_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.Elf(         'targets/netx
 txt_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.ObjDump(     'targets/netx4000_cr7_cached/netx4000_ramtest_cr7_cached.txt', elf_netx4000_s_cr7_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.ObjCopy(     'targets/netx4000_cr7_cached/netx4000_ramtest_cr7_cached.bin', elf_netx4000_s_cr7_cached)
 
-# ramtest for CA9 core 0, cache is enabled in init.s
+# ramtest for CA9 core 0, l1 cache is enabled in ca9_init.S
 env_netx4000_s_ca9_core0_cached = env_netx4000_default.Clone()
 env_netx4000_s_ca9_core0_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca9_core0_intram.ld')
 env_netx4000_s_ca9_core0_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core0_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
-env_netx4000_s_ca9_core0_cached.Append(CPPDEFINES = [['CPU_CA9']])
+env_netx4000_s_ca9_core0_cached.Append(CPPDEFINES = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE']])
 src_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.SetBuildPath('targets/netx4000_ca9_core0_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.Elf(         'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.elf', src_netx4000_s_ca9_core0_cached + platform_lib_netx4000)
 txt_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.ObjDump(     'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.txt', elf_netx4000_s_ca9_core0_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.ObjCopy(     'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.bin', elf_netx4000_s_ca9_core0_cached)
 
-# ramtest for CA9 core 1, cache is enabled in init.s
+# ramtest for CA9 core 1, l1 cache is enabled in ca9_init.s
 env_netx4000_s_ca9_core1_cached = env_netx4000_default.Clone()
 env_netx4000_s_ca9_core1_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca9_core1_intram.ld')
 env_netx4000_s_ca9_core1_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core1_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
-env_netx4000_s_ca9_core1_cached.Append(CPPDEFINES = [['CPU_CA9']])
+env_netx4000_s_ca9_core1_cached.Append(CPPDEFINES = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE']])
 src_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.SetBuildPath('targets/netx4000_ca9_core1_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.Elf(         'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.elf', src_netx4000_s_ca9_core1_cached + platform_lib_netx4000)
 txt_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.ObjDump(     'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.txt', elf_netx4000_s_ca9_core1_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.ObjCopy(     'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.bin', elf_netx4000_s_ca9_core1_cached)
+
+# ramtest for CA9 core 0, L1+L2 caches are enabled in ca9_init.s
+env_netx4000_s_ca9_core0_cached_l2 = env_netx4000_default.Clone()
+env_netx4000_s_ca9_core0_cached_l2.Replace(LDFILE = 'src/netx4000/netx4000_ca9_core0_intram.ld')
+env_netx4000_s_ca9_core0_cached_l2.Append(CPPPATH = aCppPath)
+env_netx4000_s_ca9_core0_cached_l2.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
+env_netx4000_s_ca9_core0_cached_l2.Append(CPPDEFINES = [['CPU_CA9']])
+src_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.SetBuildPath('targets/netx4000_ca9_core0_cached_l2', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+elf_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.Elf(         'targets/netx4000_ca9_core0_cached_l2/netx4000_ramtest_ca9_core0_cached_l2.elf', src_netx4000_s_ca9_core0_cached_l2 + platform_lib_netx4000)
+txt_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.ObjDump(     'targets/netx4000_ca9_core0_cached_l2/netx4000_ramtest_ca9_core0_cached_l2.txt', elf_netx4000_s_ca9_core0_cached_l2, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
+bin_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached.ObjCopy(     'targets/netx4000_ca9_core0_cached_l2/netx4000_ramtest_ca9_core0_cached_l2.bin', elf_netx4000_s_ca9_core0_cached_l2)
 
 
 #----------------------------------------------------------------------------
@@ -402,6 +413,25 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cache
 	elf_netx4000_s_ca9_core0_cached +
 	elf_netx4000_s_ca9_core1_cached)
 
+# NXHX 4000 DDR RAM 400 MHz with l1+l2 caches enabled, on all CPUs. 
+ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached_l2 = env_netx4000_s_cr7.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached_l2.bin', 
+	'src/netx4000/nxhx4000_ddr3/CR7_CA9_to_INTRAM_nxhx4000_ddr3_400MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCR7'             : elf_netx4000_s_cr7_cached[0],
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2[0],
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached_l2, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_cr7_cached +
+	elf_netx4000_s_ca9_core0_cached_l2 +
+	elf_netx4000_s_ca9_core1_cached)
+
+	
 #----------------------------------------------------------------------------
 
 

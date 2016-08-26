@@ -1,8 +1,12 @@
-#define CA9_0_ENABLE
+
+/* Generate code for core 0 to wake up core 1.
+   Always enabled; it does not matter if core 1 is not running. */
 #define CA9_1_ENABLE
+
 #define CA9_ENABLE_CACHES
-#define CA9_NO_L2C_ENABLE
-/* do not define:CA9_DISABLE_BRANCH_PREDICTION darm, SIM_MESSAGES, CA9_DISABLE_BRANCH_PREDICTION */
+
+/* define CA9_NO_L2C_ENABLE as needed 
+   do not define:CA9_DISABLE_BRANCH_PREDICTION darm, SIM_MESSAGES, CA9_DISABLE_BRANCH_PREDICTION */
 
 	.section .init_code, "ax"
 	.arm
