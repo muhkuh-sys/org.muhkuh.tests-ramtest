@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+
+
+		
+		<!-- ================================================================== -->
+		<!-- netX intram tests: 
+				CR7 code at 0x04000000, CA9/0 code at 05000000, CA9/1 code at 05020000  
+				0x05080000 - 0x0509ffff  
+				0x050a0000 - 0x050bffff
+				0x050c0000 - 0x050dffff
+				0x050e0000 - 0x050effff
+				0x050f0000 - 0x050fffff
+				0x05100000 - 0x05107fff
+				
+				AXI RAM tests: 
+				CR7 code at 0x04000000, CA9/0 at 05000000, CA9/1 code at 05020000  (as above)
+				0x05060000 - 0x0507ffff
+				0x05040000 - 0x0505ffff
+				CR7 code at 0x04000000, CA9/0 at 05040000, CA9/1 code at 05060000  
+				0x05020000 - 0x0503ffff
+				0x05000000 - 0x0501ffff
+				
+				LLRAM/TCM tests: CR7 code at 0x05080000
+				0x04000000 - 0x040fffff
+				0x00000000 - 0x0001ffff
+				0x00020000 - 0x0003ffff
+				
+			-->
+				
+		
+		<!-- R7: Open the firewalls -->
+		<Data>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Execute>
+		
+		
+		<!-- CR7 parameters -->
+		<Data>
+			<Hex address="0x0003ff80">
+				00 00 00 00 <!-- Start address of test area -->
+				00 00 00 00 <!-- Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				10 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+				01 00 00 00 <!-- Enable UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ff80">
+				00 00 00 00 <!-- Start address of test area -->
+				00 00 00 00 <!-- Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				10 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0503ff80">
+				00 00 00 00 <!-- Start address of test area -->
+				00 00 00 00 <!-- Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				10 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+
+		<!-- R7: load ram test -->
+		<Data>
+			<File name="@tElfCA9core0" />
+		</Data>
+		<Data>
+			<File name="@tElfCA9core1" />
+		</Data>
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		<Data>
+			<File name="@tElfCR7SyncA9" />
+		</Data>
+
+		
+		<!-- Intram test 05080000-0509ffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 08 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 80 08 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 40 09 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- Intram test 050a0000-050bffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0a 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 80 0a 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 40 0b 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- Intram test 050c0000-050dffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0c 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 80 0c 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 40 0d 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- Intram test 050e0000-050effff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0e 05    00 40 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 40 0e 05    00 60 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 c0 0e 05    00 60 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- Intram test 050f0000-050fffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0f 05    00 40 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 40 0f 05    00 60 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 c0 0f 05    00 60 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- Intram test 05100000-05107fff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 10 05    00 20 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 20 10 05    00 30 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 50 10 05    00 30 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		
+		
+		<!-- AXI RAM test 05060000-0507ffcf  Start           Size  (Exclude CA9 firmware vectors at 0507ffd0) -->
+		<Data><Hex address="0x0003ff80"> 00 00 06 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 80 06 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 40 07 05    d0 bf 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- AXI RAM test 05040000-0505ffff  Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 04 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0501ff80"> 00 80 04 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0503ff80"> 00 40 05 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0505ff80">
+				00 00 00 00 <!-- Start address of test area -->
+				00 00 00 00 <!-- Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				10 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0507ff80">
+				00 00 00 00 <!-- Start address of test area -->
+				00 00 00 00 <!-- Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				10 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<!-- R7: load ram test -->
+		<Data>
+			<File name="@tElfCA9core0_rap2" />
+		</Data>
+		<Data>
+			<File name="@tElfCA9core1_rap3" />
+		</Data>
+		
+		<!-- AXI RAM test 05000000-0501ffff  Start           Size -->
+		<Data><Hex address="0x0003ff80"> 00 00 00 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0505ff80"> 00 80 00 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0507ff80"> 00 40 01 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0_rap2" start="start_core0" /><R0>0x0505ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1_rap3" start="start_core1" /><R0>0x0507ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+		
+		<!-- AXI RAM test 05020000-0503ffff  Start           Size -->
+		<Data><Hex address="0x0003ff80"> 00 00 02 05    00 80 00 00 </Hex></Data> <!-- CR7 -->
+		<Data><Hex address="0x0505ff80"> 00 80 02 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 0 -->
+		<Data><Hex address="0x0507ff80"> 00 40 03 05    00 c0 00 00 </Hex></Data> <!-- CA9 core 1 -->
+		<ExecuteCA9><Core0><File name="@tElfCA9core0_rap2" start="start_core0" /><R0>0x0505ff80</R0> </Core0>
+								<Core1><File name="@tElfCA9core1_rap3" start="start_core1" /><R0>0x0507ff80</R0> </Core1></ExecuteCA9> 
+		<Execute>          <File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
+		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
+
+		
+		
+		<!-- CR7 parameters -->
+		<Data>
+			<Hex address="0x0509ff80">
+				00 00 00 00 <!-- Start address of test area -->
+				00 00 00 00 <!-- Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				10 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+				01 00 00 00 <!-- Enable UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<Data>
+			<File name="@tElfCR7_netx_intram" />
+		</Data>
+		
+		<!-- LLRAM test 04000000-040fffff   Start           Size  -->
+		<Data><Hex address="0x0509ff80"> 00 00 00 04    00 00 10 00 </Hex></Data> <!-- CR7 -->
+		<Execute><File name="@tElfCR7_netx_intram" /><R0>0x0509ff80</R0></Execute>
+		
+		<!-- ITCM test 00000300-0001ffff   Start           Size  -->
+		<Data><Hex address="0x0509ff80"> 00 03 00 00    00 fd 01 00 </Hex></Data> <!-- CR7 -->
+		<Execute><File name="@tElfCR7_netx_intram" /><R0>0x0509ff80</R0></Execute>
+		
+		<!-- DTCM test 00020000-0003ffff   Start           Size  -->
+		<Data><Hex address="0x0509ff80"> 00 00 02 00    00 00 02 00 </Hex></Data> <!-- CR7 -->
+		<Execute><File name="@tElfCR7_netx_intram" /><R0>0x0509ff80</R0></Execute>
+		
+	</Chunks>
+</HBootImage>
