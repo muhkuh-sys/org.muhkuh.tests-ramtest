@@ -1,5 +1,5 @@
 	.arm
-.section .text, "ax"
+.section .synca9, "ax"
 .global start
 
 #define ADDR_A9_0_FW_VECT 0x0507ffd0
@@ -8,21 +8,33 @@
 #define MAGIC2 0x00000022
 
 start:
-	
 	ldr     r0, =ADDR_A9_0_FW_VECT
 	ldm     r0, {r1, r2}
-	teq     r1, #MAGIC1
-	bne     start
-	teq     r2, #MAGIC2
-	bne     start
+	eor     r1, r2, r1
+	adds     r1, r1, #1
+	beq     start
 	
 	ldr     r0, =ADDR_A9_1_FW_VECT
 	ldm     r0, {r1, r2}
-	teq     r1, #MAGIC1
-	bne     start
-	teq     r2, #MAGIC2
-	bne     start
+	eor     r1, r2, r1
+	adds     r1, r1, #1
+	beq     start
 	bx      lr
+	
+//	ldr     r0, =ADDR_A9_0_FW_VECT
+//	ldm     r0, {r1, r2}
+//	teq     r1, #MAGIC1
+//	bne     start
+//	teq     r2, #MAGIC2
+//	bne     start
+//	
+//	ldr     r0, =ADDR_A9_1_FW_VECT
+//	ldm     r0, {r1, r2}
+//	teq     r1, #MAGIC1
+//	bne     start
+//	teq     r2, #MAGIC2
+//	bne     start
+//	bx      lr
 	
 	.end
 	
