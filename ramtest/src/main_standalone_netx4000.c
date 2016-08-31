@@ -132,7 +132,8 @@ void print_ddr_config(void)
 	uprintf("\n");
 }
 
-void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam) __attribute__ ((noreturn));
+
+void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam) /* __attribute__ ((noreturn))*/;
 void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 {
 	RAMTEST_PARAMETER_T tTestParams;
@@ -172,8 +173,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 		uprintf("PLL speed: 1200 MHz\n");
 	}
 	
-	print_ddr_config();
-	
 	/*
 	 * Set the RAM test configuration.
 	 */
@@ -188,14 +187,19 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 		
 	/* Override the test case selection: use only the address sequence test */
 	//tTestParams.ulCases         = 0x80;
-		
-	/* If the DDR ctrl is configured for 16 bit, divide the start offsets and sizes by two. */
-	fDdrCtrlReduc = (ptDdrCtrlArea->aulDDR_CTRL_CTL[58] & MSK_NX4000_DDR_CTRL_CTL58_REDUC) >> SRT_NX4000_DDR_CTRL_CTL58_REDUC;
-	if (fDdrCtrlReduc) 
+	
+	if ((ptParam->ulStart >= 0x40000000UL) && (ptParam->ulStart <= 0x7fffffff))
 	{
-		uprintf("Adjusting area start/size for 16 bit DDR mode.\n");
-		tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
-		tTestParams.ulSize /= 2;
+		print_ddr_config();
+	
+		/* If the DDR ctrl is configured for 16 bit, divide the start offsets and sizes by two. */
+		fDdrCtrlReduc = (ptDdrCtrlArea->aulDDR_CTRL_CTL[58] & MSK_NX4000_DDR_CTRL_CTL58_REDUC) >> SRT_NX4000_DDR_CTRL_CTL58_REDUC;
+		if (fDdrCtrlReduc) 
+		{
+			uprintf("Adjusting area start/size for 16 bit DDR mode.\n");
+			tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
+			tTestParams.ulSize /= 2;
+		}
 	}
 	
 	/* Set the progress callback. */
@@ -219,5 +223,17 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	tRes = ramtest_run(&tTestParams);
 
 	tTestParams.pfnProgress(&tTestParams, tRes);
-	while(1);
+	
+	/* while(1); */
+	
+	if (tRes == RAMTEST_RESULT_OK) 
+	{
+		uprintf("RAM test SUCCESSFUL.\n");
+	}
+	else
+	{
+		uprintf("RAM test FAILED.\n");
+		while(1);
+	}
+	return;
 }

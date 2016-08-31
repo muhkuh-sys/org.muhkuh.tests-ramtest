@@ -8,6 +8,12 @@
 /* define CA9_NO_L2C_ENABLE as needed 
    do not define:CA9_DISABLE_BRANCH_PREDICTION darm, SIM_MESSAGES, CA9_DISABLE_BRANCH_PREDICTION */
 
+	// R_FW_VECT holds the base address of the firmware vector structures.
+// R_CPU_ID is the core number (0 or 1)
+#define R_FW_VECT  r11
+#define R_CPU_ID   r12
+
+	 
 	.section .init_code, "ax"
 	.arm
 
@@ -38,11 +44,14 @@ start_core0:
    @ define entry point for CA9_core1
 start_core1:
 start:
-	stmfd   sp!, {r0, r1, r2, r3, r4, lr}
+//	stmfd   sp!, {r0, r1, r2, r3, r4, lr}
 	
 	@ set own stack position
 	ldr     r2, =stack_top
 	mov     sp, r2
+	
+	@ save firmware vector address/CPU id
+	stmfd   sp!, {R_FW_VECT, R_CPU_ID}
 	
 	@ save r0/r1
 	stmfd   sp!, {r0, r1}
@@ -429,6 +438,13 @@ core1_wfe_loop:
 	// sim_asm_message("init.s: Core 1 received wakeup flag.", disp_only, r1);
 	#endif
 
+	// clear the sync flags for next time
+	ldr r0, =mmu_init_done
+	mov r1, #0
+	str r1, [r0]
+	str r1, [r0], #4
+	str r1, [r0], #8
+	
 	b prepare_jump_to_main
 #endif //infndef darm
 
@@ -451,18 +467,34 @@ prepare_jump_to_main:
 	@ restore r0/r1
 	ldmfd   sp!, {r0, r1}
 
-bl      ramtest_main
+	bl      ramtest_main
 
-
+	bl      clean_invalidate_dcache
+	bl      disable_caches
+	
+	@ restore firmware vector address/CPU id
+	ldmfd   sp!, {R_FW_VECT, R_CPU_ID}
+	
+	// clear entry vector for A9 firmware and return to the rom code
+	add     r0, R_CPU_ID, R_CPU_ID, LSL #1
+	add     r0, R_FW_VECT, r0, LSL #3
+	mov     r1, #0x11
+	mov     r2, #0x22
+	mov     r3, #0x33
+	mov     r4, #0x44
+	stm     r0, {r1-r4}
+	
+	
+	ldr     pc, =0x1e4
+	
 //-----------------------------------------------------------------------------
-.section .wakeupflags, "ax"
+//.section .wakeupflags, "ax"
 //-----------------------------------------------------------------------------
 	.section .sync_flags
 mmu_init_done: .word 0
 scu_enabled: .word 0
 wakeup_flag_core0to1:   .word 0
 	
-
   .endfunc
 	
 	
