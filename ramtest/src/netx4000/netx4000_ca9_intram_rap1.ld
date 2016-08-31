@@ -23,10 +23,9 @@ ENTRY(start)
 MEMORY
 {
 	ASSERT_EMPTY(rwx): ORIGIN = 0x00000000, LENGTH = 0
-/*	SERIALVECTORS(rw): ORIGIN = 0x0003fff0, LENGTH = 0x00000010*/
-	CODE(rx)         : ORIGIN = 0x05000000, LENGTH = 0x0001ff00
-	SERIALVECTORS(rw): ORIGIN = 0x0501fff0, LENGTH = 0x00000010
-	FLAGS(rw)        : ORIGIN = 0x0501ffe0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
+	CODE(rx)         : ORIGIN = 0x05020000, LENGTH = 0x0001ff00
+	FLAGS(rw)        : ORIGIN = 0x0501ffe0, LENGTH = 0x00000010 /* same address on core 0 and 1 */
+	SERIALVECTORS(rw): ORIGIN = 0x0503fff0, LENGTH = 0x00000010
 }
 
 
@@ -80,9 +79,9 @@ SECTIONS
 
 	/* NOTE: do not put anything between the bss and the stack section. Here goes the buffer. */
 
-	.stack ORIGIN(CODE)+LENGTH(CODE)-0x1000 :
+	.stack ORIGIN(CODE)+LENGTH(CODE)-0x4000 :
 	{
-		. = . + 0x1000;
+		. = . + 0x4000;
 		PROVIDE (stack_top = .);
 	} >CODE
 
@@ -92,7 +91,6 @@ SECTIONS
 		*(.sync_flags)
 	} >FLAGS
 	
-
 	/* The serial vectors are at the end of the DTCM */
 	.serial_vectors ORIGIN(SERIALVECTORS) :
 	{

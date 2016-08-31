@@ -24,7 +24,7 @@ MEMORY
 {
 	ASSERT_EMPTY(rwx): ORIGIN = 0x00000000, LENGTH = 0
 	SERIALVECTORS(rw): ORIGIN = 0x0003fff0, LENGTH = 0x00000010
-	CODE(rwx):         ORIGIN = 0x04000000, LENGTH = 0x00100000
+	CODE(rwx):         ORIGIN = 0x04000000, LENGTH = 0x00020000
 }
 
 
@@ -74,9 +74,9 @@ SECTIONS
 
 	/* NOTE: do not put anything between the bss and the stack section. Here goes the buffer. */
 
-	.stack ORIGIN(CODE)+LENGTH(CODE)-0x1000 :
+	.stack ORIGIN(CODE)+LENGTH(CODE)-0x4000 :
 	{
-		. = . + 0x1000;
+		. = . + 0x4000;
 		PROVIDE (stack_top = .);
 	} >CODE
 
