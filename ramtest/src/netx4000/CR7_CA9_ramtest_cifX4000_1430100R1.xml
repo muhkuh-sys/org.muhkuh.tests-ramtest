@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+	
+		<Snip artifact="board_config_1430100R1_cifx4000" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+
+		<!-- Activate the SDRAM. -->
+		<MemoryDeviceUp device="MEMDEV_SDRAM_H" />
+		
+		<!-- R7: Open the firewalls -->
+		<Data>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Execute>
+		
+		<!-- R7: load ram test -->
+		<Data>
+			<File name="@tElfCA9core0" />
+		</Data>
+		<Data>
+			<File name="@tElfCA9core1" />
+		</Data>
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		
+		<!-- Write ramtest parameters.
+			unsigned 32 bit values as bytes in little endian order -->
+		<Data>
+			<Hex address="0x0003ff80">
+				00 00 00 20 <!-- 0x20000000 Start address of HIF SDRAM -->
+				00 00 20 00 <!-- 0x00800000 Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ff80">
+				00 00 20 20 <!-- 0x4c000000 Start address of DDR RAM -->
+				00 00 30 00 <!-- 0x1a000000 Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0503ff80">
+				00 00 50 20 <!-- 0x66000000 Start address of DDR RAM -->
+				00 00 30 00 <!-- 0x1a000000 Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<ExecuteCA9>
+			<Core0>
+				<File name="@tElfCA9core0" start="start_core0" />
+				<R0>0x0501ff80</R0> 
+			</Core0>
+			<Core1>
+				<File name="@tElfCA9core1" start="start_core1" />
+				<R0>0x0503ff80</R0> 
+			</Core1>
+		</ExecuteCA9> 
+		<Execute>
+			<File name="@tElfCR7" />
+			<R0>0x0003ff80</R0>
+		</Execute>
+		
+	</Chunks>
+</HBootImage>

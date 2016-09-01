@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HBootSnippet>
+	<Info artifact="board_config_1430100R1_cifx4000" group="com.hilscher.hboot.sniplib" vcs-id="none" version="1.0.0">
+		<License name="PROPRIETARY"/>
+		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
+		<Description>Hardware configuration for cifX 4000 1430.100R1: MMIO, Portcontrol, SDRAM</Description>
+		<Category>netx4000</Category>
+		<Category>SDRAM</Category>
+		<Category>memory</Category>
+		<Category>hardware configuration</Category>
+	</Info>
+	<Snippet>
+
+&lt;!-- 
+	IO setup for 1430.100 R1 (cifx 4000)
+
+	The following groups of signals are configured:
+	                             Hardware      PU/PD Drive  MMIO Inv  MMIO function
+	MMIO 1-4    Rotary switch    PU 3.3 *1)    PD    6mA    -          -
+	MMIO 26,27  netX UART 0      open          PD    6mA    -          netX UART 0 RX/TX
+	MMIO 51-54  PHY0/1 LEDs      PU 3.3        -     6mA    - *2)      PHY 0/1 LNK/ACT LEDs, output inverted 
+	MMIO 55-58  COM0/1 LEDs      PU 3.3        -     6mA    -          -
+	MMIO 59-62  Sync             open          PD    6mA    -          -
+	                                                 
+	RDY                                        PU    6mA
+	RUN                                        PU    6mA
+	
+	Port control is configured for the above pins. For all other pins, the default configuration is kept.
+	The MMIOs for UART and PHY LEDs are mapped to the respective signals.
+	The MMIOs for rotary switch, COM LEDs and Sync are not mapped to any PIO or GPIO yet. 
+	SDRAM is configured and enabled.
+	No Asic Ctrl or RAP_SYSCTRL setup is done (except setting up SDRAM/DDR RAM).
+	
+	*1 The rotary switch pins are either connected to a pullup to 3.3V or floating -&gt; configure pulldown on netx pins.
+	*2 The PHY LNK/ACT signals seem to be 0 after reset. 
+	
+--&gt;
+		&lt;Options&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x12bc&quot;&gt;
+				&lt;U08&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 0 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 1 Rotary Switch 0 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 2 Rotary Switch 1 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 3 Rotary Switch 2 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 4 Rotary Switch 3 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 5 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 6 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 7 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 8 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 9 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 10 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 11 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 12 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 13 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 14 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 15 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 16 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 17 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 18 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 19 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 20 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 21 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 22 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 23 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 24 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 25 --&gt;
+					MMIO_CFG_UART0_RXD,  &lt;!-- MMIO 26 netx UART 0 RXD--&gt;
+					MMIO_CFG_UART0_TXD,  &lt;!-- MMIO 27 netx UART 0 TXD--&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 28 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 29 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 30 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 31 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 32 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 33 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 34 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 35 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 36 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 37 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 38 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 39 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 40 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 41 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 42 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 43 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 44 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 45 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 46 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 47 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 48 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 49 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 50 --&gt;
+					MMIO_CFG_PHY0_LED_PHY_CTRL_LNK,   &lt;!-- MMIO 51 CH0_Link --&gt;
+					MMIO_CFG_PHY0_LED_PHY_CTRL_ACT,   &lt;!-- MMIO 52 CH0_Act --&gt;
+					MMIO_CFG_PHY1_LED_PHY_CTRL_LNK,   &lt;!-- MMIO 53 CH1_Link--&gt;
+					MMIO_CFG_PHY1_LED_PHY_CTRL_ACT,   &lt;!-- MMIO 54 CH1_Act--&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 55 COM0 Red   --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 56 COM0 Green --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 57 COM1 Red   --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 58 COM1 Green --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 59 Sync       --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 60 Sync       --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 61 Sync       --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 62 Sync       --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 63 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 64 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 65 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 66 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 67 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 68 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 69 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 70 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 71 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 72 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 73 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 74 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 75 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 76 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 77 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 78 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 79 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 80 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 81 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 82 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 83 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 84 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 85 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 86 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 87 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 88 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 89 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 90 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 91 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 92 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 93 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 94 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 95 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 96 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 97 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 98 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 99 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 100 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 101 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 102 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 103 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 104 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 105 --&gt;
+					MMIO_CFG_PIO    &lt;!-- MMIO 106 --&gt;
+				&lt;/U08&gt;
+			&lt;/Option&gt;
+			
+			&lt;!-- Set the MMIO inversion flags --&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x1327&quot;&gt;
+				&lt;U08&gt;
+					0x00,   &lt;!-- MMIO 0 --&gt;
+					0x00,   &lt;!-- MMIO 1 Rotary Switch 0 --&gt;
+					0x00,   &lt;!-- MMIO 2 Rotary Switch 1 --&gt;
+					0x00,   &lt;!-- MMIO 3 Rotary Switch 2 --&gt;
+					0x00,   &lt;!-- MMIO 4 Rotary Switch 3 --&gt;
+					0x00,   &lt;!-- MMIO 5 --&gt;
+					0x00,   &lt;!-- MMIO 6 --&gt;
+					0x00,   &lt;!-- MMIO 7 --&gt;
+					0x00,   &lt;!-- MMIO 8 --&gt;
+					0x00,   &lt;!-- MMIO 9 --&gt;
+					0x00,   &lt;!-- MMIO 10 --&gt;
+					0x00,   &lt;!-- MMIO 11 --&gt;
+					0x00,   &lt;!-- MMIO 12 --&gt;
+					0x00,   &lt;!-- MMIO 13 --&gt;
+					0x00,   &lt;!-- MMIO 14 --&gt;
+					0x00,   &lt;!-- MMIO 15 --&gt;
+					0x00,   &lt;!-- MMIO 16 --&gt;
+					0x00,   &lt;!-- MMIO 17 --&gt;
+					0x00,   &lt;!-- MMIO 18 --&gt;
+					0x00,   &lt;!-- MMIO 19 --&gt;
+					0x00,   &lt;!-- MMIO 20 --&gt;
+					0x00,   &lt;!-- MMIO 21 --&gt;
+					0x00,   &lt;!-- MMIO 22 --&gt;
+					0x00,   &lt;!-- MMIO 23 --&gt;
+					0x00,   &lt;!-- MMIO 24 --&gt;
+					0x00,   &lt;!-- MMIO 25 --&gt;
+					0x00,   &lt;!-- MMIO 26 netx UART 0 RXD--&gt;
+					0x00,   &lt;!-- MMIO 27 netx UART 0 TXD--&gt;
+					0x00,   &lt;!-- MMIO 28 --&gt;
+					0x00,   &lt;!-- MMIO 29 --&gt;
+					0x00,   &lt;!-- MMIO 30 --&gt;
+					0x00,   &lt;!-- MMIO 31 --&gt;
+					0x00,   &lt;!-- MMIO 32 --&gt;
+					0x00,   &lt;!-- MMIO 33 --&gt;
+					0x00,   &lt;!-- MMIO 34 --&gt;
+					0x00,   &lt;!-- MMIO 35 --&gt;
+					0x00,   &lt;!-- MMIO 36 --&gt;
+					0x00,   &lt;!-- MMIO 37 --&gt;
+					0x00,   &lt;!-- MMIO 38 --&gt;
+					0x00,   &lt;!-- MMIO 39 --&gt;
+					0x00,   &lt;!-- MMIO 40 --&gt;
+					0x00,   &lt;!-- MMIO 41 --&gt;
+					0x00,   &lt;!-- MMIO 42 --&gt;
+					0x00,   &lt;!-- MMIO 43 --&gt;
+					0x00,   &lt;!-- MMIO 44 --&gt;
+					0x00,   &lt;!-- MMIO 45 --&gt;
+					0x00,   &lt;!-- MMIO 46 --&gt;
+					0x00,   &lt;!-- MMIO 47 --&gt;
+					0x00,   &lt;!-- MMIO 48 --&gt;
+					0x00,   &lt;!-- MMIO 49 --&gt;
+					0x00,   &lt;!-- MMIO 50 --&gt;
+					0x00,   &lt;!-- MMIO 51 CH0_Link   --&gt;
+					0x00,   &lt;!-- MMIO 52 CH0_Act    --&gt;
+					0x00,   &lt;!-- MMIO 53 CH1_Link   --&gt;
+					0x00,   &lt;!-- MMIO 54 CH1_Act    --&gt;
+					0x00,   &lt;!-- MMIO 55 COM0 Red   --&gt;
+					0x00,   &lt;!-- MMIO 56 COM0 Green --&gt;
+					0x00,   &lt;!-- MMIO 57 COM1 Red   --&gt;
+					0x00,   &lt;!-- MMIO 58 COM1 Green --&gt;
+					0x00,   &lt;!-- MMIO 59 Sync       --&gt;
+					0x00,   &lt;!-- MMIO 60 Sync       --&gt;
+					0x00,   &lt;!-- MMIO 61 Sync       --&gt;
+					0x00,   &lt;!-- MMIO 62 Sync       --&gt;
+					0x00,   &lt;!-- MMIO 63 --&gt;
+					0x00,   &lt;!-- MMIO 64 --&gt;
+					0x00,   &lt;!-- MMIO 65 --&gt;
+					0x00,   &lt;!-- MMIO 66 --&gt;
+					0x00,   &lt;!-- MMIO 67 --&gt;
+					0x00,   &lt;!-- MMIO 68 --&gt;
+					0x00,   &lt;!-- MMIO 69 --&gt;
+					0x00,   &lt;!-- MMIO 70 --&gt;
+					0x00,   &lt;!-- MMIO 71 --&gt;
+					0x00,   &lt;!-- MMIO 72 --&gt;
+					0x00,   &lt;!-- MMIO 73 --&gt;
+					0x00,   &lt;!-- MMIO 74 --&gt;
+					0x00,   &lt;!-- MMIO 75 --&gt;
+					0x00,   &lt;!-- MMIO 76 --&gt;
+					0x00,   &lt;!-- MMIO 77 --&gt;
+					0x00,   &lt;!-- MMIO 78 --&gt;
+					0x00,   &lt;!-- MMIO 79 --&gt;
+					0x00,   &lt;!-- MMIO 80 --&gt;
+					0x00,   &lt;!-- MMIO 81 --&gt;
+					0x00,   &lt;!-- MMIO 82 --&gt;
+					0x00,   &lt;!-- MMIO 83 --&gt;
+					0x00,   &lt;!-- MMIO 84 --&gt;
+					0x00,   &lt;!-- MMIO 85 --&gt;
+					0x00,   &lt;!-- MMIO 86 --&gt;
+					0x00,   &lt;!-- MMIO 87 --&gt;
+					0x00,   &lt;!-- MMIO 88 --&gt;
+					0x00,   &lt;!-- MMIO 89 --&gt;
+					0x00,   &lt;!-- MMIO 90 --&gt;
+					0x00,   &lt;!-- MMIO 91 --&gt;
+					0x00,   &lt;!-- MMIO 92 --&gt;
+					0x00,   &lt;!-- MMIO 93 --&gt;
+					0x00,   &lt;!-- MMIO 94 --&gt;
+					0x00,   &lt;!-- MMIO 95 --&gt;
+					0x00,   &lt;!-- MMIO 96 --&gt;
+					0x00,   &lt;!-- MMIO 97 --&gt;
+					0x00,   &lt;!-- MMIO 98 --&gt;
+					0x00,   &lt;!-- MMIO 99 --&gt;
+					0x00,   &lt;!-- MMIO 100 --&gt;
+					0x00,   &lt;!-- MMIO 101 --&gt;
+					0x00,   &lt;!-- MMIO 102 --&gt;
+					0x00,   &lt;!-- MMIO 103 --&gt;
+					0x00,   &lt;!-- MMIO 104 --&gt;
+					0x00,   &lt;!-- MMIO 105 --&gt;
+					0x00    &lt;!-- MMIO 106 --&gt;
+				&lt;/U08&gt;
+			&lt;/Option&gt;
+			
+			&lt;!-- Set the portcontrol values. --&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x139c&quot;&gt;
+				&lt;U16&gt;
+					&lt;!-- P00 --&gt;
+					&lt;!-- Rdy/Run: P0_0, P0_1  
+							TWF8BC33ALV04SZ pu 6mA  SEL:00 (netX default) DRV:01 (6mA) UDC:01 (pullup) --&gt;
+					0x0011,                                       &lt;!-- P0_0 RDY --&gt;
+					0x0011,                                       &lt;!-- P0_1 RUN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P0_2,             &lt;!-- P0_2 RST_OUT --&gt;
+					0xFFFF,                                       &lt;!-- P0_3 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_4 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_5 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_6 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_7 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_8 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_9 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_10 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P0_15 is not available --&gt;
+
+					&lt;!-- P01 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P1_0,             &lt;!-- P1_0 SQI_CLK --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P1_1,             &lt;!-- P1_1 SQI_MOSI --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P1_2,             &lt;!-- P1_2 SQI_MISO --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P1_3,             &lt;!-- P1_3 SQI_SIO2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P1_4,             &lt;!-- P1_4 SQI_SIO3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P1_5,             &lt;!-- P1_5 SQI_CS0N --&gt;
+					0xFFFF,                                       &lt;!-- P1_6 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_7 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_8 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_9 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_10 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P1_15 is not available --&gt;
+
+					&lt;!-- P02 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P2_0,             &lt;!-- P2_0 I2C_SCL --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P2_1,             &lt;!-- P2_1 I2C_SDA --&gt;
+					0xFFFF,                                       &lt;!-- P2_2 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_3 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_4 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_5 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_6 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_7 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_8 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_9 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_10 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P2_15 is not available --&gt;
+
+					&lt;!-- P03 --&gt;
+					0xFFFF,                                       &lt;!-- P3_0 is not available --&gt;
+					&lt;!-- MMIO 1-4: P3_1-P3_4  
+								TWF8BC33ALV04SZ pd 6mA SEL:00 (netX default) DRV:01 (6mA) UDC:11 (pulldown) --&gt;
+					0x0013,                                       &lt;!-- P3_1  MMIO1  Rotary Switch 0 --&gt;
+					0x0013,                                       &lt;!-- P3_2  MMIO2  Rotary Switch 1 --&gt;
+					0x0013,                                       &lt;!-- P3_3  MMIO3  Rotary Switch 2 --&gt;
+					0x0013,                                       &lt;!-- P3_4  MMIO4  Rotary Switch 3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_5,             &lt;!-- P3_5  MMIO5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_6,             &lt;!-- P3_6  MMIO6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_7,             &lt;!-- P3_7  MMIO7 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_8,             &lt;!-- P3_8  MMIO8 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_9,             &lt;!-- P3_9  MMIO9 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_10,            &lt;!-- P3_10 MMIO10 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_11,            &lt;!-- P3_11 MMIO11 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_12,            &lt;!-- P3_12 MMIO12 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_13,            &lt;!-- P3_13 MMIO13 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_14,            &lt;!-- P3_14 MMIO14 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P3_15,            &lt;!-- P3_15 MMIO15 --&gt;
+
+					&lt;!-- P04 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_0,             &lt;!-- P4_0  MMIO16 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_1,             &lt;!-- P4_1  MMIO17 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_2,             &lt;!-- P4_2  MMIO18 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_3,             &lt;!-- P4_3  MMIO19 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_4,             &lt;!-- P4_4  MMIO20 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_5,             &lt;!-- P4_5  MMIO21 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_6,             &lt;!-- P4_6  MMIO22 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_7,             &lt;!-- P4_7  MMIO23 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_8,             &lt;!-- P4_8  MMIO24 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_9,             &lt;!-- P4_9  MMIO25 --&gt;
+					&lt;!-- MMIO 26, 27: P4_10-P4_11  
+								TWF8BC33ALV04SZ pd 6mA SEL:00 (netX default) DRV:01 (6mA) UDC:11 (pulldown) --&gt;
+					0x0013,                                       &lt;!-- P3_10 MMIO26 netX UART 0 RXD--&gt;
+					0x0013,                                       &lt;!-- P3_11 MMIO27 netX UART 0 TXD--&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_12,            &lt;!-- P4_12 MMIO28 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_13,            &lt;!-- P4_13 MMIO29 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_14,            &lt;!-- P4_14 MMIO30 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P4_15,            &lt;!-- P4_15 MMIO31 --&gt;
+
+					&lt;!-- P05 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_0,             &lt;!-- P5_0  MMIO32 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_1,             &lt;!-- P5_1  MMIO33 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_2,             &lt;!-- P5_2  MMIO34 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_3,             &lt;!-- P5_3  MMIO35 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_4,             &lt;!-- P5_4  MMIO36 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_5,             &lt;!-- P5_5  MMIO37 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_6,             &lt;!-- P5_6  MMIO38 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_7,             &lt;!-- P5_7  MMIO39 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_8,             &lt;!-- P5_8  MMIO40 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_9,             &lt;!-- P5_9  MMIO41 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_10,            &lt;!-- P5_10 MMIO42 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_11,            &lt;!-- P5_11 MMIO43 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_12,            &lt;!-- P5_12 MMIO44 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_13,            &lt;!-- P5_13 MMIO45 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_14,            &lt;!-- P5_14 MMIO46 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P5_15,            &lt;!-- P5_15 MMIO47 --&gt;
+					
+					&lt;!-- P06 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P6_0,             &lt;!-- P6_0  MMIO48 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P6_1,             &lt;!-- P6_1  MMIO49 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P6_2,             &lt;!-- P6_2  MMIO50 --&gt;
+					&lt;!-- MMIO 51-68: P6_3-P6_10  
+								TWF8BC33ALV04SZ 6mA SEL:00 (netX default) DRV:01 (6mA) UDC:00 (pulldown) --&gt;
+					0x0010,                                       &lt;!-- P6_3  MMIO51 CH0_Link    --&gt;
+					0x0010,                                       &lt;!-- P6_4  MMIO52 CH0_Act     --&gt;
+					0x0010,                                       &lt;!-- P6_5  MMIO53 CH1_Link    --&gt;
+					0x0010,                                       &lt;!-- P6_6  MMIO54 CH1_Act     --&gt;
+					0x0010,                                       &lt;!-- P6_7  MMIO55 COM0 Red    --&gt;
+					0x0010,                                       &lt;!-- P6_8  MMIO56 COM0 Green  --&gt;
+					0x0010,                                       &lt;!-- P6_9  MMIO57 COM1 Red    --&gt;
+					0x0010,                                       &lt;!-- P6_10 MMIO58 COM1 Green  --&gt;
+					&lt;!-- MMIO 59-62: P6_11-P6_14  
+								TWF8BC33ALV04SZ PD 6mA SEL:00 (netX default) DRV:01 (6mA) UDC:11 (pulldown) --&gt;
+					0x0013,                                       &lt;!-- P6_11 MMIO59 Sync        --&gt;
+					0x0013,                                       &lt;!-- P6_12 MMIO60 Sync        --&gt;
+					0x0013,                                       &lt;!-- P6_13 MMIO61 Sync        --&gt;
+					0x0013,                                       &lt;!-- P6_14 MMIO62 Sync        --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P6_15             &lt;!-- P6_15 MMIO63 --&gt;
+				&lt;/U16&gt;
+			&lt;/Option&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x147c&quot;&gt;
+				&lt;U16&gt;
+					&lt;!-- P07 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_0,             &lt;!-- P7_0  HIF_A17 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_1,             &lt;!-- P7_1  HIF_D0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_2,             &lt;!-- P7_2  HIF_D1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_3,             &lt;!-- P7_3  HIF_D2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_4,             &lt;!-- P7_4  HIF_D3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_5,             &lt;!-- P7_5  HIF_D4 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_6,             &lt;!-- P7_6  HIF_D5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_7,             &lt;!-- P7_7  HIF_D6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_8,             &lt;!-- P7_8  HIF_D7 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_9,             &lt;!-- P7_9  HIF_D8 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_10,            &lt;!-- P7_10 HIF_D9 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_11,            &lt;!-- P7_11 HIF_D10 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_12,            &lt;!-- P7_12 HIF_D11 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_13,            &lt;!-- P7_13 HIF_D12 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_14,            &lt;!-- P7_14 HIF_D13 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P7_15,            &lt;!-- P7_15 HIF_D14 --&gt;
+
+					&lt;!-- P08 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_0,             &lt;!-- P8_0  HIF_D15 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_1,             &lt;!-- P8_1  HIF_D16 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_2,             &lt;!-- P8_2  HIF_D17 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_3,             &lt;!-- P8_3  HIF_D18 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_4,             &lt;!-- P8_4  HIF_D19 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_5,             &lt;!-- P8_5  HIF_D20 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_6,             &lt;!-- P8_6  HIF_D21 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_7,             &lt;!-- P8_7  HIF_D22 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_8,             &lt;!-- P8_8  HIF_D23 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_9,             &lt;!-- P8_9  HIF_D24 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_10,            &lt;!-- P8_10 HIF_D25 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_11,            &lt;!-- P8_11 HIF_D26 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_12,            &lt;!-- P8_12 HIF_D27 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_13,            &lt;!-- P8_13 HIF_D28 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_14,            &lt;!-- P8_14 HIF_D29 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P8_15,            &lt;!-- P8_15 HIF_D30 --&gt;
+
+					&lt;!-- P09 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_0,             &lt;!-- P9_0  MEM_SDCLK --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_1,             &lt;!-- P9_1  HIF_A0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_2,             &lt;!-- P9_2  HIF_A1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_3,             &lt;!-- P9_3  HIF_A2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_4,             &lt;!-- P9_4  HIF_A3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_5,             &lt;!-- P9_5  HIF_A4 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_6,             &lt;!-- P9_6  HIF_A5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_7,             &lt;!-- P9_7  HIF_A6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_8,             &lt;!-- P9_8  HIF_A7 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_9,             &lt;!-- P9_9  HIF_A8 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_10,            &lt;!-- P9_10 HIF_A9 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_11,            &lt;!-- P9_11 HIF_A10 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_12,            &lt;!-- P9_12 HIF_A11 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_13,            &lt;!-- P9_13 HIF_A12 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_14,            &lt;!-- P9_14 HIF_A13 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P9_15,            &lt;!-- P9_15 HIF_A14 --&gt;
+
+					&lt;!-- P10 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_0,            &lt;!-- P10_0  HIF_A15 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_1,            &lt;!-- P10_1  HIF_A16 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_2,            &lt;!-- P10_2  HIF_D31 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_3,            &lt;!-- P10_3  HIF_BHE1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_4,            &lt;!-- P10_4  HIF_BHE3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_5,            &lt;!-- P10_5  HIF_CSN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_6,            &lt;!-- P10_6  HIF_RDN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_7,            &lt;!-- P10_7  HIF_WRN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_8,            &lt;!-- P10_8  HIF_RDY --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_9,            &lt;!-- P10_9  HIF_DIRQ --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P10_10,           &lt;!-- P10_10 HIF_SDCLK --&gt;
+					0xFFFF,                                       &lt;!-- P10_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P10_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P10_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P10_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P10_15 is not available --&gt;
+
+					&lt;!-- P11 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_0,            &lt;!-- P11_0 SDIO_CLK --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_1,            &lt;!-- P11_1 SDIO_CMD --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_2,            &lt;!-- P11_2 SDIO_DAT0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_3,            &lt;!-- P11_3 SDIO_DAT1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_4,            &lt;!-- P11_4 SDIO_DAT2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_5,            &lt;!-- P11_5 SDIO_DAT3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_6,            &lt;!-- P11_6 SDIO_CD --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P11_7,            &lt;!-- P11_7 SDIO_WP --&gt;
+					0xFFFF,                                       &lt;!-- P11_8 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_9 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_10 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P11_15 is not available --&gt;
+
+					&lt;!-- P12 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_0,            &lt;!-- P12_0  VO_R0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_1,            &lt;!-- P12_1  VO_R1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_2,            &lt;!-- P12_2  VO_R2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_3,            &lt;!-- P12_3  VO_R3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_4,            &lt;!-- P12_4  VO_R4 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_5,            &lt;!-- P12_5  VO_R5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_6,            &lt;!-- P12_6  VO_R6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_7,            &lt;!-- P12_7  VO_R7 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_8,            &lt;!-- P12_8  VO_G0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_9,            &lt;!-- P12_9  VO_G1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_10,           &lt;!-- P12_10 VO_G2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_11,           &lt;!-- P12_11 VO_G3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_12,           &lt;!-- P12_12 VO_G4 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_13,           &lt;!-- P12_13 VO_G5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_14,           &lt;!-- P12_14 VO_G6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P12_15,           &lt;!-- P12_15 VO_G7 --&gt;
+
+					&lt;!-- P13 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_0,            &lt;!-- P13_0  VO_B0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_1,            &lt;!-- P13_1  VO_B1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_2,            &lt;!-- P13_2  VO_B2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_3,            &lt;!-- P13_3  VO_B3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_4,            &lt;!-- P13_4  VO_B4 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_5,            &lt;!-- P13_5  VO_B5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_6,            &lt;!-- P13_6  VO_B6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_7,            &lt;!-- P13_7  VO_B7 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_8,            &lt;!-- P13_8  VO_CLK --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_9,            &lt;!-- P13_9  VO_BLANK --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_10,           &lt;!-- P13_10 VO_HSYNC --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P13_11,           &lt;!-- P13_11 VO_VSYNC --&gt;
+					0xFFFF,                                       &lt;!-- P13_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P13_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P13_14 is not available --&gt;
+					0xFFFF                                        &lt;!-- P13_15 is not available --&gt;
+				&lt;/U16&gt;
+			&lt;/Option&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x155c&quot;&gt;
+				&lt;U16&gt;
+					&lt;!-- P14 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P14_0,            &lt;!-- P14_0 USB20_OCI --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P14_1,            &lt;!-- P14_1 USB20_PPON --&gt;
+					0xFFFF,                                       &lt;!-- P14_2 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_3 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_4 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_5 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_6 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_7 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_8 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_9 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_10 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P14_15 is not available --&gt;
+
+					&lt;!-- P15 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_0,            &lt;!-- P15_0  MEM_A0 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_1,            &lt;!-- P15_1  MEM_A1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_2,            &lt;!-- P15_2  MEM_A2 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_3,            &lt;!-- P15_3  MEM_A3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_4,            &lt;!-- P15_4  MEM_A4 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_5,            &lt;!-- P15_5  MEM_A5 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_6,            &lt;!-- P15_6  MEM_A6 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_7,            &lt;!-- P15_7  MEM_A7 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_8,            &lt;!-- P15_8  MEM_A8 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_9,            &lt;!-- P15_9  MEM_A9 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_10,           &lt;!-- P15_10 MEM_A10 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_11,           &lt;!-- P15_11 MEM_A11 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_12,           &lt;!-- P15_12 MEM_A12 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P15_13,           &lt;!-- P15_13 MEM_A13 --&gt;
+					0xFFFF,                                       &lt;!-- P15_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P15_15 is not available --&gt;
+
+					&lt;!-- P16 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_0,            &lt;!-- P16_0  MEM_A14 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_1,            &lt;!-- P16_1  MEM_A15 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_2,            &lt;!-- P16_2  MEM_A16 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_3,            &lt;!-- P16_3  MEM_A17 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_4,            &lt;!-- P16_4  MEM_BHE1 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_5,            &lt;!-- P16_5  MEM_BHE3 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_6,            &lt;!-- P16_6  MEM_SD_CSN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_7,            &lt;!-- P16_7  MEM_M_CSN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_8,            &lt;!-- P16_8  MEM_WRN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_9,            &lt;!-- P16_9  MEM_RDN --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_10,           &lt;!-- P16_10 MEM_RDY --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P16_11,           &lt;!-- P16_11 MMIO0 --&gt;
+					0xFFFF,                                       &lt;!-- P16_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P16_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P16_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P16_15 is not available --&gt;
+
+					&lt;!-- P17 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P17_0,            &lt;!-- P17_0 LVDS_TXT0 --&gt;
+					0xFFFF,                                       &lt;!-- P17_1 is not available --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P17_2,            &lt;!-- P17_2 LVDS_TXT1 --&gt;
+					0xFFFF,                                       &lt;!-- P17_3 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_4 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_5 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_6 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_7 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_8 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_9 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_10 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_11 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_12 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_13 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_14 is not available --&gt;
+					0xFFFF,                                       &lt;!-- P17_15 is not available --&gt;
+
+					&lt;!-- P18 --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P18_0,            &lt;!-- P18_0 LVDS_RXT0 --&gt;
+					0xFFFF,                                       &lt;!-- P18_1 is not available --&gt;
+					DFLT_VAL_NX4000_PORTCONTROL_P18_2             &lt;!-- P18_2 LVDS_RXT1 --&gt;
+				&lt;/U16&gt;
+			&lt;/Option&gt;
+			
+		&lt;/Options&gt;
+			
+		&lt;!-- Apply the MMIO values. --&gt;
+		&lt;Data&gt;
+			&lt;Hex address=&quot;0x04000000&quot;&gt;
+				f0b4aff3538744f6be3044f65333c0f202004ff480744ff480660746c0f20203
+				cff20844cff20846a3f5123210f8015f13f8011fa2f2533241ea4521bb42e56f
+				e56746f82210efd1aff35385f0bc7047
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
+		&lt;Execute&gt;
+			&lt;Address&gt;0x04000001&lt;/Address&gt;
+		&lt;/Execute&gt;
+
+		&lt;!-- Apply the portcontrol values. --&gt;
+		&lt;Execute&gt;
+			&lt;Address&gt;0x041165f5&lt;/Address&gt;
+		&lt;/Execute&gt;
+		
+		&lt;!-- Configure the SDRAM. --&gt;
+		&lt;Options&gt;
+			&lt;Option id=&quot;hif_hif_io&quot;&gt;
+				&lt;U32&gt;0x000300c0&lt;/U32&gt;
+			&lt;/Option&gt;
+
+			&lt;Option id=&quot;netx_hif_sdram&quot;&gt;
+				&lt;U32&gt;0x030d0001&lt;/U32&gt;    &lt;!-- SDRAM general_ctrl register --&gt;
+				&lt;U32&gt;0x02A23251&lt;/U32&gt;    &lt;!-- SDRAM timing_ctrl register --&gt;
+				&lt;U32&gt;0x00000033&lt;/U32&gt;    &lt;!-- SDRAM mr register --&gt;
+				&lt;U16&gt;100&lt;/U16&gt;           &lt;!-- SDRAM powerup timeout in milliseconds --&gt;
+			&lt;/Option&gt;
+		&lt;/Options&gt;
+
+</Snippet>
+</HBootSnippet>
