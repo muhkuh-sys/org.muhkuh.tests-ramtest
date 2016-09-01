@@ -13,9 +13,9 @@ start:
 	stmfd   sp!, {r0-r12, lr}
 
 	@ save romcode stack position
-	mov     r0, sp
-	ldr     r1, =sp_save
-	str     r0, [r1]
+	mov     r2, sp
+	ldr     r3, =sp_save
+	str     r2, [r3]
  
 	@ set own stack position
 	ldr     r2, =stack_top
