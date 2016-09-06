@@ -3,26 +3,26 @@
 	<Chunks>
 		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
 
+		<!-- Display the HW/memory configuration -->
 		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
 		
 		<!-- ================================================================== -->
 		<!-- netX intram tests: 
 				CA9/0 code at 05000000, CA9/1 code at 05020000  
-				0x05080000 - 0x0509ffff  
-				0x050a0000 - 0x050bffff
-				0x050c0000 - 0x050dffff
-				0x050e0000 - 0x050effff
-				0x050f0000 - 0x050fffff
-				0x05100000 - 0x05107fff
+				netX_RAM0 0x05080000 - 0x0509ffff  
+				netX_RAM1 0x050a0000 - 0x050bffff
+				netX_RAM2 0x050c0000 - 0x050dffff
+				netX_HS0  0x050e0000 - 0x050effff
+				netX_HS2  0x050f0000 - 0x050fffff
+				netX_ETH  0x05100000 - 0x05107fff
 				
-				AXI RAM tests: 
-				0x05060000 - 0x0507ffff
-				0x05040000 - 0x0505ffff
-				0x05020000 - 0x0503ffff  CA9/0 at 05040000, CA9/1 code at 05060000  
-				0x05000000 - 0x0501ffff  CA9/0 at 05040000, CA9/1 code at 05060000  
+				AHB/AXI RAM tests: 
+				AHB_RAM3 0x05060000 - 0x0507ffff
+				AHB_RAM2 0x05040000 - 0x0505ffff
+				AHB_RAM1 0x05020000 - 0x0503ffff  CA9/0 at 05040000, CA9/1 code at 05060000  
+				AHB_RAM0 0x05000000 - 0x0501ffff  CA9/0 at 05040000, CA9/1 code at 05060000  
 				
 			-->
-				
 		
 		<!-- R7: Open the firewalls -->
 		<Data>
