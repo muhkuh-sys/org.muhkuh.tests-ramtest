@@ -348,7 +348,7 @@ bin_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.Ob
 # cifx 4000 SDRAM CR7 uncached
 ramtest_standalone_cifx4000_sdram  = env_netx4000_s_cr7.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_cifx4000_sdram_cr7.bin',       
-	'src/netx4000/CR7_cifx4000_1430100R1_sdram.xml',    
+	'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml',    
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7[0]}), 
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
 	)
@@ -357,7 +357,7 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_cifx4000_sdram, elf_netx4000_s_cr7
 # cifx 4000 SDRAM CR7 cached
 ramtest_standalone_cifx4000_sdram  = env_netx4000_s_cr7.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_cifx4000_sdram_cr7_cached.bin',       
-	'src/netx4000/CR7_cifx4000_1430100R1_sdram.xml',    
+	'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml',    
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7_cached[0]}), 
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
 	)
@@ -366,7 +366,7 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_cifx4000_sdram, elf_netx4000_s_cr7
 # cifx 4000 SDRAM CR7+CA9 cached (L1+L2)
 ramtest_standalone_cifx4000_sdram_cr7_ca9_cached_l2  = env_netx4000_s_cr7.HBootImage(
 	'targets/netx4000/standalone/ramtest_standalone_cifx4000_sdram_cr7_ca9_cached_l2.bin',       
-	'src/netx4000/CR7_CA9_cifX4000_1430100R1_sdram.xml',    
+	'src/netx4000/cifx4000/CR7_CA9_cifX4000_1430100R1_sdram.xml',    
 	HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
 	'tElfCR7'             : elf_netx4000_s_cr7_cached[0],
