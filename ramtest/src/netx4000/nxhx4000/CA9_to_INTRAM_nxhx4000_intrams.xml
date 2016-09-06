@@ -3,7 +3,7 @@
 	<Chunks>
 		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
 
-
+		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
 		
 		<!-- ================================================================== -->
 		<!-- netX intram tests: 
