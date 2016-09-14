@@ -246,6 +246,9 @@ static RAMTEST_RESULT_T ram_test_checkerboard_1pass(RAMTEST_PARAMETER_T *ptRamTe
 			uprintf("! Checkerboard test at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			uprintf("! wrote value:     0x%08x\n", ulValue);
 			uprintf("! read back value: 0x%08x\n", ulReadBack);
+			volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
+			hexdump_read_multi(pulAddr, 10);
+
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -711,6 +714,12 @@ static RAMTEST_RESULT_T ram_test_memcpy_pass(
 			uprintf("! memcpy test at address 0x%08x failed (offset 0x%08x)\n", ulDestAddr+sizOffset*sizeof(unsigned long), (unsigned long)sizOffset);
 			uprintf("! wrote value:     0x%08x\n", pulBuf1[sizOffset]);
 			uprintf("! read back value: 0x%08x\n", pulBuf2[sizOffset]);
+			
+			
+			volatile unsigned long *pulAddr = adjust_hexdump_addr(ulDestAddr+sizOffset*sizeof(unsigned long), pucDestAddr, pucDestAddr + sizeof(unsigned long) * sizDwordSize, 64);
+			hexdump_read_multi(pulAddr, 10);
+			
+			
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
 		}
@@ -1089,6 +1098,22 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 	}
 
 
+	/* test memcpy */
+	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_MEMCPY)!=0 )
+	{
+		uprintf(". Testing memcpy...\n");
+//		tResult = ram_test_count_32bit(ptParameter);
+		tResult = ram_test_memcpy(ptParameter);
+		if( tResult==RAMTEST_RESULT_OK )
+		{
+			uprintf(". memcpy test OK\n");
+		}
+		else
+		{
+			uprintf("! memcpy test failed.\n");
+		}
+	}
+
 	/* Test checkerboard pattern for retention + produce hard cluster for burst */
 	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_CHECKERBOARD)!=0 )
 	{
@@ -1135,22 +1160,6 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		}
 	}
 	
-	/* test memcpy */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_MEMCPY)!=0 )
-	{
-		uprintf(". Testing memcpy...\n");
-//		tResult = ram_test_count_32bit(ptParameter);
-		tResult = ram_test_memcpy(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". memcpy test OK\n");
-		}
-		else
-		{
-			uprintf("! memcpy test failed.\n");
-		}
-	}
-
 	return tResult;
 }
 
