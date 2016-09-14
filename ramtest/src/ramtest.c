@@ -716,7 +716,7 @@ static RAMTEST_RESULT_T ram_test_memcpy_pass(
 			uprintf("! read back value: 0x%08x\n", pulBuf2[sizOffset]);
 			
 			
-			volatile unsigned long *pulAddr = adjust_hexdump_addr(ulDestAddr+sizOffset*sizeof(unsigned long), pucDestAddr, pucDestAddr + sizeof(unsigned long) * sizDwordSize, 64);
+			volatile unsigned long *pulAddr = adjust_hexdump_addr((volatile unsigned long*)(ulDestAddr+sizOffset*sizeof(unsigned long)), (volatile unsigned long*)pucDestAddr, (volatile unsigned long*)(pucDestAddr + sizeof(unsigned long) * sizDwordSize), 64);
 			hexdump_read_multi(pulAddr, 10);
 			
 			
@@ -1114,6 +1114,22 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		}
 	}
 
+	/* test access sequence */
+	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
+	{
+		uprintf(". Testing Access Sequence...\n");
+//		tResult = ram_test_count_32bit(ptParameter);
+		tResult = ram_test_count_addr_32bit(ptParameter);
+		if( tResult==RAMTEST_RESULT_OK )
+		{
+			uprintf(". Access Sequence test OK\n");
+		}
+		else
+		{
+			uprintf("! Access Sequence test failed.\n");
+		}
+	}
+
 	/* Test checkerboard pattern for retention + produce hard cluster for burst */
 	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_CHECKERBOARD)!=0 )
 	{
@@ -1141,22 +1157,6 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		else
 		{
 			uprintf("! Marching test failed.\n");
-		}
-	}
-
-	/* test access sequence */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
-	{
-		uprintf(". Testing Access Sequence...\n");
-//		tResult = ram_test_count_32bit(ptParameter);
-		tResult = ram_test_count_addr_32bit(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". Access Sequence test OK\n");
-		}
-		else
-		{
-			uprintf("! Access Sequence test failed.\n");
 		}
 	}
 	
