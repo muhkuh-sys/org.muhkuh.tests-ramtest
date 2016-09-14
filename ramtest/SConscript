@@ -709,6 +709,24 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cache
 	elf_netx4000_s_ca9_core0_cached +
 	elf_netx4000_s_ca9_core1_cached)
 
+# NXHX 4000 DDR RAM 600 MHz with l1+l2 caches enabled, on all CPUs. 
+ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached_l2 = env_netx4000_s_cr7.HBootImage(
+	'targets/netx4000/standalone/ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached_l2.bin', 
+	'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml', 
+	HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls[0],
+	'tElfCR7'             : elf_netx4000_s_cr7_cached[0],
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2[0],
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
+	}),
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	)
+env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached_l2, 
+	elf_netx4000_cr7_openfirewalls +
+	elf_netx4000_s_cr7_cached +
+	elf_netx4000_s_ca9_core0_cached_l2 +
+	elf_netx4000_s_ca9_core1_cached)
+
 
 
 	
