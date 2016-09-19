@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HBootSnippet>
-	<Info artifact="DDR_parameter_NXHX4000_R1_400MHz" group="com.hilscher.hboot.sniplib" vcs-id="GITcbe2af9e2448" version="0.0.0">
+	<Info artifact="DDR_parameter_NXHX4000_R1_400MHz" group="com.hilscher.hboot.sniplib" vcs-id="GITd14604ffd5d6" version="0.0.0">
 		<License name="PROPRIETARY"/>
 		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
 		<Description>Parameter for the DDR memory on the Hilscher NXHX 4000+ R1 board at 400MHz.</Description>
