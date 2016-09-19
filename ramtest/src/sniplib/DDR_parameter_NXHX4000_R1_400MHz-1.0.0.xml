@@ -88,7 +88,7 @@
 			&lt;WriteCtrl register=&quot;6&quot;   data=&quot;0x00013880&quot;/&gt;
 			&lt;WriteCtrl register=&quot;7&quot;   data=&quot;0x00030d40&quot;/&gt;
 			&lt;WriteCtrl register=&quot;8&quot;   data=&quot;0x00000000&quot;/&gt;
-			&lt;WriteCtrl register=&quot;9&quot;   data=&quot;0x12 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL9_CASLAT_LIN | 0x0 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL9_NO_CMD_INIT | 0x200 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL9_TDLL&quot;/&gt;
+			&lt;WriteCtrl register=&quot;9&quot;   data=&quot;0x0c &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL9_CASLAT_LIN | 0x0 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL9_NO_CMD_INIT | 0x200 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL9_TDLL&quot;/&gt;
 			&lt;WriteCtrl register=&quot;10&quot;  data=&quot;0x04040005&quot;/&gt;
 			&lt;WriteCtrl register=&quot;11&quot;  data=&quot;0x040e1404&quot;/&gt;
 			&lt;WriteCtrl register=&quot;12&quot;  data=&quot;0x04041006&quot;/&gt;
