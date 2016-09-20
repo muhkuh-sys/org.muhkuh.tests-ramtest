@@ -1,0 +1,34 @@
+<!--
+  Run the DDR ram test on CR7.
+-->
+<!-- R7: Write the ramtest parameters for R7 and A9
+        core              CR7
+        test area start   0x40000000
+        test area end     0x7fffffff
+        test area size    0x40000000
+        unsigned 32 bit values as bytes in little endian order -->
+<!-- CR7 parameters -->
+<Data>
+	<Hex address="0x0003ff80">
+		00 00 00 40 <!-- 0x40000000 Start address of DDR RAM -->
+		00 00 00 40 <!-- 0x40000000 Size in bytes -->
+		ff 01 00 00 <!-- Test Cases -->
+		00 00 00 00 <!-- Loops -->
+		00 00 00 00 <!-- PerfTestCases -->
+		00 00 00 00 <!-- Status LED MMIO numbers -->
+		01 00 00 00 <!-- Enable UART -->
+		00 00 00 ff <!-- tag mask -->
+		00 00 00 11 <!-- tag value -->
+	</Hex>
+</Data>
+
+<!-- R7: load ram test for R7 -->
+<Data>
+	<File name="@tElfCR7" />
+</Data>
+
+<!-- R7: run ram test -->
+<Execute>
+	<File name="@tElfCR7" />
+	<R0>0x0003ff80</R0> <!-- address of parameter block -->
+</Execute>
