@@ -200,24 +200,24 @@ Command('targets/testbench/lua/ramtest.lua',                        'lua/ramtest
 # Install a demo test.
 # NOTE: Place hexadecimal values in quotes to prevent conversion to decimal.
 #
-aAttr = {'CHIP_TYPE':             56,
+aAttr0 = {'CHIP_TYPE':             56,
          'REGISTER_GENERAL_CTRL': '0x030D0001',
          'REGISTER_TIMING_CTRL':  '0x00A13251',
          'REGISTER_MODE':         '0x00000033',
          'SIZE_EXPONENT':         23,
          'INTERFACE':             'MEM'}
-tP0 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr)
+tP0 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr0)
 tR0 = env_default.RamTestTemplate('targets/demo_scripts/ramtest_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0})
 tT0 = env_default.RamTestTemplate('targets/demo_scripts/timing_phase_test_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0})
 
 # IS42S32200L-7I_netX4000_HIF_ONBOARD.xml
-aAttr = {'CHIP_TYPE':             4000,
+aAttr1 = {'CHIP_TYPE':             4000,
          'REGISTER_GENERAL_CTRL': '0x030D0001',
          'REGISTER_TIMING_CTRL':  '0x02A23251',
          'REGISTER_MODE':         '0x00000033',
          'SIZE_EXPONENT':         23,
          'INTERFACE':             'HIF'}
-tP0 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr)
-tR0 = env_default.RamTestTemplate('targets/demo_scripts/ramtest_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0})
-tT0 = env_default.RamTestTemplate('targets/demo_scripts/timing_phase_test_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0})
+tP1 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr1)
+tR1 = env_default.RamTestTemplate('targets/demo_scripts/ramtest_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1})
+tT1 = env_default.RamTestTemplate('targets/demo_scripts/timing_phase_test_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1})
 
