@@ -89,7 +89,7 @@
 			&lt;WriteCtrl register=&quot;7&quot;   data=&quot;0x0004918a&quot;/&gt;
 			&lt;WriteCtrl register=&quot;8&quot;   data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;9&quot;   data=&quot;0x12000200&quot;/&gt;
-			&lt;WriteCtrl register=&quot;10&quot;  data=&quot;0x04040005&quot;/&gt;
+			&lt;WriteCtrl register=&quot;10&quot;  data=&quot;0x04040007&quot;/&gt;
 			&lt;WriteCtrl register=&quot;11&quot;  data=&quot;0x05151e05&quot;/&gt;
 			&lt;WriteCtrl register=&quot;12&quot;  data=&quot;0x04051809&quot;/&gt;
 			&lt;WriteCtrl register=&quot;13&quot;  data=&quot;0x00a4330c&quot;/&gt;

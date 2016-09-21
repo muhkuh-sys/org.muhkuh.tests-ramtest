@@ -1082,38 +1082,6 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 	tResult = RAMTEST_RESULT_OK;
 
 
-	/* Test all Datalines independently from each other */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_DATABUS)!=0 )
-	{
-		uprintf(". Testing Databus...\n");
-		tResult = ram_test_databus(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". Databus test OK.\n");
-		}
-		else
-		{
-			uprintf("! Databus test failed.\n");
-		}
-	}
-
-
-	/* test memcpy */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_MEMCPY)!=0 )
-	{
-		uprintf(". Testing memcpy...\n");
-//		tResult = ram_test_count_32bit(ptParameter);
-		tResult = ram_test_memcpy(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". memcpy test OK\n");
-		}
-		else
-		{
-			uprintf("! memcpy test failed.\n");
-		}
-	}
-
 	/* test access sequence */
 	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
 	{
