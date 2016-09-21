@@ -351,7 +351,8 @@ ramtest_standalone_cifx4000_sdram  = env_netx4000_s_cr7.HBootImage(
 	'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml',
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7[0]}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_cifx4000_sdram, elf_netx4000_s_cr7)
 
@@ -361,7 +362,8 @@ ramtest_standalone_cifx4000_sdram  = env_netx4000_s_cr7.HBootImage(
 	'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml',
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7_cached[0]}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_cifx4000_sdram, elf_netx4000_s_cr7_cached)
 
@@ -376,7 +378,8 @@ ramtest_standalone_cifx4000_sdram_cr7_ca9_cached_l2  = env_netx4000_s_cr7.HBootI
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_cifx4000_sdram_cr7_ca9_cached_l2,
 	elf_netx4000_cr7_openfirewalls +
@@ -394,7 +397,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_cr7 = env_netx4000_s_cr7.HBootImage(
 	'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_400MHz.xml',
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7[0]}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7, elf_netx4000_s_cr7)
 
@@ -404,7 +408,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_cached = env_netx4000_s_cr7.HBootIma
 	'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_400MHz.xml',
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7_cached[0]}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_cached, elf_netx4000_s_cr7_cached)
 
@@ -418,7 +423,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0 = env_netx4000_s_ca9_core0.HBoo
 	'tElfCA9core0': elf_netx4000_s_ca9_core0[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0,
 	elf_netx4000_cr7_openfirewalls +
@@ -433,7 +439,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0_cached = env_netx4000_s_ca9_cor
 	'tElfCA9core0': elf_netx4000_s_ca9_core0_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9core0_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -450,7 +457,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_ca9 = env_netx4000_s_ca9_core0.HBootImag
 	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9,
 	elf_netx4000_cr7_openfirewalls +
@@ -468,7 +476,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached = env_netx4000_s_ca9_core0_ca
 	'tElfCA9core1': elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -485,7 +494,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached_l2 = env_netx4000_s_ca9_core0
 	'tElfCA9core1': elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_ca9_cached_l2,
 	elf_netx4000_cr7_openfirewalls +
@@ -504,7 +514,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9 = env_netx4000_s_cr7.HBootImage(
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9,
 	elf_netx4000_cr7_openfirewalls +
@@ -523,7 +534,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached = env_netx4000_s_cr7.HBoo
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -542,7 +554,8 @@ ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached_l2 = env_netx4000_s_cr7.H
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_400MHz_cr7_ca9_cached_l2,
 	elf_netx4000_cr7_openfirewalls +
@@ -562,7 +575,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7 = env_netx4000_s_cr7.HBootImage(
 	'tElfCR7': elf_netx4000_s_cr7[0]
 	}), 
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7, elf_netx4000_s_cr7)
 
@@ -575,7 +589,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core0 = env_netx4000_s_ca9_core0.HBoo
 	'tElfCA9core0': elf_netx4000_s_ca9_core0[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core0,
 	elf_netx4000_cr7_openfirewalls +
@@ -591,7 +606,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core1 = env_netx4000_s_ca9_core1.HBoo
 	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core1.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core1,
 	elf_netx4000_cr7_openfirewalls +
@@ -608,7 +624,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_ca9 = env_netx4000_s_ca9_core0.HBootImag
 	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9,
 	elf_netx4000_cr7_openfirewalls +
@@ -625,7 +642,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core0 = env_netx4000_s_cr7.HBootI
 	'tElfCA9core0': elf_netx4000_s_ca9_core0[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core0,
 	elf_netx4000_cr7_openfirewalls +
@@ -642,7 +660,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core1 = env_netx4000_s_cr7.HBootI
 	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9core1,
 	elf_netx4000_cr7_openfirewalls +
@@ -660,7 +679,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9 = env_netx4000_s_cr7.HBootImage(
 	'tElfCA9core1': elf_netx4000_s_ca9_core1[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9,
 	elf_netx4000_cr7_openfirewalls +
@@ -676,7 +696,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_cached = env_netx4000_s_cr7_cached.H
 	'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_600MHz.xml',
 	HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s_cr7_cached[0]}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_cached, elf_netx4000_s_cr7_cached)
 
@@ -690,7 +711,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core0_cached = env_netx4000_s_ca9_cor
 	'tElfCA9core0': elf_netx4000_s_ca9_core0_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9core0_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -707,7 +729,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_cached = env_netx4000_s_ca9_core0_ca
 	'tElfCA9core1': elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_ca9_core0.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -725,7 +748,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached = env_netx4000_s_cr7_cach
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -744,7 +768,8 @@ ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached_l2 = env_netx4000_s_cr7.H
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ca9_cached_l2,
 	elf_netx4000_cr7_openfirewalls +
@@ -771,7 +796,8 @@ ramtest_standalone_nxhx4000_intrams_cr7_ca9_cached_l2 = env_netx4000_s_cr7.HBoot
 	'tElfCR7SyncA9'       : elf_netx4000_cr7_sync_ca9[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_intrams_cr7_ca9_cached_l2,
 	elf_netx4000_cr7_openfirewalls +
@@ -801,7 +827,8 @@ ramtest_standalone_nxhx4000_intrams_ca9_cached_l2 = env_netx4000_s_ca9_core0_cac
 	'tElfCR7SyncA9'       : elf_netx4000_cr7_sync_ca9[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_intrams_ca9_cached_l2,
 	elf_netx4000_cr7_openfirewalls +
@@ -826,7 +853,8 @@ ramtest_standalone_nxhx4000_intrams_ca9_cached = env_netx4000_s_ca9_core0_cached
 	'tElfCR7SyncA9'       : elf_netx4000_cr7_sync_ca9[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_intrams_ca9_cached,
 	elf_netx4000_cr7_openfirewalls +
@@ -847,7 +875,8 @@ ramtest_standalone_nxhx4000_intrams_cr7_cached = env_netx4000_s_cr7.HBootImage(
 	'tElfCR7_netx_intram' : elf_netx4000_s_cr7_netx_intram_cached[0]
 	}),
 	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib'],
-	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot'],
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	)
 env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_intrams_cr7_ca9_cached_l2,
 	elf_netx4000_s_cr7_cached +

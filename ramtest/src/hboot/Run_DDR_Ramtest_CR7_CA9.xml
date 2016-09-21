@@ -21,7 +21,7 @@
 	<Hex address="0x0003ff80">
 		00 00 00 40 <!-- 0x40000000 Start address of DDR RAM -->
 		00 00 00 0c <!-- 0x0c000000 Size in bytes -->
-		ff 01 00 00 <!-- Test Cases -->
+		%%'%02x %02x %02x %02x' % (TEST_CASES & 0xff, (TEST_CASES >> 8) & 0xff, (TEST_CASES >> 16) & 0xff, (TEST_CASES >> 24) & 0xff)%%  <!-- Test Cases -->
 		00 00 00 00 <!-- Loops -->
 		00 00 00 00 <!-- PerfTestCases -->
 		00 00 00 00 <!-- Status LED MMIO numbers -->
@@ -35,7 +35,7 @@
 	<Hex address="0x0501ff80">
 		00 00 00 4c <!-- 0x4c000000 Start address of DDR RAM -->
 		00 00 00 1a <!-- 0x1a000000 Size in bytes -->
-		ff 01 00 00 <!-- Test Cases -->
+		%%'%02x %02x %02x %02x' % (TEST_CASES & 0xff, (TEST_CASES >> 8) & 0xff, (TEST_CASES >> 16) & 0xff, (TEST_CASES >> 24) & 0xff)%%  <!-- Test Cases -->
 		00 00 00 00 <!-- Loops -->
 		00 00 00 00 <!-- PerfTestCases -->
 		00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
@@ -49,7 +49,7 @@
 	<Hex address="0x0503ff80">
 		00 00 00 66 <!-- 0x66000000 Start address of DDR RAM -->
 		00 00 00 1a <!-- 0x1a000000 Size in bytes -->
-		ff 01 00 00 <!-- Test Cases -->
+		%%'%02x %02x %02x %02x' % (TEST_CASES & 0xff, (TEST_CASES >> 8) & 0xff, (TEST_CASES >> 16) & 0xff, (TEST_CASES >> 24) & 0xff)%%  <!-- Test Cases -->
 		00 00 00 00 <!-- Loops -->
 		00 00 00 00 <!-- PerfTestCases -->
 		00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
