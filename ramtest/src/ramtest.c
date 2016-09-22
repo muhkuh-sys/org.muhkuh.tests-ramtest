@@ -246,8 +246,8 @@ static RAMTEST_RESULT_T ram_test_checkerboard_1pass(RAMTEST_PARAMETER_T *ptRamTe
 			uprintf("! Checkerboard test at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
 			uprintf("! wrote value:     0x%08x\n", ulValue);
 			uprintf("! read back value: 0x%08x\n", ulReadBack);
-			volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
-			hexdump_read_multi(pulAddr, 10);
+			// volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
+			// hexdump_read_multi(pulAddr, 10);
 
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
@@ -582,8 +582,8 @@ static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTest
 			uprintf("! wrote value:     0x%08x\n", ram_test_tag_value(ptRamTestParameter, ulCnt));
 			uprintf("! read back value: 0x%08x\n", ulReadBack);
 			
-			volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
-			hexdump_read_multi(pulAddr, 10);
+			// volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
+			// hexdump_read_multi(pulAddr, 10);
 			
 			tResult = RAMTEST_RESULT_FAILED;
 			break;
@@ -716,8 +716,8 @@ static RAMTEST_RESULT_T ram_test_memcpy_pass(
 			uprintf("! read back value: 0x%08x\n", pulBuf2[sizOffset]);
 			
 			
-			volatile unsigned long *pulAddr = adjust_hexdump_addr((volatile unsigned long*)(ulDestAddr+sizOffset*sizeof(unsigned long)), (volatile unsigned long*)pucDestAddr, (volatile unsigned long*)(pucDestAddr + sizeof(unsigned long) * sizDwordSize), 64);
-			hexdump_read_multi(pulAddr, 10);
+			// volatile unsigned long *pulAddr = adjust_hexdump_addr((volatile unsigned long*)(ulDestAddr+sizOffset*sizeof(unsigned long)), (volatile unsigned long*)pucDestAddr, (volatile unsigned long*)(pucDestAddr + sizeof(unsigned long) * sizDwordSize), 64);
+			// hexdump_read_multi(pulAddr, 10);
 			
 			
 			tResult = RAMTEST_RESULT_FAILED;
