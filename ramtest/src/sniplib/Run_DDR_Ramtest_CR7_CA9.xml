@@ -43,7 +43,7 @@
 		&lt;!-- CA9 core 0 parameters --&gt;
 		&lt;Data&gt;
 			&lt;Hex address=&quot;0x0501ff80&quot;&gt;
-				00 80 00 4c &lt;!-- 0x40008000 Start address of DDR RAM --&gt;
+				00 80 00 40 &lt;!-- 0x40008000 Start address of DDR RAM --&gt;
 				00 40 00 00 &lt;!-- 0x00004000 Size in bytes --&gt;
 				ff 01 00 00 &lt;!-- Test Cases --&gt;
 				00 00 00 00 &lt;!-- Loops --&gt;
