@@ -1097,36 +1097,6 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 			uprintf("! Access Sequence test failed.\n");
 		}
 	}
-
-	/* Test checkerboard pattern for retention + produce hard cluster for burst */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_CHECKERBOARD)!=0 )
-	{
-		uprintf(". Testing checkerboard pattern...\n");
-		tResult = ram_test_checkerboard(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". Checkerboard test OK.\n");
-		}
-		else
-		{
-			uprintf("! Checkerboard test failed.\n");
-		}
-	}
-
-	/* test Marching pattern */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_MARCHC)!=0 )
-	{
-		uprintf(". Testing Marching Pattern...\n");
-		tResult = ram_test_marching(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". Marching test OK\n");
-		}
-		else
-		{
-			uprintf("! Marching test failed.\n");
-		}
-	}
 	
 	return tResult;
 }
@@ -1218,63 +1188,12 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	uprintf(". Ram start address:      0x%08x\n", ptParameter->ulStart);
 	uprintf(". Ram size in bytes:      0x%08x\n", ptParameter->ulSize);
 	ramtest_show_sdram_config( ptParameter->ulStart);
-	uprintf(". Test cases:\n");
+	uprintf(". \n");
 	ulCases = ptParameter->ulCases;
 
-	if( ulCases==0 )
-	{
-		uprintf("    none\n");
-	}
-	if( (ulCases&RAMTESTCASE_DATABUS)!=0 )
-	{
-		uprintf("     Databus\n");
-	}
-	if( (ulCases&RAMTESTCASE_MARCHC)!=0 )
-	{
-		uprintf("     Marching C-\n");
-	}
-	if( (ulCases&RAMTESTCASE_CHECKERBOARD)!=0 )
-	{
-		uprintf("     Checkerboard\n");
-	}
-	if( (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
-	{
-		uprintf("     Access sequence\n");
-	}
-	if( (ulCases&RAMTESTCASE_MEMCPY)!=0 )
-	{
-		uprintf("     memcpy\n");
-	}
-	if( (ulCases&RAMTESTCASE_08BIT)!=0 )
-	{
-		uprintf("     8 bit\n");
-	}
-	if( (ulCases&RAMTESTCASE_16BIT)!=0 )
-	{
-		uprintf("     16 bit\n");
-	}
-	if( (ulCases&RAMTESTCASE_32BIT)!=0 )
-	{
-		uprintf("     32 bit\n");
-	}
-	if( (ulCases&RAMTESTCASE_BURST)!=0 )
-	{
-		uprintf("     Burst\n");
-	}
 
-	ramtest_print_performance_tests(ptParameter);
-
-	ulLoopMax = ptParameter->ulLoops;
-	if( ulLoopMax==0 )
-	{
-		uprintf(". Loops:                  endless\n");
-	}
-	else
-	{
-		uprintf(". Loops:                  0x%08x\n", ulLoopMax);
-	}
-	uprintf("\n\n");
-
+    ulLoopMax = ptParameter->ulLoops;
+	
 	/* Run test cases. */
 	ulLoopCnt = 0;
 
@@ -1282,48 +1201,14 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	{
 		++ulLoopCnt;
 
-		uprintf("****************************************\n");
-		uprintf("*                                      *\n");
+//		uprintf("****************************************\n");
+//		uprintf("*                                      *\n");
 		uprintf("*  Deterministic test - Loop %08d  *\n", ulLoopCnt);
-		uprintf("*                                      *\n");
-		uprintf("****************************************\n");
+//		uprintf("*                                      *\n");
+//		uprintf("****************************************\n");
 
 		tRamTestResult = ramtest_deterministic(ptParameter);
 		if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
-
-
-		uprintf("****************************************\n");
-		uprintf("*                                      *\n");
-		uprintf("*  Random number test - Loop %08d  *\n", ulLoopCnt);
-		uprintf("*                                      *\n");
-		uprintf("****************************************\n");
-
-		for(uiTestCnt=0; uiTestCnt<(sizeof(testPairs)/sizeof(RAMTEST_PAIR_T)); ++uiTestCnt )
-		{
-			uprintf(". Start test case %d of %d\n", uiTestCnt+1, sizeof(testPairs)/sizeof(RAMTEST_PAIR_T));
-			tRamTestResult = ramtest_pseudorandom(ptParameter, testPairs+uiTestCnt);
-			if( tRamTestResult!=RAMTEST_RESULT_OK )
-			{
-				uprintf("! Test case %d failed.\n", uiTestCnt+1);
-				break;
-			}
-			uprintf(". Test case %d OK.\n", uiTestCnt+1);
-		}
-
-
-		/* TODO: does it make sense to run the performance tests multiple times in a loop? */
-		if (ptParameter->ulPerfTestCases != 0)
-		{
-			uprintf("****************************************\n");
-			uprintf("*                                      *\n");
-			uprintf("*  Performance Tests - Loop %08d   *\n", ulLoopCnt);
-			uprintf("*                                      *\n");
-			uprintf("****************************************\n");
-
-			tRamTestResult = ramtest_run_performance_tests(ptParameter);
-			if( tRamTestResult!=RAMTEST_RESULT_OK ) break;
-		}
-
 
 		if( tRamTestResult==RAMTEST_RESULT_OK )
 		{
@@ -1336,8 +1221,6 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			break;
 		}
 	} while(tRamTestResult==RAMTEST_RESULT_OK);
-
-	ramtest_show_sdram_config( ptParameter->ulStart);
 
 	return tRamTestResult;
 }
