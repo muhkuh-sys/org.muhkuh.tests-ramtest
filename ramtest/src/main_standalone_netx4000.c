@@ -112,24 +112,24 @@ void print_ddr_config(void)
 	unsigned long ulDdrCtrl125 = ptDdrCtrlArea->aulDDR_CTRL_CTL[125];
 	unsigned long ulDdrCtrl152 = ptDdrCtrlArea->aulDDR_CTRL_CTL[152];
 	
-	uprintf("\n");
-	uprintf("DDR controller config:\n");
-	uprintf("DDR_CTRL_009 = 0x%08x\n", ulDdrCtrl009);
-	uprintf("    CASLAT_LIN = %d\n",         (ulDdrCtrl009 & MSK_NX4000_DDR_CTRL_CTL9_CASLAT_LIN)    >> SRT_NX4000_DDR_CTRL_CTL9_CASLAT_LIN);
-
+//	uprintf("\n");
+//	uprintf("DDR controller config:\n");
+//	uprintf("DDR_CTRL_009 = 0x%08x\n", ulDdrCtrl009);
+//	uprintf("    CASLAT_LIN = %d\n",         (ulDdrCtrl009 & MSK_NX4000_DDR_CTRL_CTL9_CASLAT_LIN)    >> SRT_NX4000_DDR_CTRL_CTL9_CASLAT_LIN);
+//
 	uprintf("DDR_CTRL_010 = 0x%08x\n", ulDdrCtrl010);
 	uprintf("    WRLAT = %d\n",              (ulDdrCtrl010 & MSK_NX4000_DDR_CTRL_CTL10_WRLAT)        >> SRT_NX4000_DDR_CTRL_CTL10_WRLAT);
-	uprintf("    ADDITIVE_LAT = %d\n",       (ulDdrCtrl010 & MSK_NX4000_DDR_CTRL_CTL10_ADDITIVE_LAT) >> SRT_NX4000_DDR_CTRL_CTL10_ADDITIVE_LAT);
-	
-	uprintf("DDR_CTRL_058 = 0x%08x\n", ulDdrCtrl058);
-	uprintf("    REDUC = %d\n",              (ulDdrCtrl058 & MSK_NX4000_DDR_CTRL_CTL58_REDUC)        >> SRT_NX4000_DDR_CTRL_CTL58_REDUC);
-	
-	uprintf("DDR_CTRL_125 = 0x%08x\n", ulDdrCtrl125);
-	uprintf("    WRLAT_ADJ = %d\n",          (ulDdrCtrl125 & MSK_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ)   >> SRT_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ);
-	uprintf("    RDLAT_ADJ = %d\n",          (ulDdrCtrl125 & MSK_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ)   >> SRT_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ);
-	
-	uprintf("DDR_CTRL_152 = 0x%08x\n", ulDdrCtrl152);
-	uprintf("\n");
+//	uprintf("    ADDITIVE_LAT = %d\n",       (ulDdrCtrl010 & MSK_NX4000_DDR_CTRL_CTL10_ADDITIVE_LAT) >> SRT_NX4000_DDR_CTRL_CTL10_ADDITIVE_LAT);
+//	
+//	uprintf("DDR_CTRL_058 = 0x%08x\n", ulDdrCtrl058);
+//	uprintf("    REDUC = %d\n",              (ulDdrCtrl058 & MSK_NX4000_DDR_CTRL_CTL58_REDUC)        >> SRT_NX4000_DDR_CTRL_CTL58_REDUC);
+//	
+//	uprintf("DDR_CTRL_125 = 0x%08x\n", ulDdrCtrl125);
+//	uprintf("    WRLAT_ADJ = %d\n",          (ulDdrCtrl125 & MSK_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ)   >> SRT_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ);
+//	uprintf("    RDLAT_ADJ = %d\n",          (ulDdrCtrl125 & MSK_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ)   >> SRT_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ);
+//	
+//	uprintf("DDR_CTRL_152 = 0x%08x\n", ulDdrCtrl152);
+//	uprintf("\n");
 }
 
 
@@ -157,20 +157,20 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	}
 	
 	
-	uprintf("\f. *** RAM test by cthelen@hilscher.com ***\n");
-	uprintf("V" VERSION_ALL "\n\n");
+	// uprintf("\f. *** RAM test by cthelen@hilscher.com ***\n");
+	uprintf("ramtest V" VERSION_ALL "\n\n");
 	
 	volatile unsigned long *pulBootmode = (volatile unsigned long*) Adr_NX4000_RAP_SYSCTRL_RAP_SYSCTRL_BOOTMODE;
 	volatile unsigned long   ulBootmode = *pulBootmode;
 	
-	uprintf("Bootstrap status register: 0x%08x\n", ulBootmode);
+	// uprintf("Bootstrap status register: 0x%08x\n", ulBootmode);
 	if ((ulBootmode & MSK_NX4000_RAP_SYSCTRL_BOOTMODE_SET_PLL_1200) == 0)
 	{
-		uprintf("PLL speed: 800 MHz\n");
+		uprintf("PLL: 800MHz\n");
 	}
 	else
 	{
-		uprintf("PLL speed: 1200 MHz\n");
+		uprintf("PLL:1200MHz\n");
 	}
 	
 	/*
@@ -214,7 +214,7 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 		tTestParams.ulProgress = ptParam->ulStatusLedMmioNr;
 	}
 	
-	uprintf("tag mask: 0x%08x  tag value: 0x%08x \n", tTestParams.ulTagMask, tTestParams.ulTagValue );
+	// uprintf("tag mask: 0x%08x  tag value: 0x%08x \n", tTestParams.ulTagMask, tTestParams.ulTagValue );
 	
 	/*
 	 * Run the RAM test.

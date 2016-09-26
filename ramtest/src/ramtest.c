@@ -578,9 +578,9 @@ static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTest
 
 		if (ulReadBack != ram_test_tag_value(ptRamTestParameter, ulCnt))
 		{
-			uprintf("! 32 bit access at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
-			uprintf("! wrote value:     0x%08x\n", ram_test_tag_value(ptRamTestParameter, ulCnt));
-			uprintf("! read back value: 0x%08x\n", ulReadBack);
+			uprintf("addr 0x%08x failed\n", (unsigned long)pulCnt);
+			uprintf("wrote:0x%08x\n", ram_test_tag_value(ptRamTestParameter, ulCnt));
+			uprintf("read :0x%08x\n", ulReadBack);
 			
 			// volatile unsigned long *pulAddr = adjust_hexdump_addr(pulCnt, pulStart, pulEnd, 64);
 			// hexdump_read_multi(pulAddr, 10);
@@ -1083,20 +1083,20 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 
 
 	/* test access sequence */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
-	{
-		uprintf(". Testing Access Sequence...\n");
+//if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
+//
+//		uprintf(". Testing Access Sequence...\n");
 //		tResult = ram_test_count_32bit(ptParameter);
 		tResult = ram_test_count_addr_32bit(ptParameter);
-		if( tResult==RAMTEST_RESULT_OK )
-		{
-			uprintf(". Access Sequence test OK\n");
-		}
-		else
-		{
-			uprintf("! Access Sequence test failed.\n");
-		}
-	}
+// 		if( tResult==RAMTEST_RESULT_OK )
+// 		{
+// 			uprintf(" test OK\n");
+// 		}
+// 		else
+// 		{
+// 			uprintf("test failed.\n");
+// 		}
+//}
 	
 	return tResult;
 }
@@ -1185,14 +1185,14 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 
 
 	/* Show welcome message. */
-	uprintf(". Ram start address:      0x%08x\n", ptParameter->ulStart);
-	uprintf(". Ram size in bytes:      0x%08x\n", ptParameter->ulSize);
-	ramtest_show_sdram_config( ptParameter->ulStart);
+	uprintf("Startaddr:0x%08x\n", ptParameter->ulStart);
+	uprintf("Size byte:0x%08x\n", ptParameter->ulSize);
+	// ramtest_show_sdram_config( ptParameter->ulStart);
 	uprintf(". \n");
 	ulCases = ptParameter->ulCases;
 
 
-    ulLoopMax = ptParameter->ulLoops;
+  ulLoopMax = ptParameter->ulLoops;
 	
 	/* Run test cases. */
 	ulLoopCnt = 0;
@@ -1203,18 +1203,14 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 
 //		uprintf("****************************************\n");
 //		uprintf("*                                      *\n");
-		uprintf("*  Deterministic test - Loop %08d  *\n", ulLoopCnt);
+//		uprintf("Loop %08d\n", ulLoopCnt);
+		uprintf("Loop %04d\n", ulLoopCnt);
 //		uprintf("*                                      *\n");
 //		uprintf("****************************************\n");
 
 		tRamTestResult = ramtest_deterministic(ptParameter);
 		if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
 
-		if( tRamTestResult==RAMTEST_RESULT_OK )
-		{
-			/* Test loop OK. */
-			uprintf("* OK *\n");
-		}
 
 		if( ulLoopMax!=0 && ulLoopCnt>=ulLoopMax )
 		{
