@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HBootSnippet>
-	<Info artifact="DDR_parameter_NXHX4000_R1_600MHz" group="com.hilscher.hboot.sniplib" vcs-id="GITd14604ffd5d6" version="0.0.0">
+	<Info artifact="DDR_parameter_NXHX4000_R1_600MHz" group="com.hilscher.hboot.sniplib" vcs-id="GIT5357244488ed" version="0.0.0">
 		<License name="PROPRIETARY"/>
 		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
-		<Description>Parameter for the DDR memory on the Hilscher NXHX 4000+ R1 board at 600MHz.</Description>
-		<Category>netx4000</Category>
-		<Category>DDR</Category>
-		<Category>memory</Category>
-		<Category>hardware configuration</Category>
+		<Description>
+			Parameter for the DDR memory on the Hilscher NXHX 4000+ R1 board at 600MHz.
+		</Description>
+		<Category>
+			netx4000
+		</Category>
+		<Category>
+			DDR
+		</Category>
+		<Category>
+			memory
+		</Category>
+		<Category>
+			hardware configuration
+		</Category>
 	</Info>
-	<Snippet>&lt;Options&gt;
+	<Snippet>
+		&lt;Options&gt;
 	&lt;Option id=&quot;ddr&quot;&gt;
 		&lt;U32&gt;10000&lt;/U32&gt;   &lt;!-- The number of ticks to wait for the power up. --&gt;
 		&lt;DDR&gt;
@@ -89,14 +100,14 @@
 			&lt;WriteCtrl register=&quot;7&quot;   data=&quot;0x0004918a&quot;/&gt;
 			&lt;WriteCtrl register=&quot;8&quot;   data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;9&quot;   data=&quot;0x12000200&quot;/&gt;
-			&lt;WriteCtrl register=&quot;10&quot;  data=&quot;0x04040005&quot;/&gt;
+			&lt;WriteCtrl register=&quot;10&quot;  data=&quot;0x04040007&quot;/&gt;
 			&lt;WriteCtrl register=&quot;11&quot;  data=&quot;0x05151e05&quot;/&gt;
 			&lt;WriteCtrl register=&quot;12&quot;  data=&quot;0x04051809&quot;/&gt;
 			&lt;WriteCtrl register=&quot;13&quot;  data=&quot;0x00a4330c&quot;/&gt;
 			&lt;WriteCtrl register=&quot;14&quot;  data=&quot;0x09000503&quot;/&gt;
 			&lt;WriteCtrl register=&quot;15&quot;  data=&quot;0x01000009&quot;/&gt;
 			&lt;WriteCtrl register=&quot;16&quot;  data=&quot;0x09031301&quot;/&gt;
-			&lt;WriteCtrl register=&quot;17&quot;  data=&quot;0x00010000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;17&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;18&quot;  data=&quot;0x00010000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;19&quot;  data=&quot;0x1236009c&quot;/&gt;
 			&lt;WriteCtrl register=&quot;20&quot;  data=&quot;0x00000000&quot;/&gt;
@@ -152,7 +163,7 @@
 			&lt;WriteCtrl register=&quot;70&quot;  data=&quot;0x01000606&quot;/&gt;
 			&lt;WriteCtrl register=&quot;71&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;72&quot;  data=&quot;0x00000000&quot;/&gt;
-			&lt;WriteCtrl register=&quot;73&quot;  data=&quot;0x00000200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;73&quot;  data=&quot;0x00000400&quot;/&gt;
 			&lt;WriteCtrl register=&quot;74&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;75&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;76&quot;  data=&quot;0x00000000&quot;/&gt;
@@ -182,10 +193,10 @@
 			&lt;WriteCtrl register=&quot;100&quot; data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;101&quot; data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;102&quot; data=&quot;0x00012222&quot;/&gt;
-			&lt;WriteCtrl register=&quot;103&quot; data=&quot;0x00020200&quot;/&gt;
-			&lt;WriteCtrl register=&quot;104&quot; data=&quot;0x02000202&quot;/&gt;
-			&lt;WriteCtrl register=&quot;105&quot; data=&quot;0x02020002&quot;/&gt;
-			&lt;WriteCtrl register=&quot;106&quot; data=&quot;0x00020200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;103&quot; data=&quot;0x01020201&quot;/&gt;
+			&lt;WriteCtrl register=&quot;104&quot; data=&quot;0x02010202&quot;/&gt;
+			&lt;WriteCtrl register=&quot;105&quot; data=&quot;0x02020102&quot;/&gt;
+			&lt;WriteCtrl register=&quot;106&quot; data=&quot;0x00020201&quot;/&gt;
 			&lt;WriteCtrl register=&quot;107&quot; data=&quot;0x05050000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;108&quot; data=&quot;0x00000505&quot;/&gt;
 			&lt;WriteCtrl register=&quot;109&quot; data=&quot;0x04040064&quot;/&gt;
@@ -198,7 +209,7 @@
 			&lt;WriteCtrl register=&quot;116&quot; data=&quot;0x00040101&quot;/&gt;
 			&lt;WriteCtrl register=&quot;117&quot; data=&quot;0x00000064&quot;/&gt;
 			&lt;WriteCtrl register=&quot;118&quot; data=&quot;0x00000000&quot;/&gt;
-			&lt;WriteCtrl register=&quot;119&quot; data=&quot;0x00000d00&quot;/&gt;
+			&lt;WriteCtrl register=&quot;119&quot; data=&quot;0x00001A00&quot;/&gt;
 			&lt;WriteCtrl register=&quot;120&quot; data=&quot;0x00246c00&quot;/&gt;
 			&lt;WriteCtrl register=&quot;121&quot; data=&quot;0x02000200&quot;/&gt;
 			&lt;WriteCtrl register=&quot;122&quot; data=&quot;0x02000200&quot;/&gt;
@@ -234,5 +245,6 @@
 		&lt;/DDR&gt;
 	&lt;/Option&gt;
 &lt;/Options&gt;
-</Snippet>
+
+	</Snippet>
 </HBootSnippet>
