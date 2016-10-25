@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HBootSnippet>
-	<Info artifact="DDR_parameter_NXHX4000_R1_600MHz_ECC" group="com.hilscher.hboot.sniplib" vcs-id="GIT33e794250730" version="0.0.0">
+	<Info artifact="DDR_parameter_NXHX4000_R1_600MHz_ECC" group="com.hilscher.hboot.sniplib" vcs-id="GIT1893dd13c758" version="0.0.0">
 		<License name="PROPRIETARY"/>
 		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
 		<Description>Parameter for the DDR memory on the Hilscher NXHX 4000+ R1 board at 600MHz with activated ECC.</Description>
@@ -77,7 +77,7 @@
 			&lt;WriteCtrl register=&quot;60&quot;  data=&quot;0x00000001&quot;/&gt;
 			&lt;WriteCtrl register=&quot;61&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;62&quot;  data=&quot;0x00000000&quot;/&gt;
-			&lt;WriteCtrl register=&quot;63&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;63&quot;  data=&quot;0x00 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL63_OBSOLETE1 | 0x400000 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL63_INT_MASK&quot;/&gt;
 			&lt;WriteCtrl register=&quot;64&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;65&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;66&quot;  data=&quot;0x00000000&quot;/&gt;
@@ -231,7 +231,6 @@
 			&lt;WriteCtrl register=&quot;0&quot;   data=&quot;0x00000600 | MSK_NX4000_DDR_CTRL_CTL0_START&quot;/&gt;
 			&lt;PollCtrl  register=&quot;61&quot;  mask=&quot;0x100&quot; data=&quot;0x100&quot; ticks=&quot;1000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;62&quot;  data=&quot;0x100&quot;/&gt;
-			&lt;WriteCtrl register=&quot;63&quot;  data=&quot;0x3fff87&quot;/&gt;
 		&lt;/DDR&gt;
 	&lt;/Option&gt;
 &lt;/Options&gt;
