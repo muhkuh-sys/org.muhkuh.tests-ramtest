@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HBootSnippet>
+	<Info artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" vcs-id="GITaf49b480ec08+" version="1.0.0">
+		<License name="GPL-2.0"/>
+		<Author name="Muhkuh team" url="https://github.com/muhkuh-sys"/>
+		<Description>Initialize a memory area with a 32bit value using STM bursts.</Description>
+		<Category>netx4000</Category>
+		<Category>memory</Category>
+	</Info>
+	<ParameterList>
+		<Parameter name="START">The first address to fill. Must be a multiple of 4.</Parameter>
+		<Parameter name="END">The last address to fill + 4. Must be a multiple of 4.</Parameter>
+		<Parameter default="0" name="FILL">The fill value. This is a 32bit value, so 0x12 will result in 0x12 0x00 0x00 0x00 0x12 ...</Parameter>
+	</ParameterList>
+	<Snippet>&lt;!-- org.muhkuh.hboot.sniplib-initialize_memory v1.0.0 GITaf49b480ec08+ --&gt;
+&lt;Data&gt;
+	&lt;Hex address=&quot;0x04000000&quot;&gt;
+f9032de90230a0e10240a0e10250a0e10260a0e10270a0e10280a0e10290a0e1
+fc03a0e8010050e1fcffff4af903bde81eff2fe1
+	&lt;/Hex&gt;
+&lt;/Data&gt;
+&lt;Execute&gt;
+	&lt;R0&gt;%%START%%&lt;/R0&gt;
+	&lt;R1&gt;%%END%%&lt;/R1&gt;
+	&lt;R2&gt;%%FILL%%&lt;/R2&gt;
+	&lt;Address&gt;0x04000000&lt;/Address&gt;
+&lt;/Execute&gt;
+</Snippet>
+</HBootSnippet>
