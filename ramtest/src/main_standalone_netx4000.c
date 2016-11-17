@@ -4,6 +4,7 @@
 #include "uprintf.h"
 #include "version.h"
 #include "main_standalone_common.h"
+#include "uart_standalone.h"
 
 #include "netx_io_areas.h"
 
@@ -147,7 +148,7 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 
 	if (ptParam->ulUseUart == 1)
 	{
-		ramtest_init_uart();
+		uart_standalone_initialize();
 		systime_wait_ms(1);
 		//__asm__("dsb");
 	}
