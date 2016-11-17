@@ -6,7 +6,7 @@
 #include "uart.h"
 
 
-#if ASIC_TYP==10
+#if ASIC_TYP==ASIC_TYP_NETX10
 /* NXHX10-ETM */
 static const UART_CONFIGURATION_T tUartCfg =
 {
@@ -16,7 +16,7 @@ static const UART_CONFIGURATION_T tUartCfg =
         .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 /* NXHX51-ETM */
 static const UART_CONFIGURATION_T tUartCfg_netx51 =
 {
@@ -35,7 +35,7 @@ static const UART_CONFIGURATION_T tUartCfg_netx52 =
         .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 /* NXHX50-ETM */
 static const UART_CONFIGURATION_T tUartCfg =
 {
@@ -45,18 +45,14 @@ static const UART_CONFIGURATION_T tUartCfg =
         .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==100 || ASIC_TYP==500
+#elif ASIC_TYP==ASIC_TYP_NETX500
 static const UART_CONFIGURATION_T tUartCfg =
 {
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==4000
+#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 static const UART_CONFIGURATION_T tUartCfg =
 {
-        .uc_rx_mmio = 26U,
-        .uc_tx_mmio = 27U,
-        .uc_rts_mmio = 0xffU,
-        .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 }; 
 #endif

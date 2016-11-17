@@ -9,7 +9,7 @@
 	.global start
 
    @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
-#if ASIC_TYP==4000
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
    @ define entry point for CA9_core0
 	.global start_core0
    @ define entry point for CA9_core1
@@ -21,7 +21,7 @@
   .func start_init_s
 
    @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
-#if ASIC_TYP==4000
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
    @ define entry point for CA9_core0
 start_core0:
    @ define entry point for CA9_core1
@@ -30,7 +30,7 @@ start_core1:
 start:
 	stmfd   sp!, {r0, r1, r2, r3, r4, lr}
 
-#if ASIC_TYP==50
+#if ASIC_TYP==ASIC_TYP_NETX50
 	@ SDRAM fix
 	@ Setup the DMA controller to stop the fake transfer at 0x800DEAD0.
 	ldr     r2,     =HOSTADDR(dmac_ch0)

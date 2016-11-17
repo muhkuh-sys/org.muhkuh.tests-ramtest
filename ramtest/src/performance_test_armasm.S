@@ -47,8 +47,8 @@
 	EXPORT ram_perftest_init_netx
 
 ram_perftest_init_netx
-#if ASIC_TYP==500 || ASIC_TYP==100
-	INFO 0, "#if ASIC_TYP==500 || ASIC_TYP==100"
+#if ASIC_TYP==ASIC_TYP_NETX500
+	INFO 0, "#if ASIC_TYP==ASIC_TYP_NETX500"
 Mode_SVC            EQU 0x13        
 I_Bit               EQU 0x80 // when I bit is set, IRQ is disabled
 F_Bit               EQU 0x40 // when F bit is set, FIQ is disabled
@@ -82,12 +82,12 @@ Adr_dTCM_base       EQU 0x10000000 // Adr_NX500_dTCM_base
 	ldmfd   sp!, {r0, r1, r2}
 	bx      lr
 	
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 	
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 		
-#elif ASIC_TYP==56
-	INFO 0, "#elif ASIC_TYP==56"
+#elif ASIC_TYP==ASIC_TYP_NETX56
+	INFO 0, "#elif ASIC_TYP==ASIC_TYP_NETX56"
 SR_Mode_SVC  EQU 0x13
 SR_Irq       EQU 0x80
 SR_Fiq       EQU 0x40
@@ -203,13 +203,13 @@ ram_perftest_get_row_size
 	mov r0, r0, LSL#8
 	
 	// multiply with 2 or 4 (netx 10: 1 or 2) bytes bus width
-#if ASIC_TYP==10
-	INFO 0, "#if ASIC_TYP==10"
+#if ASIC_TYP==ASIC_TYP_NETX10
+	INFO 0, "#if ASIC_TYP==ASIC_TYP_NETX10"
 	and r1, r1, #HOSTMSK(sdram_general_ctrl_dbus16)
 	mov r1, r1, LSR#HOSTSRT(sdram_general_ctrl_dbus16)
 	mov r0, r0, LSL r1
 #else
-	INFO 0, "ELSE (#if ASIC_TYP==10)"
+	INFO 0, "ELSE (#if ASIC_TYP==ASIC_TYP_NETX10)"
 	and r1, r1, #HOSTMSK(sdram_general_ctrl_dbus32)
 	mov r1, r1, LSR#HOSTSRT(sdram_general_ctrl_dbus32)
 	add r1, r1, #1

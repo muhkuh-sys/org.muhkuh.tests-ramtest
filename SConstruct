@@ -27,56 +27,36 @@ import os.path
 # Set up the Muhkuh Build System.
 #
 SConscript('mbs/SConscript')
-Import('env_default')
-
-# Create a build environment for the ARM9 based netX chips.
-env_arm9 = env_default.CreateEnvironment(['gcc-arm-none-eabi-4.7', 'asciidoc'])
-
-# Create a build environment for the Cortex-R based netX chips.
-env_cortex7 = env_default.CreateEnvironment(['gcc-arm-none-eabi-4.9', 'asciidoc'])
+Import('atEnv')
 
 # Add the local builders.
 import ram_test_template
-ram_test_template.ApplyToEnv(env_default)
+ram_test_template.ApplyToEnv(atEnv.DEFAULT)
 
+# Create a build environment for the ARM9 based netX chips.
+env_arm9 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.7', 'asciidoc'])
+env_arm9.CreateCompilerEnv('NETX500', ['arch=armv5te'])
+env_arm9.CreateCompilerEnv('NETX56', ['arch=armv5te'])
+env_arm9.CreateCompilerEnv('NETX50', ['arch=armv5te'])
+env_arm9.CreateCompilerEnv('NETX10', ['arch=armv5te'])
 
-#----------------------------------------------------------------------------
-#
-# Create the compiler environments.
-#
-env_netx4000_default = env_cortex7.CreateCompilerEnv('4000', ['arch=armv7', 'thumb'], ['arch=armv7-r', 'thumb'])
-env_netx4000_default.Replace(BOOTBLOCK_CHIPTYPE = 4000)
+# Create a build environment for the Cortex-R7 and Cortex-A9 based netX chips.
+env_cortexR7 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.9', 'asciidoc'])
+env_cortexR7.CreateCompilerEnv('NETX4000_RELAXED', ['arch=armv7', 'thumb'], ['arch=armv7-r', 'thumb'])
 
-env_netx500_default = env_arm9.CreateCompilerEnv('500', ['arch=armv5te'])
-env_netx500_default.Replace(BOOTBLOCK_CHIPTYPE = 500)
+# Create a build environment for the Cortex-M4 based netX chips.
+env_cortexM4 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.9', 'asciidoc'])
+env_cortexM4.CreateCompilerEnv('NETX90_MPW', ['arch=armv7', 'thumb'], ['arch=armv7e-m', 'thumb'])
 
-env_netx56_default = env_arm9.CreateCompilerEnv('56', ['arch=armv5te'])
-env_netx56_default.Replace(BOOTBLOCK_CHIPTYPE = 56)
-
-env_netx50_default = env_arm9.CreateCompilerEnv('50', ['arch=armv5te'])
-env_netx50_default.Replace(BOOTBLOCK_CHIPTYPE = 50)
-
-env_netx10_default = env_arm9.CreateCompilerEnv('10', ['arch=armv5te'])
-env_netx10_default.Replace(BOOTBLOCK_CHIPTYPE = 10)
-
-Export('env_netx4000_default', 'env_netx500_default', 'env_netx56_default', 'env_netx50_default', 'env_netx10_default')
-
-
-
-#----------------------------------------------------------------------------
-#
 # Build the platform libraries.
-#
-PLATFORM_LIB_CFG_BUILDS = [4000, 500, 56, 50, 10]
-SConscript('platform/SConscript', exports='PLATFORM_LIB_CFG_BUILDS')
-Import('platform_lib_netx4000', 'platform_lib_netx500', 'platform_lib_netx56', 'platform_lib_netx50', 'platform_lib_netx10')
+SConscript('platform/SConscript')
 
 
 #----------------------------------------------------------------------------
 #
 # Get the source code version from the VCS.
 #
-env_default.Version('#targets/version/version.h', 'templates/version.h')
+atEnv.DEFAULT.Version('#targets/version/version.h', 'templates/version.h')
 
 
 #----------------------------------------------------------------------------
@@ -99,7 +79,7 @@ Import('setup_netx56')
 #
 
 # Get the default attributes.
-aAttribs = env_default['ASCIIDOC_ATTRIBUTES']
+aAttribs = atEnv.DEFAULT['ASCIIDOC_ATTRIBUTES']
 # Add some custom attributes.
 aAttribs.update(dict({
 	# Use ASCIIMath formulas.
@@ -121,7 +101,7 @@ aAttribs.update(dict({
 	'toclevels': 4
 }))
 
-tDoc = env_default.Asciidoc('targets/doc/org.muhkuh.tests.ramtest.html', 'README.asciidoc', ASCIIDOC_BACKEND='html5', ASCIIDOC_ATTRIBUTES=aAttribs)
+tDoc = atEnv.DEFAULT.Asciidoc('targets/doc/org.muhkuh.tests.ramtest.html', 'README.asciidoc', ASCIIDOC_BACKEND='html5', ASCIIDOC_ATTRIBUTES=aAttribs)
 
 #----------------------------------------------------------------------------
 # 
@@ -136,7 +116,7 @@ aArtifactGroupReverse.reverse()
 
 
 strArtifactId = 'ramtest'
-tArcList = env_default.ArchiveList('zip')
+tArcList = atEnv.DEFAULT.ArchiveList('zip')
 tArcList.AddFiles('netx/',
 	ramtest_netx10,
 	ramtest_netx50,
@@ -165,15 +145,15 @@ tArcList.AddFiles('',
 	'ivy/org.muhkuh.tests.ramtest/install.xml')
 
 strArtifactPath = 'targets/ivy/repository/%s/%s/%s' % ('/'.join(aArtifactGroupReverse),strArtifactId,PROJECT_VERSION)
-tArc = env_default.Archive(os.path.join(strArtifactPath, '%s-%s.zip' % (strArtifactId,PROJECT_VERSION)), None, ARCHIVE_CONTENTS=tArcList)
-tIvy = env_default.Version(os.path.join(strArtifactPath, 'ivy-%s.xml' % PROJECT_VERSION), 'ivy/%s.%s/ivy.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
-tPom = env_default.ArtifactVersion(os.path.join(strArtifactPath, '%s-%s.pom' % (strArtifactId,PROJECT_VERSION)), 'ivy/%s.%s/pom.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
+tArc = atEnv.DEFAULT.Archive(os.path.join(strArtifactPath, '%s-%s.zip' % (strArtifactId,PROJECT_VERSION)), None, ARCHIVE_CONTENTS=tArcList)
+tIvy = atEnv.DEFAULT.Version(os.path.join(strArtifactPath, 'ivy-%s.xml' % PROJECT_VERSION), 'ivy/%s.%s/ivy.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
+tPom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strArtifactPath, '%s-%s.pom' % (strArtifactId,PROJECT_VERSION)), 'ivy/%s.%s/pom.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
 
 
 # Build the artifact list for the deploy operation to bintray.
-env_default.AddArtifact(tArc, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'zip')
-env_default.AddArtifact(tIvy, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'ivy')
-tArtifacts = env_default.Artifact('targets/artifacts.xml', None)
+atEnv.DEFAULT.AddArtifact(tArc, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'zip')
+atEnv.DEFAULT.AddArtifact(tIvy, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'ivy')
+tArtifacts = atEnv.DEFAULT.Artifact('targets/artifacts.xml', None)
 
 # Copy the artifacts to a fixed filename to allow a deploy to github.
 Command('targets/ivy/%s.zip' % strArtifactId,  tArc,  Copy("$TARGET", "$SOURCE"))
@@ -206,9 +186,9 @@ aAttr0 = {'CHIP_TYPE':             56,
          'REGISTER_MODE':         '0x00000033',
          'SIZE_EXPONENT':         23,
          'INTERFACE':             'MEM'}
-tP0 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr0)
-tR0 = env_default.RamTestTemplate('targets/demo_scripts/ramtest_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0[0]})
-tT0 = env_default.RamTestTemplate('targets/demo_scripts/timing_phase_test_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0[0]})
+tP0 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/attributes_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr0)
+tR0 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/ramtest_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0[0]})
+tT0 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/timing_phase_test_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0[0]})
 
 # IS42S32200L-7I_netX4000_HIF_ONBOARD.xml
 aAttr1 = {'CHIP_TYPE':             4000,
@@ -217,7 +197,7 @@ aAttr1 = {'CHIP_TYPE':             4000,
          'REGISTER_MODE':         '0x00000033',
          'SIZE_EXPONENT':         23,
          'INTERFACE':             'HIF'}
-tP1 = env_default.RamTestTemplate('targets/demo_scripts/attributes_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr1)
-tR1 = env_default.RamTestTemplate('targets/demo_scripts/ramtest_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1[0]})
-tT1 = env_default.RamTestTemplate('targets/demo_scripts/timing_phase_test_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1[0]})
+tP1 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/attributes_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr1)
+tR1 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/ramtest_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1[0]})
+tT1 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/timing_phase_test_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1[0]})
 

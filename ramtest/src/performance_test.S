@@ -47,7 +47,7 @@
 .global ram_perftest_init_netx
 
 ram_perftest_init_netx:
-#if ASIC_TYP==500 || ASIC_TYP==100
+#if ASIC_TYP==ASIC_TYP_NETX500
 Mode_SVC            = 0x13        
 I_Bit               = 0x80 @ when I bit is set, IRQ is disabled
 F_Bit               = 0x40 @ when F bit is set, FIQ is disabled
@@ -81,11 +81,11 @@ Adr_dTCM_base       = 0x10000000 @ Adr_NX500_dTCM_base
 	ldmfd   sp!, {r0, r1, r2}
 	bx      lr
 	
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 	
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 		
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 
 #define SR_Mode_SVC  0x13
 #define SR_Irq       0x80

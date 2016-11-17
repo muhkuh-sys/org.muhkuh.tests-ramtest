@@ -1,3 +1,4 @@
+#include "netx_io_areas.S"
 
 	.section .init_code, "ax"
 	.arm
@@ -9,14 +10,14 @@
 	.global stack_top
 
 	@ optional can be used by python script to define individual entry points for cortex CA9 core0/1
-#if ASIC_TYP==4000
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 	@ define entry point for CA9_core0
 	.global start_core0
 	@ define entry point for CA9_core1
 	.global start_core1
 #endif
 
-#if ASIC_TYP==500 || ASIC_TYP==100
+#if ASIC_TYP==ASIC_TYP_NETX500
 	.equ Adr_dTCM_base,			0x10000000
 #endif
 
@@ -25,7 +26,7 @@
   .func start_init_s
 
 	@ optional can be used by python script to define individual entry points for cortex CA9 core0/1
-#if ASIC_TYP==4000
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 	@ define entry point for CA9_core0
 start_core0:
 	@ define entry point for CA9_core1

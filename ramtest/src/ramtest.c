@@ -1,4 +1,4 @@
-
+#include "netx_io_areas.h"
 #include "ramtest.h"
 #include "systime.h"
 #include "uprintf.h"
@@ -1169,9 +1169,9 @@ void ramtest_show_sdram_config(unsigned long ulSdramStart)
 	unsigned long ulSdramGeneralCtrl;
 	unsigned long ulSdramTimingCtrl;
 	unsigned long ulSdramMr;
-#if ASIC_TYP==500
+#if ASIC_TYP==ASIC_TYP_NETX500
 	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
-#elif ASIC_TYP==4000
+#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 	NX4000_EXT_SDRAM_CTRL_AREA_T *ptSdram;
 #else
 	HOSTADEF(SDRAM) *ptSdram;
@@ -1179,7 +1179,7 @@ void ramtest_show_sdram_config(unsigned long ulSdramStart)
 
 	/* Get the SDRAM controller address from the test area address. */
 	ptSdram = NULL;
-#if ASIC_TYP==4000
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 
 	if( ulSdramStart>=HOSTADDR(mem_sdram) && ulSdramStart<=HOSTADR(mem_sdram_sdram_end) )
 	{
@@ -1190,17 +1190,17 @@ void ramtest_show_sdram_config(unsigned long ulSdramStart)
 		ptSdram = (NX4000_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(hif_sdram_ctrl);
 	}
 	
-#elif ASIC_TYP==500
+#elif ASIC_TYP==ASIC_TYP_NETX500
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
 	}
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
 	}
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_sdram_end) )
 	{
 		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
@@ -1209,7 +1209,7 @@ void ramtest_show_sdram_config(unsigned long ulSdramStart)
 	{
 		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(hif_sdram_ctrl);
 	}
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);

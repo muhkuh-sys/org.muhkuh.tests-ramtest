@@ -25,7 +25,7 @@ typedef enum ENUM_CHIP_SUBTYP
 
 
 
-#if ASIC_TYP==10
+#if ASIC_TYP==ASIC_TYP_NETX10
 /* NXHX10-ETM */
 static const UART_CONFIGURATION_T tUartCfg =
 {
@@ -35,7 +35,7 @@ static const UART_CONFIGURATION_T tUartCfg =
         .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 /* NXHX51-ETM */
 static const UART_CONFIGURATION_T tUartCfg_netx51 =
 {
@@ -54,7 +54,7 @@ static const UART_CONFIGURATION_T tUartCfg_netx52 =
         .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 /* NXHX50-ETM */
 static const UART_CONFIGURATION_T tUartCfg =
 {
@@ -64,12 +64,12 @@ static const UART_CONFIGURATION_T tUartCfg =
         .uc_cts_mmio = 0xffU,
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==100 || ASIC_TYP==500
+#elif ASIC_TYP==ASIC_TYP_NETX500
 static const UART_CONFIGURATION_T tUartCfg =
 {
         .us_baud_div = UART_BAUDRATE_DIV(UART_BAUDRATE_115200)
 };
-#elif ASIC_TYP==4000
+#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 static const UART_CONFIGURATION_T tUartCfg =
 {
         .uc_rx_mmio = 26U,
@@ -145,7 +145,7 @@ static unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 	ulColumns >>= HOSTSRT(sdram_general_ctrl_columns);
 	ulColumns   = 2048U << ulColumns;
 
-#if ASIC_TYP==4000 || ASIC_TYP==500 || ASIC_TYP==50 || ASIC_TYP==56
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX500 || ASIC_TYP==ASIC_TYP_NETX50 || ASIC_TYP==ASIC_TYP_NETX56
 	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus32))!=0 )
 	{
 		/* 32 bit bus. */
@@ -156,7 +156,7 @@ static unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 		/* 16 bit bus. */
 		ulBus = 2;
 	}
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus16))!=0 )
 	{
 		/* 16 bit bus. */
@@ -176,7 +176,7 @@ static unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 
 
 
-#if ASIC_TYP==10
+#if ASIC_TYP==ASIC_TYP_NETX10
 static int setup_sdram_hif_netx10(unsigned long ulSdramGeneralCtrl)
 {
 	HOSTDEF(ptAsicCtrlArea);
@@ -202,7 +202,7 @@ static int setup_sdram_hif_netx10(unsigned long ulSdramGeneralCtrl)
 }
 
 
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 typedef struct HIF_SIZE_TO_ADRCFG_STRUCT
 {
 	unsigned long ulSDRAMSize;
@@ -298,9 +298,9 @@ static int setup_sdram_hif_netx56(unsigned long ulSdramGeneralCtrl)
 
 static int sdram_setup(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 {
-#if ASIC_TYP==500
+#if ASIC_TYP==ASIC_TYP_NETX500
 	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
-#elif ASIC_TYP==4000
+#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 	NX4000_EXT_SDRAM_CTRL_AREA_T *ptSdram;
 #else
 	HOSTADEF(SDRAM) *ptSdram;
@@ -320,19 +320,19 @@ static int sdram_setup(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	/* Get the SDRAM controller address from the test area address. */
 	ptSdram = NULL;
 	ulValue = ptBootBlock->s.ulUserData;
-#if ASIC_TYP==500
+#if ASIC_TYP==ASIC_TYP_NETX500
 	/* Is the test area inside the SDRAM? */
 	if( ulValue>=HOSTADDR(sdram) && ulValue<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
 	}
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 	/* Is the test area inside the SDRAM? */
 	if( ulValue>=HOSTADDR(sdram) && ulValue<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
 	}
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 	/* Is the test area inside the SDRAM? */
 	if( ulValue>=HOSTADDR(sdram) && ulValue<=HOSTADR(sdram_sdram_end) )
 	{
@@ -346,7 +346,7 @@ static int sdram_setup(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 		/* HIF SDRAM needs special preparation. */
 		iResult = setup_sdram_hif_netx56(ptBootBlock->s.uMemoryCtrl.sSDRam.ulGeneralCtrl);
 	}
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 	/* Is the test area inside the SDRAM? */
 	if( ulValue>=HOSTADDR(sdram) && ulValue<=HOSTADR(sdram_end) )
 	{
@@ -447,7 +447,7 @@ static void ramtest_rdyrun_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestPa
 }
 
 
-#if ASIC_TYP==56
+#if ASIC_TYP==ASIC_TYP_NETX56
 static void ramtest_mmio_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult)
 {
 	HOSTDEF(ptMmioCtrlArea);
@@ -504,7 +504,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	unsigned long ulSdramGeneralCtrl;
 	RAMTEST_PARAMETER_T tTestParams;
 	int iResult;
-#if ASIC_TYP==56
+#if ASIC_TYP==ASIC_TYP_NETX56
 	HOSTDEF(ptAsicCtrlArea);
 	HOSTDEF(ptMmioCtrlArea);
 	unsigned int uiMmioGreen;
@@ -520,7 +520,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	/* Set the serial vectors. */
 	memcpy(&tSerialVectors, &tSerialVectors_Uart, sizeof(SERIAL_COMM_UI_FN_T));
 
-#if ASIC_TYP==56
+#if ASIC_TYP==ASIC_TYP_NETX56
 	/* Get the chip subtype from mem_a18 and mem_a19:
 	 *  18 19
 	 *   0  0  netX50
@@ -555,7 +555,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	 */
 	memset(&tTestParams, 0, sizeof(tTestParams));
 	
-#if ASIC_TYP==4000
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 	/* On netx 4000, set hardcoded parameters for the moment. */
 	/* Set the start of the test area. */
 	tTestParams.ulStart = 0x40000000;
@@ -588,7 +588,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	tTestParams.ulPerfTestCases = 0;
 	
 	/* Set the progress callback. */
-#if ASIC_TYP==56
+#if ASIC_TYP==ASIC_TYP_NETX56
 	ulValue = ptBootBlock->s.uMemoryCtrl.sSDRam.aulReserved[0];
 	if( ulValue!=0 )
 	{

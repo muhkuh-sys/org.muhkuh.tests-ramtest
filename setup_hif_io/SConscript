@@ -24,8 +24,7 @@
 #
 # Import all required environments.
 #
-Import('env_default')
-Import('env_netx500_default', 'env_netx56_default', 'env_netx50_default', 'env_netx10_default')
+Import('atEnv')
 
 
 #----------------------------------------------------------------------------
@@ -43,7 +42,7 @@ sources = """
 #
 aCppPath = ['src', '#platform/src', '#platform/src/lib']
 
-env_netx56 = env_netx56_default.Clone()
+env_netx56 = atEnv.NETX56.Clone()
 env_netx56.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56.Append(CPPPATH = aCppPath)
 src_netx56 = env_netx56.SetBuildPath('targets/netx56', 'src', sources)

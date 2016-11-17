@@ -35,7 +35,7 @@ unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 	ulColumns >>= HOSTSRT(sdram_general_ctrl_columns);
 	ulColumns   = 2048U << ulColumns;
 
-#if ASIC_TYP==500 || ASIC_TYP==50 || ASIC_TYP==56
+#if ASIC_TYP==ASIC_TYP_NETX500 || ASIC_TYP==ASIC_TYP_NETX50 || ASIC_TYP==ASIC_TYP_NETX56
 	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus32))!=0 )
 	{
 		/* 32 bit bus. */
@@ -46,7 +46,7 @@ unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 		/* 16 bit bus. */
 		ulBus = 2;
 	}
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus16))!=0 )
 	{
 		/* 16 bit bus. */
@@ -66,7 +66,7 @@ unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 
 
 
-#if ASIC_TYP==10
+#if ASIC_TYP==ASIC_TYP_NETX10
 static int setup_sdram_hif_netx10(unsigned long ulSdramGeneralCtrl)
 {
 	HOSTDEF(ptAsicCtrlArea);
@@ -92,7 +92,7 @@ static int setup_sdram_hif_netx10(unsigned long ulSdramGeneralCtrl)
 }
 
 
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 typedef struct HIF_SIZE_TO_ADRCFG_STRUCT
 {
 	unsigned long ulSDRAMSize;
@@ -187,7 +187,7 @@ static int setup_sdram_hif_netx56(unsigned long ulSdramGeneralCtrl)
 
 
 /* keep the address of the controller in a global variable */
-#if ASIC_TYP==500
+#if ASIC_TYP==ASIC_TYP_NETX500
 	NX500_EXT_SDRAM_CTRL_AREA_T *g_ptSdram;
 #else
 	HOSTADEF(SDRAM) *g_ptSdram;
@@ -199,7 +199,7 @@ int sdram_setup(unsigned long ulSdramStart,
 	unsigned long ulSdramTimingCtrl,
 	unsigned long ulSdramMr)
 {
-#if ASIC_TYP==500
+#if ASIC_TYP==ASIC_TYP_NETX500
 	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
 #else
 	HOSTADEF(SDRAM) *ptSdram;
@@ -215,19 +215,19 @@ int sdram_setup(unsigned long ulSdramStart,
 
 	/* Get the SDRAM controller address from the test area address. */
 	ptSdram = NULL;
-#if ASIC_TYP==500
+#if ASIC_TYP==ASIC_TYP_NETX500
 	/* Is the test area inside the SDRAM? */
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
 	}
-#elif ASIC_TYP==50
+#elif ASIC_TYP==ASIC_TYP_NETX50
 	/* Is the test area inside the SDRAM? */
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
 		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
 	}
-#elif ASIC_TYP==56
+#elif ASIC_TYP==ASIC_TYP_NETX56
 	/* Is the test area inside the SDRAM? */
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_sdram_end) )
 	{
@@ -241,7 +241,7 @@ int sdram_setup(unsigned long ulSdramStart,
 		/* HIF SDRAM needs special preparation. */
 		iResult = setup_sdram_hif_netx56(ptBootBlock->s.uMemoryCtrl.sSDRam.ulGeneralCtrl);
 	}
-#elif ASIC_TYP==10
+#elif ASIC_TYP==ASIC_TYP_NETX10
 	/* Is the test area inside the SDRAM? */
 	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 	{
