@@ -223,7 +223,7 @@ end
 
 
 local atPlatformAttributes = {
-	[romloader.ROMLOADER_CHIPTYP_NETX4000] = {
+	[romloader.ROMLOADER_CHIPTYP_NETX4000RELAXED] = {
 		ulAsic = 4000,
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
@@ -400,7 +400,7 @@ end
 local function compare_netx_version(tPlugin, atRamAttributes)
 	local atChipTypes = {
 		[4000] = {
-			romloader.ROMLOADER_CHIPTYP_NETX4000,
+			romloader.ROMLOADER_CHIPTYP_NETX4000RELAXED,
 		},
 		[500] = {
 			romloader.ROMLOADER_CHIPTYP_NETX500,
@@ -561,11 +561,11 @@ end
 
 
 -- Note: the geometry fields have slightly different definitions:
---           netx 500/100/50                  netx 10                          netx 56/4000                
+--           netx 500/100/50                  netx 10                          netx 56/4000
 -- width    1 bit,  0..1     = 16..32        1 bit,  0..1     = 8..16        1 bit,  0..1     = 16..32
--- columns  3 bits, 000..110 = 256..16k      3 bits, 000..100 = 256..4k      3 bits, 000..100 = 256..4k   
--- rows     3 bits, 000..101 = 2k..64k       3 bits, 000..011 = 2k..16k      2 bits, 000..011 = 2k..16k  
--- banks    2 bits, 00..10   = 2..8          2 bits, 00..01   = 2..4         2 bits, 00..01   = 2..4      
+-- columns  3 bits, 000..110 = 256..16k      3 bits, 000..100 = 256..4k      3 bits, 000..100 = 256..4k
+-- rows     3 bits, 000..101 = 2k..64k       3 bits, 000..011 = 2k..16k      2 bits, 000..011 = 2k..16k
+-- banks    2 bits, 00..10   = 2..8          2 bits, 00..01   = 2..4         2 bits, 00..01   = 2..4
 
 -- Extract the geometry parameters.
 function decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
@@ -580,10 +580,10 @@ function decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
 	local ulColumns  = bit.lshift(256,  ulColumnBits)
 	local ulBusWidth = bit.lshift(1,    ulBusWidthBits)
 
-	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500 
+	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50
-	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B 
-	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000RELAXED
 	then
 		ulBusWidth = ulBusWidth * 2
 	elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
