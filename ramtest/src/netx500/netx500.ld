@@ -37,16 +37,14 @@ SECTIONS
 
 		KEEP(*(.header))
 		*(.init_code)
-		*(.text*)
-		*(.rodata*)
+		*(.text* .rodata*)
 	} >INTRAM
 
 
 	.bss :
 	{
 		PROVIDE ( __bss_start__ = . );
-		*(.bss)
-		*(COMMON)
+		*(.bss COMMON)
 		PROVIDE ( __bss_end__ = . );
 	} >INTRAM
 
