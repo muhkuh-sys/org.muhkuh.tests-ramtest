@@ -107,7 +107,6 @@ int main(void)
 	
 	/* Setup the SDRAM. */
 	iResult = sdram_setup(ulSdramStart, ulSdramGeneralCtrl, ulSdramTimingCtrl, ulSdramMr);
-	sdram_show_config();
 	
 	if( iResult==0 )
 	{
@@ -117,8 +116,6 @@ int main(void)
 		ramtest_run_performance_tests(&tTestParams);
 	}
 
-	sdram_show_config();
-	
 	//sim_message(". End of test", stop_clock, 0);
 	while(1);
   return 0;
