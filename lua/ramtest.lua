@@ -178,20 +178,20 @@ local function setup_sdram_hif_netx90_mpw(tPlugin, atSdramAttributes)
     end
   end
   print(string.format("ulAddressCfg=0x%08x", ulAddressCfg))
-  
+
   -- Get the configuration value for the data bus size.
   -- bits 5-4 hif_mi_cfg
   local ulGeneralCtrl = atSdramAttributes.general_ctrl
   local ulDataCfg
   if bit.band(ulGeneralCtrl,0x00010000)==0 then
     -- The data bus has a size of 8 bit.
-    ulDataCfg = 0x00000050
-  else 
+    ulDataCfg = 0x00000080
+  else
     -- The data bus has a size of 16 bit.
-    ulDataCfg = 0x00000060
+    ulDataCfg = 0x000000a0
   end
   print(string.format("ulDataCfg=0x%08x", ulDataCfg))
-  
+
   -- Install the binary.
   local strBinaryName = "netx/setup_netx90_mpw.bin"
   local ulParameter = bit.bor(ulAddressCfg, ulDataCfg)
