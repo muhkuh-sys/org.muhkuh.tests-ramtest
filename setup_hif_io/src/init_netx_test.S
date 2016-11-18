@@ -3,9 +3,15 @@
 
 
 	.section .init_code, "ax"
-	.arm
 
-	.extern test_main
+@ The Cortex-M4 in the netX90 is a THUMB-only CPU.
+@ All others start in 32 bit mode.
+#if ASIC_TYP==ASIC_TYP_NETX90_MPW
+        .syntax unified
+        .thumb
+#else
+        .arm
+#endif
 
 	.global NetxTestParameter_Init
 	.global start
@@ -13,10 +19,10 @@
 
 @--------------------------------------
 
-  .func start_init_s
-
+    .func start, start
+    .type start, STT_FUNC
 start:
-	stmfd   sp!, {r1, r2, lr}
+	push    {r1, r2}
 
 	@ Unlock the access key.
 	ldr     r1, =HOSTADR(asic_ctrl_access_key)
@@ -33,6 +39,7 @@ start:
 	str     r1, [r0]
 
 	@ Go back.
+	pop     {r1, r2}
 	bx	lr
 
   .endfunc
