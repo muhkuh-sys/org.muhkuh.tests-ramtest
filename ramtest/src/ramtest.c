@@ -1,5 +1,6 @@
 #include "netx_io_areas.h"
 #include "ramtest.h"
+#include "setup_sdram.h"
 #include "systime.h"
 #include "uprintf.h"
 #include "string.h"
@@ -936,6 +937,9 @@ static RAMTEST_RESULT_T ram_test_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 
 static RAMTEST_RESULT_T ram_test_burst(RAMTEST_PARAMETER_T *ptRamTestParameter, const RAMTEST_PAIR_T *ptTestPair)
 {
+#if ASIC_TYP==ASIC_TYP_NETX90_MPW
+	return RAMTEST_RESULT_OK;
+#else
 	unsigned long *pulCnt;
 	unsigned long *pulEnd;
 	int iResult;
@@ -964,6 +968,7 @@ static RAMTEST_RESULT_T ram_test_burst(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 	}
 
 	return tResult;
+#endif
 }
 
 
@@ -1169,64 +1174,22 @@ void ramtest_show_sdram_config(unsigned long ulSdramStart)
 	unsigned long ulSdramGeneralCtrl;
 	unsigned long ulSdramTimingCtrl;
 	unsigned long ulSdramMr;
-#if ASIC_TYP==ASIC_TYP_NETX500
-	NX500_EXT_SDRAM_CTRL_AREA_T *ptSdram;
-#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
-	NX4000_EXT_SDRAM_CTRL_AREA_T *ptSdram;
-#else
-	HOSTADEF(SDRAM) *ptSdram;
-#endif
+	SDRAM_CTRL_T *ptSdram;
+
 
 	/* Get the SDRAM controller address from the test area address. */
-	ptSdram = NULL;
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
-
-	if( ulSdramStart>=HOSTADDR(mem_sdram) && ulSdramStart<=HOSTADR(mem_sdram_sdram_end) )
-	{
-		ptSdram = (NX4000_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
-	}
-	else 	if( ulSdramStart>=HOSTADDR(hif_sdram) && ulSdramStart<=HOSTADR(hif_sdram_sdram_end) )
-	{
-		ptSdram = (NX4000_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(hif_sdram_ctrl);
-	}
-	
-#elif ASIC_TYP==ASIC_TYP_NETX500
-	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
-	{
-		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
-	}
-#elif ASIC_TYP==ASIC_TYP_NETX50
-	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
-	{
-		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
-	}
-#elif ASIC_TYP==ASIC_TYP_NETX56
-	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_sdram_end) )
-	{
-		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
-	}
-	else if( ulSdramStart>=HOSTADDR(hif_sdram_lite) && ulSdramStart<=HOSTADR(hif_sdram_lite_sdram_end) )
-	{
-		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(hif_sdram_ctrl);
-	}
-#elif ASIC_TYP==ASIC_TYP_NETX10
-	if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
-	{
-		ptSdram = (HOSTADEF(SDRAM)*)HOSTADDR(ext_sdram_ctrl);
-	}
-#endif
-
+	ptSdram = get_sdram_controller(ulSdramStart);
 	if( ptSdram!=NULL )
 	{
-		ulSdramGeneralCtrl	= ptSdram->ulSdram_general_ctrl ; 
-		ulSdramTimingCtrl	= ptSdram->ulSdram_timing_ctrl  ; 
-		ulSdramMr			= ptSdram->ulSdram_mr           ; 
-		
+		ulSdramGeneralCtrl = ptSdram->ulSdram_general_ctrl;
+		ulSdramTimingCtrl  = ptSdram->ulSdram_timing_ctrl;
+		ulSdramMr          = ptSdram->ulSdram_mr;
+
 		//sim_message(". SDRAM controller:    ", disp_data, (unsigned long) ptSdram);
 		//sim_message(". SDRAM general ctrl:  ", disp_data, ulSdramGeneralCtrl);
 		//sim_message(". SDRAM timing ctrl:   ", disp_data, ulSdramTimingCtrl);
 		//sim_message(". SDRAM mode register: ", disp_data, ulSdramMr);
-		
+
 		uprintf("\n");
 		uprintf(". SDRAM controller:    0x%08x\n", (unsigned long) ptSdram);
 		uprintf(". SDRAM general ctrl:  0x%08x\n", ulSdramGeneralCtrl);
@@ -1293,8 +1256,9 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	{
 		uprintf("     Burst\n");
 	}
-
+#if ASIC_TYP!=ASIC_TYP_NETX90_MPW
 	ramtest_print_performance_tests(ptParameter);
+#endif
 
 	ulLoopMax = ptParameter->ulLoops;
 	if( ulLoopMax==0 )
@@ -1343,6 +1307,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		}
 
 
+#if ASIC_TYP!=ASIC_TYP_NETX90_MPW
 		/* TODO: does it make sense to run the performance tests multiple times in a loop? */
 		if (ptParameter->ulPerfTestCases != 0)
 		{
@@ -1355,6 +1320,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			tRamTestResult = ramtest_run_performance_tests(ptParameter);
 			if( tRamTestResult!=RAMTEST_RESULT_OK ) break;
 		}
+#endif
 
 
 		if( tRamTestResult==RAMTEST_RESULT_OK )

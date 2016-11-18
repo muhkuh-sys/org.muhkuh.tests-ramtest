@@ -17,10 +17,4 @@ typedef struct {
 
 /*-----------------------------------*/
 
-void test_main(void);
-TEST_RESULT_T test(TEST_PARAMETER_T *ptTestParam);
-TEST_PARAMETER_T *netx_test_getParameters(void);
-
-/*-----------------------------------*/
-
-#endif	/* __NETX_TEST_H__ */
+#endif  /* __NETX_TEST_H__ */

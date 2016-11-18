@@ -32,16 +32,20 @@ Import('atEnv')
 # (i.e. spaces, tabs, newlines). The amount of whitespace does not matter.
 sources_common = """
 	src/header.c
+	src/progress.c
 	src/ramtest.c
-	src/random_burst.s
-	src/ramtest_perf.c
+	src/setup_sdram.c
+"""
+
+sources_arm_assembler = """
 	src/performance_test.S
+	src/ramtest_perf.c
+	src/random_burst.s
 """
 
 sources_test = """
 	src/init_netx_test.S
 	src/main_test.c
-	src/netx_test.c
 """
 
 sources_standalone = """
@@ -84,9 +88,9 @@ sources_debugger = """
 sources_sim = """
 	src/init_simu.S
 	src/main_simu.c
-	src/setup_sdram.c
-	src/ramtest_perf.c
 	src/performance_test.S
+	src/ramtest_perf.c
+	src/setup_sdram.c
 """
 
 # special files for netX 4000 bootup
@@ -117,14 +121,14 @@ aCppPath = ['src', '#platform/src', '#platform/src/lib', '#targets/version']
 env_netx4000_t = atEnv.NETX4000_RELAXED.Clone()
 env_netx4000_t.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
 env_netx4000_t.Append(CPPPATH = aCppPath)
-src_netx4000_t = env_netx4000_t.SetBuildPath('targets/netx4000/muhkuh_test', 'src', sources_common+sources_test)
+src_netx4000_t = env_netx4000_t.SetBuildPath('targets/netx4000/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
 elf_netx4000_t = env_netx4000_t.Elf('targets/netx4000/muhkuh_test/ramtest.elf', src_netx4000_t + env_netx4000_t['PLATFORM_LIBRARY'])
 ramtest_netx4000 = env_netx4000_t.ObjCopy('targets/netx4000/muhkuh_test/ramtest_netx4000.bin', elf_netx4000_t)
 
 env_netx500_t = atEnv.NETX500.Clone()
 env_netx500_t.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_t.Append(CPPPATH = aCppPath)
-src_netx500_t = env_netx500_t.SetBuildPath('targets/netx500/muhkuh_test', 'src', sources_common+sources_test)
+src_netx500_t = env_netx500_t.SetBuildPath('targets/netx500/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
 elf_netx500_t = env_netx500_t.Elf('targets/netx500/muhkuh_test/ramtest.elf', src_netx500_t + env_netx500_t['PLATFORM_LIBRARY'])
 ramtest_netx500 = env_netx500_t.ObjCopy('targets/netx500/muhkuh_test/ramtest_netx500.bin', elf_netx500_t)
 
@@ -136,28 +140,35 @@ src_netx500_sim = env_netx500_sim.SetBuildPath('targets/netx500/sim', 'src',  so
 elf_netx500_sim = env_netx500_sim.Elf('targets/netx500/sim/ramtest_netx500.elf', src_netx500_sim + env_netx500_sim['PLATFORM_LIBRARY'])
 ramtest_netx500_sim = env_netx500_sim.ObjCopy('targets/netx500/sim/ramtest_netx500.bin', elf_netx500_sim)
 
+env_netx90_mpw_t = atEnv.NETX90_MPW.Clone()
+env_netx90_mpw_t.Replace(LDFILE = 'src/netx90/netx90.ld')
+env_netx90_mpw_t.Append(CPPPATH = aCppPath)
+src_netx90_mpw_t = env_netx90_mpw_t.SetBuildPath('targets/netx90_mpw/muhkuh_test', 'src', sources_common+sources_test)
+elf_netx90_mpw_t = env_netx90_mpw_t.Elf('targets/netx90_mpw/muhkuh_test/ramtest.elf', src_netx90_mpw_t + env_netx90_mpw_t['PLATFORM_LIBRARY'])
+ramtest_netx90_mpw = env_netx90_mpw_t.ObjCopy('targets/netx90_mpw/muhkuh_test/ramtest_netx90_mpw.bin', elf_netx90_mpw_t)
+
 env_netx56_t = atEnv.NETX56.Clone()
 env_netx56_t.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_t.Append(CPPPATH = aCppPath)
-src_netx56_t = env_netx56_t.SetBuildPath('targets/netx56/muhkuh_test', 'src', sources_common+sources_test)
+src_netx56_t = env_netx56_t.SetBuildPath('targets/netx56/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
 elf_netx56_t = env_netx56_t.Elf('targets/netx56/muhkuh_test/ramtest.elf', src_netx56_t + env_netx56_t['PLATFORM_LIBRARY'])
 ramtest_netx56 = env_netx56_t.ObjCopy('targets/netx56/muhkuh_test/ramtest_netx56.bin', elf_netx56_t)
 
 env_netx50_t = atEnv.NETX50.Clone()
 env_netx50_t.Replace(LDFILE = 'src/netx50/netx50.ld')
 env_netx50_t.Append(CPPPATH = aCppPath)
-src_netx50_t = env_netx50_t.SetBuildPath('targets/netx50/muhkuh_test', 'src', sources_common+sources_test)
+src_netx50_t = env_netx50_t.SetBuildPath('targets/netx50/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
 elf_netx50_t = env_netx50_t.Elf('targets/netx50/muhkuh_test/ramtest.elf', src_netx50_t + env_netx50_t['PLATFORM_LIBRARY'])
 ramtest_netx50 = env_netx50_t.ObjCopy('targets/netx50/muhkuh_test/ramtest_netx50.bin', elf_netx50_t)
 
 env_netx10_t = atEnv.NETX10.Clone()
 env_netx10_t.Replace(LDFILE = 'src/netx10/netx10.ld')
 env_netx10_t.Append(CPPPATH = aCppPath)
-src_netx10_t = env_netx10_t.SetBuildPath('targets/netx10/muhkuh_test', 'src', sources_common+sources_test)
+src_netx10_t = env_netx10_t.SetBuildPath('targets/netx10/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
 elf_netx10_t = env_netx10_t.Elf('targets/netx10/muhkuh_test/ramtest.elf', src_netx10_t + env_netx10_t['PLATFORM_LIBRARY'])
 ramtest_netx10 = env_netx10_t.ObjCopy('targets/netx10/muhkuh_test/ramtest_netx10.bin', elf_netx10_t)
 
-Export('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Export('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 
 
 
@@ -212,7 +223,7 @@ env_netx4000_s_cr7 = atEnv.NETX4000_RELAXED.Clone()
 env_netx4000_s_cr7.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
 env_netx4000_s_cr7.Append(CPPPATH = aCppPath)
 env_netx4000_s_cr7.Append(CPPDEFINES = [['CPU_CR7', '1']])
-src_netx4000_s_cr7 = env_netx4000_s_cr7.SetBuildPath('targets/netx4000_cr7', 'src', sources_common+sources_standalone_netx4000_cr7)
+src_netx4000_s_cr7 = env_netx4000_s_cr7.SetBuildPath('targets/netx4000_cr7', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7)
 elf_netx4000_s_cr7 = env_netx4000_s_cr7.Elf(         'targets/netx4000_cr7/netx4000_ramtest_cr7.elf', src_netx4000_s_cr7 + env_netx4000_s_cr7['PLATFORM_LIBRARY'])
 txt_netx4000_s_cr7 = env_netx4000_s_cr7.ObjDump(     'targets/netx4000_cr7/netx4000_ramtest_cr7.txt', elf_netx4000_s_cr7, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_cr7 = env_netx4000_s_cr7.ObjCopy(     'targets/netx4000_cr7/netx4000_ramtest_cr7.bin', elf_netx4000_s_cr7)
@@ -223,7 +234,7 @@ env_netx4000_s_ca9_core0.Replace(LDFILE = 'src/netx4000/netx4000_ca9_intram_rap0
 env_netx4000_s_ca9_core0.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core0.Append(CPPPATH = ['src/netx4000'])
 env_netx4000_s_ca9_core0.Append(CPPDEFINES = [['CPU_CA9']])
-src_netx4000_s_ca9_core0 = env_netx4000_s_ca9_core0.SetBuildPath('targets/netx4000_ca9_core0', 'src', sources_common+sources_standalone_netx4000_ca9)
+src_netx4000_s_ca9_core0 = env_netx4000_s_ca9_core0.SetBuildPath('targets/netx4000_ca9_core0', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9)
 elf_netx4000_s_ca9_core0 = env_netx4000_s_ca9_core0.Elf(         'targets/netx4000_ca9_core0/netx4000_ramtest_ca9_core0.elf', src_netx4000_s_ca9_core0 + env_netx4000_s_ca9_core0['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_core0 = env_netx4000_s_ca9_core0.ObjDump(     'targets/netx4000_ca9_core0/netx4000_ramtest_ca9_core0.txt', elf_netx4000_s_ca9_core0, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core0 = env_netx4000_s_ca9_core0.ObjCopy(     'targets/netx4000_ca9_core0/netx4000_ramtest_ca9_core0.bin', elf_netx4000_s_ca9_core0)
@@ -234,7 +245,7 @@ env_netx4000_s_ca9_core1.Replace(LDFILE = 'src/netx4000/netx4000_ca9_intram_rap1
 env_netx4000_s_ca9_core1.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core1.Append(CPPPATH = ['src/netx4000'])
 env_netx4000_s_ca9_core1.Append(CPPDEFINES = [['CPU_CA9', '1']])
-src_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.SetBuildPath('targets/netx4000_ca9_core1', 'src', sources_common+sources_standalone_netx4000_ca9)
+src_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.SetBuildPath('targets/netx4000_ca9_core1', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9)
 elf_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.Elf(         'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.elf', src_netx4000_s_ca9_core1 + env_netx4000_s_ca9_core1['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.ObjDump(     'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.txt', elf_netx4000_s_ca9_core1, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core1 = env_netx4000_s_ca9_core1.ObjCopy(     'targets/netx4000_ca9_core1/netx4000_ramtest_ca9_core1.bin', elf_netx4000_s_ca9_core1)
@@ -247,7 +258,7 @@ env_netx4000_s_cr7_cached = atEnv.NETX4000_RELAXED.Clone()
 env_netx4000_s_cr7_cached.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
 env_netx4000_s_cr7_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_cr7_cached.Append(CPPDEFINES = [['CPU_CR7', '1']])
-src_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.SetBuildPath('targets/netx4000_cr7_cached', 'src', sources_common+sources_standalone_netx4000_cr7_cached)
+src_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.SetBuildPath('targets/netx4000_cr7_cached', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7_cached)
 elf_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.Elf(         'targets/netx4000_cr7_cached/netx4000_ramtest_cr7_cached.elf', src_netx4000_s_cr7_cached + env_netx4000_s_cr7_cached['PLATFORM_LIBRARY'])
 txt_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.ObjDump(     'targets/netx4000_cr7_cached/netx4000_ramtest_cr7_cached.txt', elf_netx4000_s_cr7_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_cr7_cached = env_netx4000_s_cr7_cached.ObjCopy(     'targets/netx4000_cr7_cached/netx4000_ramtest_cr7_cached.bin', elf_netx4000_s_cr7_cached)
@@ -258,7 +269,7 @@ env_netx4000_s_ca9_core0_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca9_intr
 env_netx4000_s_ca9_core0_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core0_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_core0_cached.Append(CPPDEFINES = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE']])
-src_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.SetBuildPath('targets/netx4000_ca9_core0_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+src_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.SetBuildPath('targets/netx4000_ca9_core0_cached', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.Elf(         'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.elf', src_netx4000_s_ca9_core0_cached + env_netx4000_s_ca9_core0_cached['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.ObjDump(     'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.txt', elf_netx4000_s_ca9_core0_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core0_cached = env_netx4000_s_ca9_core0_cached.ObjCopy(     'targets/netx4000_ca9_core0_cached/netx4000_ramtest_ca9_core0_cached.bin', elf_netx4000_s_ca9_core0_cached)
@@ -269,7 +280,7 @@ env_netx4000_s_ca9_core1_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca9_intr
 env_netx4000_s_ca9_core1_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core1_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_core1_cached.Append(CPPDEFINES = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE']])
-src_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.SetBuildPath('targets/netx4000_ca9_core1_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+src_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.SetBuildPath('targets/netx4000_ca9_core1_cached', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.Elf(         'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.elf', src_netx4000_s_ca9_core1_cached + env_netx4000_s_ca9_core1_cached['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.ObjDump(     'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.txt', elf_netx4000_s_ca9_core1_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core1_cached = env_netx4000_s_ca9_core1_cached.ObjCopy(     'targets/netx4000_ca9_core1_cached/netx4000_ramtest_ca9_core1_cached.bin', elf_netx4000_s_ca9_core1_cached)
@@ -280,7 +291,7 @@ env_netx4000_s_ca9_core0_cached_l2.Replace(LDFILE = 'src/netx4000/netx4000_ca9_i
 env_netx4000_s_ca9_core0_cached_l2.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_core0_cached_l2.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_core0_cached_l2.Append(CPPDEFINES = [['CPU_CA9']])
-src_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.SetBuildPath('targets/netx4000_ca9_core0_cached_l2', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+src_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.SetBuildPath('targets/netx4000_ca9_core0_cached_l2', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.Elf(         'targets/netx4000_ca9_core0_cached_l2/netx4000_ramtest_ca9_core0_cached_l2.elf', src_netx4000_s_ca9_core0_cached_l2 + env_netx4000_s_ca9_core0_cached_l2['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached_l2.ObjDump(     'targets/netx4000_ca9_core0_cached_l2/netx4000_ramtest_ca9_core0_cached_l2.txt', elf_netx4000_s_ca9_core0_cached_l2, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_core0_cached_l2 = env_netx4000_s_ca9_core0_cached.ObjCopy(     'targets/netx4000_ca9_core0_cached_l2/netx4000_ramtest_ca9_core0_cached_l2.bin', elf_netx4000_s_ca9_core0_cached_l2)
@@ -295,7 +306,7 @@ env_netx4000_s_cr7_netx_intram_cached = atEnv.NETX4000_RELAXED.Clone()
 env_netx4000_s_cr7_netx_intram_cached.Replace(LDFILE = 'src/netx4000/netx4000_cr7_netx_intram0.ld')
 env_netx4000_s_cr7_netx_intram_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_cr7_netx_intram_cached.Append(CPPDEFINES = [['CPU_CR7', '1']])
-src_netx4000_s_cr7_netx_intram_cached = env_netx4000_s_cr7_netx_intram_cached.SetBuildPath('targets/netx4000_cr7_netx_intram_cached', 'src', sources_common+sources_standalone_netx4000_cr7_cached)
+src_netx4000_s_cr7_netx_intram_cached = env_netx4000_s_cr7_netx_intram_cached.SetBuildPath('targets/netx4000_cr7_netx_intram_cached', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7_cached)
 elf_netx4000_s_cr7_netx_intram_cached = env_netx4000_s_cr7_netx_intram_cached.Elf(         'targets/netx4000_cr7_netx_intram_cached/netx4000_ramtest_cr7_netx_intram_cached.elf', src_netx4000_s_cr7_netx_intram_cached + env_netx4000_s_cr7_netx_intram_cached['PLATFORM_LIBRARY'])
 txt_netx4000_s_cr7_netx_intram_cached = env_netx4000_s_cr7_netx_intram_cached.ObjDump(     'targets/netx4000_cr7_netx_intram_cached/netx4000_ramtest_cr7_netx_intram_cached.txt', elf_netx4000_s_cr7_netx_intram_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_cr7_netx_intram_cached = env_netx4000_s_cr7_netx_intram_cached.ObjCopy(     'targets/netx4000_cr7_netx_intram_cached/netx4000_ramtest_cr7_netx_intram_cached.bin', elf_netx4000_s_cr7_netx_intram_cached)
@@ -306,7 +317,7 @@ env_netx4000_s_ca9_intram_rap2_cached_l2.Replace(LDFILE = 'src/netx4000/netx4000
 env_netx4000_s_ca9_intram_rap2_cached_l2.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_intram_rap2_cached_l2.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_intram_rap2_cached_l2.Append(CPPDEFINES = [['CPU_CA9']])
-src_netx4000_s_ca9_intram_rap2_cached_l2 = env_netx4000_s_ca9_intram_rap2_cached_l2.SetBuildPath('targets/netx4000_ca9_intram_rap2_cached_l2', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+src_netx4000_s_ca9_intram_rap2_cached_l2 = env_netx4000_s_ca9_intram_rap2_cached_l2.SetBuildPath('targets/netx4000_ca9_intram_rap2_cached_l2', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_intram_rap2_cached_l2 = env_netx4000_s_ca9_intram_rap2_cached_l2.Elf(         'targets/netx4000_ca9_intram_rap2_cached_l2/netx4000_ramtest_ca9_intram_rap2_cached_l2.elf', src_netx4000_s_ca9_intram_rap2_cached_l2 + env_netx4000_s_ca9_intram_rap2_cached_l2['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_intram_rap2_cached_l2 = env_netx4000_s_ca9_intram_rap2_cached_l2.ObjDump(     'targets/netx4000_ca9_intram_rap2_cached_l2/netx4000_ramtest_ca9_intram_rap2_cached_l2.txt', elf_netx4000_s_ca9_intram_rap2_cached_l2, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_intram_rap2_cached_l2 = env_netx4000_s_ca9_intram_rap2_cached_l2.ObjCopy(     'targets/netx4000_ca9_intram_rap2_cached_l2/netx4000_ramtest_ca9_intram_rap2_cached_l2.bin', elf_netx4000_s_ca9_intram_rap2_cached_l2)
@@ -318,7 +329,7 @@ env_netx4000_s_ca9_intram_rap2_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca
 env_netx4000_s_ca9_intram_rap2_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_intram_rap2_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_intram_rap2_cached.Append(CPPDEFINES = [['CPU_CA9'], ['CA9_NOC_ENABLE']])
-src_netx4000_s_ca9_intram_rap2_cached = env_netx4000_s_ca9_intram_rap2_cached.SetBuildPath('targets/netx4000_ca9_intram_rap2_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+src_netx4000_s_ca9_intram_rap2_cached = env_netx4000_s_ca9_intram_rap2_cached.SetBuildPath('targets/netx4000_ca9_intram_rap2_cached', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_intram_rap2_cached = env_netx4000_s_ca9_intram_rap2_cached.Elf(         'targets/netx4000_ca9_intram_rap2_cached/netx4000_ramtest_ca9_intram_rap2_cached.elf', src_netx4000_s_ca9_intram_rap2_cached + env_netx4000_s_ca9_intram_rap2_cached['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_intram_rap2_cached = env_netx4000_s_ca9_intram_rap2_cached.ObjDump(     'targets/netx4000_ca9_intram_rap2_cached/netx4000_ramtest_ca9_intram_rap2_cached.txt', elf_netx4000_s_ca9_intram_rap2_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_intram_rap2_cached = env_netx4000_s_ca9_intram_rap2_cached.ObjCopy(     'targets/netx4000_ca9_intram_rap2_cached/netx4000_ramtest_ca9_intram_rap2_cached.bin', elf_netx4000_s_ca9_intram_rap2_cached)
@@ -330,7 +341,7 @@ env_netx4000_s_ca9_intram_rap3_cached.Replace(LDFILE = 'src/netx4000/netx4000_ca
 env_netx4000_s_ca9_intram_rap3_cached.Append(CPPPATH = aCppPath)
 env_netx4000_s_ca9_intram_rap3_cached.Append(CPPPATH = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000'])
 env_netx4000_s_ca9_intram_rap3_cached.Append(CPPDEFINES = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE']])
-src_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.SetBuildPath('targets/netx4000_ca9_intram_rap3_cached', 'src', sources_common+sources_standalone_netx4000_ca9_cached)
+src_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.SetBuildPath('targets/netx4000_ca9_intram_rap3_cached', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached)
 elf_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.Elf(         'targets/netx4000_ca9_intram_rap3_cached/netx4000_ramtest_ca9_intram_rap3_cached.elf', src_netx4000_s_ca9_intram_rap3_cached + env_netx4000_s_ca9_intram_rap3_cached['PLATFORM_LIBRARY'])
 txt_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.ObjDump(     'targets/netx4000_ca9_intram_rap3_cached/netx4000_ramtest_ca9_intram_rap3_cached.txt', elf_netx4000_s_ca9_intram_rap3_cached, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 bin_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.ObjCopy(     'targets/netx4000_ca9_intram_rap3_cached/netx4000_ramtest_ca9_intram_rap3_cached.bin', elf_netx4000_s_ca9_intram_rap3_cached)
@@ -904,7 +915,7 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_intrams_cr7_ca9_cached_l2
 env_netx500_s = atEnv.NETX500.Clone()
 env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_s.Append(CPPPATH = aCppPath)
-src_netx500_s = env_netx500_s.SetBuildPath('targets/netx500/standalone', 'src', sources_common+sources_standalone)
+src_netx500_s = env_netx500_s.SetBuildPath('targets/netx500/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx500_s = env_netx500_s.Elf('targets/netx500/standalone/ramtest_netx500.elf', src_netx500_s + env_netx500_s['PLATFORM_LIBRARY'])
 ramtest_standalone_netx500 = env_netx500_s.BootBlock('targets/netx500/standalone/ramtest_standalone_netx500.bin', elf_netx500_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
@@ -912,7 +923,7 @@ ramtest_standalone_netx500 = env_netx500_s.BootBlock('targets/netx500/standalone
 env_netx56_s = atEnv.NETX56.Clone()
 env_netx56_s.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_s.Append(CPPPATH = aCppPath)
-src_netx56_s = env_netx56_s.SetBuildPath('targets/netx56/standalone', 'src', sources_common+sources_standalone)
+src_netx56_s = env_netx56_s.SetBuildPath('targets/netx56/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx56_s = env_netx56_s.Elf('targets/netx56/standalone/ramtest_netx56.elf', src_netx56_s + env_netx56_s['PLATFORM_LIBRARY'])
 ramtest_standalone_netx56 = env_netx56_s.BootBlock('targets/netx56/standalone/ramtest_standalone_netx56.bin', elf_netx56_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
@@ -920,7 +931,7 @@ ramtest_standalone_netx56 = env_netx56_s.BootBlock('targets/netx56/standalone/ra
 env_netx50_s = atEnv.NETX50.Clone()
 env_netx50_s.Replace(LDFILE = 'src/netx50/netx50.ld')
 env_netx50_s.Append(CPPPATH = aCppPath)
-src_netx50_s = env_netx50_s.SetBuildPath('targets/netx50/standalone', 'src', sources_common+sources_standalone)
+src_netx50_s = env_netx50_s.SetBuildPath('targets/netx50/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx50_s = env_netx50_s.Elf('targets/netx50/standalone/ramtest_netx50.elf', src_netx50_s + env_netx50_s['PLATFORM_LIBRARY'])
 ramtest_standalone_netx50 = env_netx50_s.BootBlock('targets/netx50/standalone/ramtest_standalone_netx50.bin', elf_netx50_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
@@ -928,7 +939,7 @@ ramtest_standalone_netx50 = env_netx50_s.BootBlock('targets/netx50/standalone/ra
 env_netx10_s = atEnv.NETX10.Clone()
 env_netx10_s.Replace(LDFILE = 'src/netx10/netx10.ld')
 env_netx10_s.Append(CPPPATH = aCppPath)
-src_netx10_s = env_netx10_s.SetBuildPath('targets/netx10/standalone', 'src', sources_common+sources_standalone)
+src_netx10_s = env_netx10_s.SetBuildPath('targets/netx10/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest_netx10.elf', src_netx10_s + env_netx10_s['PLATFORM_LIBRARY'])
 ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ramtest_standalone_netx10.bin', elf_netx10_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
@@ -944,6 +955,6 @@ Export('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
 env_netx500_d = atEnv.NETX500.Clone()
 env_netx500_d.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_d.Append(CPPPATH = aCppPath)
-src_netx500_d = env_netx500_d.SetBuildPath('targets/netx500/debugger', 'src', sources_common+sources_debugger)
+src_netx500_d = env_netx500_d.SetBuildPath('targets/netx500/debugger', 'src', sources_common+sources_arm_assembler+sources_debugger)
 elf_netx500_d = env_netx500_d.Elf('targets/netx500/debugger/ramtest_netx500.elf', src_netx500_d + env_netx500_d['PLATFORM_LIBRARY'])
 

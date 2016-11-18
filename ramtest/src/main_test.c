@@ -2,6 +2,7 @@
 #include "netx_io_areas.h"
 
 #include "netx_test.h"
+#include "progress.h"
 #include "ramtest.h"
 #include "rdy_run.h"
 #include "systime.h"
@@ -10,34 +11,8 @@
 
 /*-----------------------------------*/
 
-static void ramtest_rdyrun_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult)
-{
-	unsigned long ulProgress;
-
-
-	if( tResult==RAMTEST_RESULT_OK )
-	{
-		ulProgress = ptRamTestParameter->ulProgress;
-		if( ulProgress==0 )
-		{
-			rdy_run_setLEDs(RDYRUN_GREEN);
-		}
-		else
-		{
-			rdy_run_setLEDs(RDYRUN_OFF);
-		}
-
-		ulProgress ^= 1;
-		ptRamTestParameter->ulProgress = ulProgress;
-	}
-	else
-	{
-		rdy_run_setLEDs(RDYRUN_YELLOW);
-	}
-}
-
-
-TEST_RESULT_T test(TEST_PARAMETER_T *ptTestParam)
+TEST_RESULT_T test_main(TEST_PARAMETER_T *ptTestParam);
+TEST_RESULT_T test_main(TEST_PARAMETER_T *ptTestParam)
 {
 	TEST_RESULT_T tTestResult;
 	RAMTEST_RESULT_T tRamTestResult;
@@ -54,7 +29,7 @@ TEST_RESULT_T test(TEST_PARAMETER_T *ptTestParam)
 
 	ptTestParams = (RAMTEST_PARAMETER_T*)(ptTestParam->pvInitParams);
 
-	ptTestParams->pfnProgress = ramtest_rdyrun_progress;
+	ptTestParams->pfnProgress = progress_rdyrun;
 	ptTestParams->ulProgress = 0;
 
 	tRamTestResult = ramtest_run(ptTestParams);

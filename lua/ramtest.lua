@@ -148,6 +148,61 @@ end
 
 
 
+local function setup_sdram_hif_netx90_mpw(tPlugin, atSdramAttributes)
+  local atAddressLines = {
+    [0x00000800] = 0x00000000,
+    [0x00001000] = 0x00000100,
+    [0x00002000] = 0x00000200,
+    [0x00004000] = 0x00000300,
+    [0x00008000] = 0x00000400,
+    [0x00010000] = 0x00000500,
+    [0x00020000] = 0x00000600,
+    [0x00040000] = 0x00000700,
+    [0x00080000] = 0x00000800,
+    [0x00100000] = 0x00000900,
+    [0x00200000] = 0x00000a00,
+    [0x00400000] = 0x00000b00,
+    [0x00800000] = 0x00000c00,
+    [0x01000000] = 0x00000d00,
+    [0x02000000] = 0x00000e00
+  }
+
+  -- Get the configuration value for the number of address lines.
+  -- bits 11-8 sel_hif_a_width
+  local ulSdramSize = get_ram_size(tPlugin, atSdramAttributes)
+  local ulAddressCfg = 0
+  for ulSize,ulCfg in pairs(atAddressLines) do
+    ulAddressCfg = ulCfg
+    if ulSdramSize<=ulSize then
+      break
+    end
+  end
+  print(string.format("ulAddressCfg=0x%08x", ulAddressCfg))
+  
+  -- Get the configuration value for the data bus size.
+  -- bits 5-4 hif_mi_cfg
+  local ulGeneralCtrl = atSdramAttributes.general_ctrl
+  local ulDataCfg
+  if bit.band(ulGeneralCtrl,0x00010000)==0 then
+    -- The data bus has a size of 8 bit.
+    ulDataCfg = 0x00000050
+  else 
+    -- The data bus has a size of 16 bit.
+    ulDataCfg = 0x00000060
+  end
+  print(string.format("ulDataCfg=0x%08x", ulDataCfg))
+  
+  -- Install the binary.
+  local strBinaryName = "netx/setup_netx90_mpw.bin"
+  local ulParameter = bit.bor(ulAddressCfg, ulDataCfg)
+  local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, ulParameter)
+  if ulResult~=0 then
+    error(string.format("The setup returned an error code: 0x%08x", ulResult))
+  end
+end
+
+
+
 local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	local atAddressLines = {
 		[0x00000800] = 0x00000000,
@@ -223,8 +278,8 @@ end
 
 
 local atPlatformAttributes = {
-	[romloader.ROMLOADER_CHIPTYP_NETX4000RELAXED] = {
-		ulAsic = 4000,
+	[romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED] = {
+		strAsic = 'netx4000_relaxed',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0xf40c0140, 
@@ -240,7 +295,7 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX500] = {
-		ulAsic = 500,
+		strAsic = 'netx500',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0x00100140,
@@ -267,7 +322,7 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX100] = {
-		ulAsic = 500,
+		strAsic = 'netx500',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0x00100140,
@@ -293,8 +348,21 @@ local atPlatformAttributes = {
 		}
 	},
 
+  [romloader.ROMLOADER_CHIPTYP_NETX90_MPW] = {
+    strAsic = 'netx90_mpw',
+    sdram = {
+      [INTERFACE_SDRAM_MEM] = {
+      },
+      [INTERFACE_SDRAM_HIF] = {
+        ulController = 0xff401540,
+        ulArea_Start = 0x10000000,
+        setup = setup_sdram_hif_netx90_mpw
+      }
+    }
+  },
+
 	[romloader.ROMLOADER_CHIPTYP_NETX56] = {
-		ulAsic = 56,
+		strAsic = 'netx56',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0x101c0140,
@@ -310,7 +378,7 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX56B] = {
-		ulAsic = 56,
+		strAsic = 'netx56',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0x101c0140,
@@ -326,7 +394,7 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX50] = {
-		ulAsic = 50,
+		strAsic = 'netx50',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0x1c000140,
@@ -339,7 +407,7 @@ local atPlatformAttributes = {
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX10] = {
-		ulAsic = 10,
+		strAsic = 'netx10',
 		sdram = {
 			[INTERFACE_SDRAM_MEM] = {
 			},
@@ -399,32 +467,35 @@ end
 
 local function compare_netx_version(tPlugin, atRamAttributes)
 	local atChipTypes = {
-		[4000] = {
-			romloader.ROMLOADER_CHIPTYP_NETX4000RELAXED,
+		['NETX4000_RELAXED'] = {
+			romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED,
 		},
-		[500] = {
+		['NETX500'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX500,
 			romloader.ROMLOADER_CHIPTYP_NETX100
 		},
-		[56] = {
+    ['NETX90_MPW'] = {
+      romloader.ROMLOADER_CHIPTYP_NETX90_MPW,
+    },
+		['NETX56'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX56,
 			romloader.ROMLOADER_CHIPTYP_NETX56B
 		},
-		[50] = {
+		['NETX50'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX50
 		},
-		[10] = {
+		['NETX10'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX10
 		}
 	}
 	
 	-- Get the connected chip type.
 	local tChipType = tPlugin:GetChiptyp()
-	
+
 	local atChipTypesStr = {}
-	for uiNetxTyp,atTypes in pairs(atChipTypes) do
+	for strNetxTyp,atTypes in pairs(atChipTypes) do
 		local strChipTypes = ""
-		sizChipTypes = #atTypes
+		local sizChipTypes = #atTypes
 		for uiCnt,tTyp in ipairs(atTypes) do
 			strChipTypes = strChipTypes .. tPlugin:GetChiptypName(tTyp)
 			-- Is more than one element left?
@@ -437,15 +508,15 @@ local function compare_netx_version(tPlugin, atRamAttributes)
 				strChipTypes = strChipTypes .. " and "
 			end
 		end
-		atChipTypesStr[uiNetxTyp] = strChipTypes
+		atChipTypesStr[strNetxTyp] = strChipTypes
 	end
-	
-	
+
+
 	local strHelp = "Possible values are:\n"
-	for uiNetxTyp,strTypes in pairs(atChipTypesStr) do
-		strHelp = strHelp .. string.format("  %3d: %s\n", uiNetxTyp, strTypes)
+	for strNetxTyp,strTypes in pairs(atChipTypesStr) do
+		strHelp = strHelp .. string.format("  %s: %s\n", strNetxTyp, strTypes)
 	end
-	
+
 	-- Get the required chip type for the parameter.
 	local tRequiredChipType = atRamAttributes.netX
 	if tRequiredChipType==nil then
@@ -462,13 +533,13 @@ local function compare_netx_version(tPlugin, atRamAttributes)
 	end
 	
 	local fChipTypeMatches = false
-	for uiCnt,tTyp in ipairs(atTypes) do
+	for _,tTyp in ipairs(atTypes) do
 		if tTyp==tChipType then
 			fChipTypeMatches = true
 			break
 		end
 	end
-	
+
 	if fChipTypeMatches~=true then
 		local strError =       "The connected chip type does not match the one specified in the SDRAM parameters.\n"
 		strError = strError .. "In other words: the parameters do not work with the connected netX.\n"
@@ -496,22 +567,22 @@ function setup_ram(tPlugin, atRamAttributes)
 		if pfnSetup~=nil then
 			pfnSetup(tPlugin, atRamAttributes)
 		end
-		
+
 		-- Get the base address of the SDRAM controller.
 		local ulSDRamController = atInterface.ulController
-		
+
 		-- Combine the timing control value from the base timing and the SDRAM specific value.
 		local ulGeneralCtrl = atRamAttributes.general_ctrl
 		local ulTimingCtrl  = atRamAttributes.timing_ctrl
 		local ulMr = atRamAttributes.mr
-		
+
 		print(string.format("SDRAM general ctrl: 0x%08x", ulGeneralCtrl))
 		print(string.format("SDRAM timing ctrl:  0x%08x", ulTimingCtrl))
 		print(string.format("SDRAM mr:           0x%08x", ulMr))
-		
+
 		-- Disable the SDRAM controller.
 		tPlugin:write_data32(ulSDRamController+0, 0)
-		
+
 		-- Setup the SDRAM controller.
 		tPlugin:write_data32(ulSDRamController+8, ulMr)
 		tPlugin:write_data32(ulSDRamController+4, ulTimingCtrl)
@@ -520,7 +591,7 @@ function setup_ram(tPlugin, atRamAttributes)
 		local ulChipSelect = atRamAttributes.sram_chip_select
 		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
 		local ulController = atInterface.ulController + 4*ulChipSelect
-		
+
 		-- Setup the RAM controller.
 		tPlugin:write_data32(ulController, atRamAttributes.sram_ctrl)
 	else
@@ -537,10 +608,10 @@ function disable_ram(tPlugin, atRamAttributes)
 	elseif tInterface==INTERFACE_SDRAM_HIF or tInterface==INTERFACE_SDRAM_MEM then
 		-- Get the interface attributes.
 		local atInterface = get_sdram_interface_attributes(tPlugin, tInterface)
-		
+
 		-- Get the base address of the SDRAM controller.
 		local ulController = atInterface.ulController
-		
+
 		-- Disable the SDRAM controller.
 		tPlugin:write_data32(ulController+0, 0)
 		tPlugin:write_data32(ulController+4, 0)
@@ -549,7 +620,7 @@ function disable_ram(tPlugin, atRamAttributes)
 		local ulChipSelect = atRamAttributes.sram_chip_select
 		local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
 		local ulController = atInterface.ulController + 4*ulChipSelect
-		
+
 		-- Disable the RAM controller.
 		tPlugin:write_data32(ulController, 0x03000000)
 	else
@@ -694,7 +765,7 @@ function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 	end
 	
 	-- Get the binary.
-	local strBinaryName = string.format("netx/ramtest_netx%d.bin", atPlatformAttributes.ulAsic)
+	local strBinaryName = string.format("netx/ramtest_%s.bin", atPlatformAttributes.strAsic)
 	
 	-- Construct the parameter.
 	local aulParameter = {
@@ -880,7 +951,7 @@ function run_ramtest(par)
 	end
 	
 	-- Get the binary.
-	local strBinaryName = string.format("netx/ramtest_netx%d.bin", atPlatformAttributes.ulAsic)
+	local strBinaryName = string.format("netx/ramtest_%s.bin", atPlatformAttributes.strAsic)
 	
 	-- Install the binary.
 	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, aulParameter)

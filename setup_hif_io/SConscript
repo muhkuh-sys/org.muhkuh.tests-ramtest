@@ -49,5 +49,12 @@ src_netx56 = env_netx56.SetBuildPath('targets/netx56', 'src', sources)
 elf_netx56 = env_netx56.Elf('targets/netx56/setup.elf', src_netx56)
 setup_netx56 = env_netx56.ObjCopy('targets/netx56/setup_netx56.bin', elf_netx56)
 
-Export('setup_netx56')
+env_netx90_mpw = atEnv.NETX90_MPW.Clone()
+env_netx90_mpw.Replace(LDFILE = 'src/netx90/netx90.ld')
+env_netx90_mpw.Append(CPPPATH = aCppPath)
+src_netx90_mpw = env_netx90_mpw.SetBuildPath('targets/netx90_mpw', 'src', sources)
+elf_netx90_mpw = env_netx90_mpw.Elf('targets/netx90_mpw/setup.elf', src_netx90_mpw)
+setup_netx90_mpw = env_netx90_mpw.ObjCopy('targets/netx90_mpw/setup_netx90_mpw.bin', elf_netx90_mpw)
+
+Export('setup_netx56', 'setup_netx90_mpw')
 
