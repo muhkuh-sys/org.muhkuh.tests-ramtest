@@ -6,7 +6,7 @@
 #include "main_standalone_common.h"
 #include "ramtest_ecc.h"
 #include "uart_standalone.h"
-
+#include "uart_wrapper.h"
 #include "netx_io_areas.h"
 
 /*-------------------------------------------------------------------------*/
@@ -90,7 +90,11 @@ void systime_wait_ms(unsigned long ulDelay_ms)
 	while (!systime_elapsed(ulStart, ulDelay_ms)) {}
 }
 
-
+/* ulUseUart:
+    0: clear serial vectors
+    1: init serial vectors, wait 1 ms
+    2: do not change serial vectors, wait 1 ms
+ */
 typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 {
 	unsigned long ulStart;
@@ -147,17 +151,23 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	systime_init();
 #endif
 
-	if (ptParam->ulUseUart == 1)
-	{
-		uart_standalone_initialize();
-		systime_wait_ms(1);
-		//__asm__("dsb");
-	}
-	else
+	if (ptParam->ulUseUart == 0)
 	{
 		ramtest_clear_serial_vectors();
 	}
-	
+	else if (ptParam->ulUseUart == 1)
+	{
+		uart_standalone_initialize();
+		#ifdef WRAP_UART
+		wrap_uart_functions();
+		#endif
+		systime_wait_ms(1);
+	}
+	else if (ptParam->ulUseUart == 2)
+	{
+		systime_wait_ms(1);
+		/* do nothing */
+	}
 	
 	uprintf("\f. *** RAM test by cthelen@hilscher.com ***\n");
 	uprintf("V" VERSION_ALL "\n\n");

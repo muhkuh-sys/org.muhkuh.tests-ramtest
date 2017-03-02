@@ -1,0 +1,1 @@
+void wrap_uart_functions(void);
