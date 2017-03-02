@@ -90,7 +90,7 @@ void systime_wait_ms(unsigned long ulDelay_ms)
 	while (!systime_elapsed(ulStart, ulDelay_ms)) {}
 }
 
-/* ulUseUart:
+/* ulUseUart
     0: clear serial vectors
     1: init serial vectors, wait 1 ms
     2: do not change serial vectors, wait 1 ms
