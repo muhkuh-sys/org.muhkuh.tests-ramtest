@@ -201,34 +201,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 			tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
 			tTestParams.ulSize /= 2;
 		}
-    
-    /*initialize DDR memory to be able to enable ECC feature*/
-    // do not use memset(ptParam->ulStart, 0, ptParam->ulSize);
-    // make sure to execute only 32 and large data with accesses into DDR
-
-    volatile unsigned long *ptrAddr;
-    unsigned long ulEndAddr = (ptParam->ulStart & 0xFFFFFFFCUL) + (ptParam->ulSize & 0xFFFFFFFCUL);
-
-    uprintf("Initialize DDR memory\n");
-    uprintf("Start Addr: 0x%08x  EndAddr: 0x%08x \n", (ptParam->ulStart & 0xFFFFFFFCUL), ulEndAddr );
-    
-    ptrAddr = (volatile unsigned long *)(ptParam->ulStart & 0xFFFFFFFCUL);
-	  do {
-		  // *ptrAddr = 0x00UL;
-		  *ptrAddr = (unsigned long)ptrAddr;
-      ptrAddr++;
-	  } while ( (unsigned long)ptrAddr < ulEndAddr);
-	
-    uprintf("Read DDR memory\n");
-    ptrAddr = (volatile unsigned long *)(ptParam->ulStart & 0xFFFFFFFCUL);
-    ulEndAddr = (unsigned long)(ptrAddr + 10);
-    do {
-		  // *ptrAddr = 0x00UL;
-      uprintf("Addr: 0x%08x  Value: 0x%08x \n", ((unsigned long)ptrAddr), *ptrAddr );
-      ptrAddr++;
-	  } while ( (unsigned long)ptrAddr < ulEndAddr);
-
-  }
 
   /* Set the progress callback. */
 	if (ptParam->ulStatusLedMmioNr == 0)
