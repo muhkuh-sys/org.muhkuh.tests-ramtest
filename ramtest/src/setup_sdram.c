@@ -290,6 +290,7 @@ static int setup_sdram_hif_netx90_mpw(unsigned long ulSdramGeneralCtrl)
 #elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 static int setup_sdram_hif_netx4000_relaxed(unsigned long ulSdramGeneralCtrl)
 {
+	(void) ulSdramGeneralCtrl;
 	return -1;
 }
 #endif

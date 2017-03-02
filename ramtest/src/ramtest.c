@@ -674,7 +674,7 @@ static RAMTEST_RESULT_T ram_test_memcpy(RAMTEST_PARAMETER_T *ptRamTestParameter)
 
 static RAMTEST_RESULT_T ram_test_memcpy_pass(
 	RAMTEST_PARAMETER_T *ptRamTestParameter, 
-	unsigned char* pucDestAddr, 
+	unsigned char* pucDestAddr, /* This address must be dword aligned. */
 	size_t sizDwordSize, 
 	unsigned long* pulBuf1, 
 	unsigned long* pulBuf2, 
@@ -684,11 +684,15 @@ static RAMTEST_RESULT_T ram_test_memcpy_pass(
 	unsigned long ulTagValue;
 	unsigned long ulTagMask;
 	unsigned long ulDestAddr;
+	volatile unsigned long* pulDestAddr;
 	unsigned long ulValue;
 	size_t sizOffset;
 	
 	tResult = RAMTEST_RESULT_OK;
+	
 	ulDestAddr = (unsigned long) pucDestAddr;
+	pulDestAddr = (volatile unsigned long*) ulDestAddr;
+	
 	
 	/* generate address sequence in buffer 1 */
 	ulTagValue = ((unsigned long) ucTag) << 16;
@@ -717,7 +721,11 @@ static RAMTEST_RESULT_T ram_test_memcpy_pass(
 			uprintf("! read back value: 0x%08x\n", pulBuf2[sizOffset]);
 			
 			
-			volatile unsigned long *pulAddr = adjust_hexdump_addr((volatile unsigned long*)(ulDestAddr+sizOffset*sizeof(unsigned long)), (volatile unsigned long*)pucDestAddr, (volatile unsigned long*)(pucDestAddr + sizeof(unsigned long) * sizDwordSize), 64);
+			volatile unsigned long *pulAddr = adjust_hexdump_addr(
+				pulDestAddr + sizOffset,
+				pulDestAddr,
+				pulDestAddr + sizDwordSize,
+				64);
 			hexdump_read_multi(pulAddr, 10);
 			
 			
@@ -938,6 +946,8 @@ static RAMTEST_RESULT_T ram_test_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 static RAMTEST_RESULT_T ram_test_burst(RAMTEST_PARAMETER_T *ptRamTestParameter, const RAMTEST_PAIR_T *ptTestPair)
 {
 #if ASIC_TYP==ASIC_TYP_NETX90_MPW
+	(void) ptRamTestParameter;
+	(void) ptTestPair;
 	return RAMTEST_RESULT_OK;
 #else
 	unsigned long *pulCnt;
