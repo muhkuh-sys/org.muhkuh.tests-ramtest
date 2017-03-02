@@ -90,6 +90,21 @@ sources_standalone_netx4000_ca9_cached = """
 	src/ecc_a9.c
 """
 
+sources_standalone_netx4000_ca9_core0_1_cached = """
+	src/netx4000/CA9/ca9_0_1_init.S
+	src/netx4000/CA9/v7a.S
+	src/netx4000/CA9/mmu.c
+	src/netx4000/CA9/MP_SCU.s
+	src/main_standalone_netx4000.c
+	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
+	src/ecc_a9.c
+	src/ramtest_smp.c
+	src/uart_wrapper.c
+"""
+
+
 sources_debugger = """
 	src/init_debugger.S
 	src/main_standalone.c
@@ -949,6 +964,13 @@ buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_cl1_ecc'
 buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_cl1_ecc'
 elf_netx4000_s_intram_rap0_ca9_l1c_ecc = build_elf_bin(buildpars)
 
+# ramtest for CA9 core 0/1 both in intram_rap0 with L1, cache, L1C ECC 
+buildpars.sources     = sources_common+sources_arm_assembler+ sources_standalone_netx4000_ca9_core0_1_cached
+buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['CA9_L1C_ECC'], ['SMP'], ['WRAP_UART']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0_1.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9core01_intram_rap0_cl1_ecc'
+buildpars.target_name = 'netx4000_ramtest_ca9core01_intram_rap0_cl1_ecc'
+elf_netx4000_s_intram_rap0_1_ca9core0_1_l1c_ecc_smp = build_elf_bin(buildpars)
 
 
 def make_bootimage(pars):
@@ -978,8 +1000,7 @@ class imgpars:
 	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	
 
-# image running on CA9 core 0 L1C, ECC, code: itnram_rap0, test: ddr3 at 600 MHz 
-# level 1+2 cache
+# image running on CA9 core 0 L1C, ECC, code: intram_rap0, test: ddr3 at 600 MHz 
 imgpars.target_name = 'ramtest_standalone_nxhx4000_code_intram_rap0_test_ddr3_600_ca9_l1c_ecc.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
@@ -988,7 +1009,18 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	})
 make_bootimage(imgpars)
 
+# CPU: CA9 core 0/1, L1C, ECC, SMP
+# code running in RAP Intram 0 on both CPUs with heap/stack on RAP intram0/1
+imgpars.target_name = 'ramtest_standalone_nxhx4000_code_rap_intram0_1_test_rap_intram_32k_ca9_core0_1_l1c_ecc_smp.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_1_to_INTRAM_nxhx4000_rap_intram_32k.xml'
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
+	'tElfCA9core0_1'      : elf_netx4000_s_intram_rap0_1_ca9core0_1_l1c_ecc_smp
+	})
+make_bootimage(imgpars)
 
+
+#############################################################################################################
 # netx 500, 50, 10, 51, 52
 env_netx500_s = atEnv.NETX500.Clone()
 env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+		
+		<!-- ================================================================== -->
+		<!-- netX intram tests: 
+				CA9 code at 05000000 (both cores)
+				heap/stack in 05000000-0501ffff (core 0), 05020000-0503ffff (core 1)
+				
+			Test areas:
+				05040000-0505ffff
+				05060000-0507ffff
+			-->
+		
+		<!-- R7: Open the firewalls -->
+		<Data>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Execute>
+		
+		
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ff80">
+				00 00 04 07 <!-- Start address of test area -->
+				00 80 00 00 <!-- Size in bytes -->
+				00 00 03 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				01 00 00 00 <!-- use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0503ff80">
+				00 00 04 07 <!-- Start address of test area -->
+				00 80 00 00 <!-- Size in bytes -->
+				00 00 03 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
+				02 00 00 00 <!-- do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+
+		<!-- Clear core 0/core 1 sync flags -->
+		<Data>
+			<Hex address="0x0501ffe0">
+				00 00 00 00
+				00 00 00 00
+				00 00 00 00
+			</Hex>
+		</Data>
+		
+		<!-- R7: load ram test -->
+		<Data>
+			<File name="@tElfCA9core0_1" />
+		</Data>
+
+		<ExecuteCA9><Core0><File name="@tElfCA9core0_1" start="start_core0" /><R0>0x0501ff80</R0> </Core0>
+					<Core1><File name="@tElfCA9core0_1" start="start_core1" /><R0>0x0503ff80</R0> </Core1></ExecuteCA9> 
+		
+		
+	</Chunks>
+</HBootImage>

@@ -1308,33 +1308,39 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	while(tRamTestResult==RAMTEST_RESULT_OK) 
 	{
 		++ulLoopCnt;
+		ptParameter->ulLoopCnt = ulLoopCnt;
 		
-		uprintf("****************************************\n");
-		uprintf("*                                      *\n");
-		uprintf("*  Deterministic test - Loop %08d  *\n", ulLoopCnt);
-		uprintf("*                                      *\n");
-		uprintf("****************************************\n");
-
-		tRamTestResult = ramtest_deterministic(ptParameter);
-		if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
-
-
-		uprintf("****************************************\n");
-		uprintf("*                                      *\n");
-		uprintf("*  Random number test - Loop %08d  *\n", ulLoopCnt);
-		uprintf("*                                      *\n");
-		uprintf("****************************************\n");
-
-		for(uiTestCnt=0; uiTestCnt<(sizeof(testPairs)/sizeof(RAMTEST_PAIR_T)); ++uiTestCnt )
+		if ((ulCases & RAMTESTCASE_DETERMINISTIC_MASK) != 0)
 		{
-			uprintf(". Start test case %d of %d\n", uiTestCnt+1, sizeof(testPairs)/sizeof(RAMTEST_PAIR_T));
-			tRamTestResult = ramtest_pseudorandom(ptParameter, testPairs+uiTestCnt);
-			if( tRamTestResult!=RAMTEST_RESULT_OK )
+			uprintf("****************************************\n");
+			uprintf("*                                      *\n");
+			uprintf("*  Deterministic test - Loop %08d  *\n", ulLoopCnt);
+			uprintf("*                                      *\n");
+			uprintf("****************************************\n");
+	
+			tRamTestResult = ramtest_deterministic(ptParameter);
+			if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
+		}
+
+		if ((ulCases & RAMTESTCASE_PSEUDORANDOM_MASK) != 0)
+		{
+			uprintf("****************************************\n");
+			uprintf("*                                      *\n");
+			uprintf("*  Random number test - Loop %08d  *\n", ulLoopCnt);
+			uprintf("*                                      *\n");
+			uprintf("****************************************\n");
+	
+			for(uiTestCnt=0; uiTestCnt<(sizeof(testPairs)/sizeof(RAMTEST_PAIR_T)); ++uiTestCnt )
 			{
-				uprintf("! Test case %d failed.\n", uiTestCnt+1);
-				break;
+				uprintf(". Start test case %d of %d\n", uiTestCnt+1, sizeof(testPairs)/sizeof(RAMTEST_PAIR_T));
+				tRamTestResult = ramtest_pseudorandom(ptParameter, testPairs+uiTestCnt);
+				if( tRamTestResult!=RAMTEST_RESULT_OK )
+				{
+					uprintf("! Test case %d failed.\n", uiTestCnt+1);
+					break;
+				}
+				uprintf(". Test case %d OK.\n", uiTestCnt+1);
 			}
-			uprintf(". Test case %d OK.\n", uiTestCnt+1);
 		}
 
 
@@ -1354,7 +1360,19 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		}
 #endif
 
-
+#ifdef SMP
+		if ((ulCases & RAMTESTCASE_SMP_MASK) != 0)
+		{
+			uprintf("****************************************\n");
+			uprintf("*                                      *\n");
+			uprintf("* CA9 L1C/SMP tests - Loop %08d    *\n", ulLoopCnt);
+			uprintf("*                                      *\n");
+			uprintf("****************************************\n");
+			
+			tRamTestResult = ramtest_smp(ptParameter);
+			if(tRamTestResult == RAMTEST_RESULT_FAILED) break;
+		}
+#endif
 		if( tRamTestResult==RAMTEST_RESULT_OK )
 		{
 			/* Test loop OK. */
