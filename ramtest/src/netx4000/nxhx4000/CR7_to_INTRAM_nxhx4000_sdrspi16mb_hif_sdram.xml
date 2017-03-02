@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+	
+		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+
+		<!-- Configure the SDRAM. -->
+		<!-- NXHX SDRSPI module with IS42S16800F-7BLI 16 MB -->
+		<Options>
+			<!-- HIF IO config: must enable A11 line --> 
+			<Option id="hif_hif_io">
+				<U32>0x000301a0</U32>
+			</Option>
+
+			<Option id="netx_hif_sdram">
+				<U32>0x030c0111</U32>    <!-- SDRAM general_ctrl register -->
+				<!--U32>0x02a22151</U32-->    <!-- SDRAM timing_ctrl register   SDCLK phase: 2 Sample phase: 2 (Bjoern HIF IF)-->
+				<U32>0x03b22151</U32>    <!-- SDRAM timing_ctrl register   SDCLK phase: 3 Sample phase: 3 -->
+				<!--U32>0x02c22151</U32-->    <!-- SDRAM timing_ctrl register   clock phase 4   sample phase 2 -->
+				<U32>0x00000033</U32>    <!-- SDRAM mr register -->
+				<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
+			</Option>
+		</Options>
+		
+		<!-- Activate the SDRAM. -->
+		<MemoryDeviceUp device="MEMDEV_SDRAM_H" />
+
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+		
+		<Include name="portcontrol_nxhx4000_hif_sdram_16bit_8mA.xml"/>
+		
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+		
+		<!-- Load the ram test on CR7. -->
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		
+		<!-- Write ramtest parameters.
+			unsigned 32 bit values as bytes in little endian order -->
+		<Data>
+			<Hex address="0x0003ff80">
+				00 00 00 20 <!-- 0x20000000 Start address of HIF SDRAM -->
+				00 00 00 01 <!-- 0x00800000 Size in bytes -->
+				ff 01 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+				01 00 00 00 <!-- Enable UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<Execute>
+			<File name="@tElfCR7" />
+			<R0>0x0003ff80</R0> <!-- address of parameter block -->
+		</Execute>
+		
+	</Chunks>
+</HBootImage>

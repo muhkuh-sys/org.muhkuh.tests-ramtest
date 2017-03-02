@@ -1009,6 +1009,7 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	})
 make_bootimage(imgpars)
 
+# CA9/L1C coherency tests
 # CPU: CA9 core 0/1, L1C, ECC, SMP
 # code running in RAP Intram 0 on both CPUs with heap/stack on RAP intram0/1
 imgpars.target_name = 'ramtest_standalone_nxhx4000_code_rap_intram0_1_test_rap_intram_32k_ca9_core0_1_l1c_ecc_smp.bin'
@@ -1016,6 +1017,15 @@ imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_1_to_INTRAM_nxhx4000_rap_
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCA9core0_1'      : elf_netx4000_s_intram_rap0_1_ca9core0_1_l1c_ecc_smp
+	})
+make_bootimage(imgpars)
+
+# Test for NXHX 4000 Rev. 2 with NXHX SDRSPI with 16 MB (IS42S16800F-7BLI
+# CR7 uncached
+imgpars.target_name = 'ramtest_standalone_nxhx4000_intram_sdrspi16mb_hif_sdram_cr7.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7'             : elf_netx4000_s_cr7
 	})
 make_bootimage(imgpars)
 
