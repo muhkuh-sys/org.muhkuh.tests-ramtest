@@ -462,6 +462,15 @@ prepare_jump_to_main:
 	// sim_asm_message("init.s: Enabling data cache.", disp_only, r1);
 	#endif
 	bl enable_dcache
+    
+#ifdef CA9_L1C_ECC
+	@ enable ECC for L1 cache
+	MRC     p15,0,r0,c1,c0,1               // read Aux Control reg
+//	ORR     r0,r0,#1<<6                    // set SMP bit
+	ORR     r0,r0,#1<<9                    // enable parity
+//	ORR     r0,r0,#1<<2                    // L1 prefetch enable
+	MCR     p15,0,r0,c1,c0,1               // write Aux Control reg
+#endif
 #endif
 
 	@ restore r0/r1

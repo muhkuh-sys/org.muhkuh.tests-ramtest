@@ -57,18 +57,25 @@ sources_standalone_netx4000_cr7 = """
 	src/netx4000/init_standalone_cr7.S
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
 """
 
 sources_standalone_netx4000_ca9 = """
 	src/netx4000/init_standalone_ca9.S
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
+	src/ecc_a9.c
 """
 
 sources_standalone_netx4000_cr7_cached = """
 	src/netx4000/init_standalone_cr7_cache_enable.S
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
 """
 
 sources_standalone_netx4000_ca9_cached = """
@@ -78,6 +85,9 @@ sources_standalone_netx4000_ca9_cached = """
 	src/netx4000/CA9/MP_SCU.s
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
+	src/ecc_a9.c
 """
 
 sources_debugger = """
@@ -909,6 +919,74 @@ env_netx4000_s_cr7.Depends(ramtest_standalone_nxhx4000_intrams_cr7_ca9_cached_l2
 # 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1[0],
 # 	'tElfCR7SyncA9'       : elf_netx4000_cr7_sync_ca9[0],
 # 	}))
+
+
+
+
+
+def build_elf_bin(pars):
+	target_path = pars.target_dir + '/' + pars.target_name
+	env = pars.env.Clone()
+	env.Replace(LDFILE = pars.ldfile)
+	env.Append(CPPPATH = aCppPath)
+	env.Append(CPPPATH = pars.cpppath)
+	env.Append(CPPDEFINES = pars.defines)
+	src = env.SetBuildPath(pars.target_dir, 'src', pars.sources)
+	elf = env.Elf(    target_path + '.elf', src + env['PLATFORM_LIBRARY'])
+	txt = env.ObjDump(target_path + '.txt', elf, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
+	bin = env.ObjCopy(target_path + '.bin', elf)
+	return elf, bin
+
+class buildpars:
+	env         = atEnv.NETX4000_RELAXED
+	cpppath     = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000']
+
+# ramtest for CA9 in intram_rap0 with L1, cache, L1C ECC and DDR ECC 
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
+buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['DDR_ECC'], ['CA9_L1C_ECC']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_cl1_ecc'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_cl1_ecc'
+elf_netx4000_s_intram_rap0_ca9_l1c_ecc = build_elf_bin(buildpars)
+
+
+
+def make_bootimage(pars):
+	d = dict()
+	for k, v in pars.HBOOTIMAGE_KNOWN_FILES.items():
+		d[k] = v[0]
+		
+	bootimg = pars.env.HBootImage(
+		pars.target_dir + '/' + pars.target_name,
+		pars.xml_template,
+		HBOOTIMAGE_KNOWN_FILES = d,
+		HBOOTIMAGE_SNIPLIB_SEARCHPATHS = pars.HBOOTIMAGE_SNIPLIB_SEARCHPATHS,
+		HBOOTIMAGE_INCLUDE_PATHS = pars.HBOOTIMAGE_INCLUDE_PATHS,
+		HBOOTIMAGE_DEFINES = pars.HBOOTIMAGE_DEFINES
+		#HBOOTIMAGE_VERBOSE = True
+		)
+	for v in pars.HBOOTIMAGE_KNOWN_FILES.values():
+		pars.env.Depends(bootimg, v)
+	return bootimg
+
+
+class imgpars:
+	env = env_netx4000_s_cr7
+	target_dir = 'targets/netx4000/standalone'
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
+	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
+	
+
+# image running on CA9 core 0 L1C, ECC, code: itnram_rap0, test: ddr3 at 600 MHz 
+# level 1+2 cache
+imgpars.target_name = 'ramtest_standalone_nxhx4000_code_intram_rap0_test_ddr3_600_ca9_l1c_ecc.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
+	'tElfCA9core0'        : elf_netx4000_s_intram_rap0_ca9_l1c_ecc
+	})
+make_bootimage(imgpars)
 
 
 # netx 500, 50, 10, 51, 52

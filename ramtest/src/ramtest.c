@@ -16,6 +16,12 @@ void hexdump32(unsigned long *pulBuffer, volatile unsigned long* pulAddr, size_t
 #define HEXDUMP_BUF_SIZE 112
 void memcpy32(volatile unsigned long* pulDest, volatile unsigned long *pulSrc, size_t sizDwords);
 
+#ifdef ECC
+#include "ramtest_ecc.h"
+#define CHECK_ECC(res) res = ramtest_ecc_check_wrapper(res);
+#else
+#define CHECK_ECC(res)
+#endif
 
 /********************************************************************
                       helper functions
@@ -1015,6 +1021,7 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
 		{
 			uprintf("! 8 bit access failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 	/* test 16 bit access */
@@ -1030,6 +1037,7 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
 		{
 			uprintf("! 16 bit access failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 	/* test 32 bit access */
@@ -1045,6 +1053,7 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
 		{
 			uprintf("! 32 Bit access failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 
@@ -1061,6 +1070,7 @@ static RAMTEST_RESULT_T ramtest_pseudorandom(RAMTEST_PARAMETER_T *ptParameter, c
 		{
 			uprintf("! 32 bit burst access failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 
@@ -1110,6 +1120,7 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			uprintf("! Databus test failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 
@@ -1127,6 +1138,7 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			uprintf("! memcpy test failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 	/* test access sequence */
@@ -1143,6 +1155,7 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			uprintf("! Access Sequence test failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 	/* Test checkerboard pattern for retention + produce hard cluster for burst */
@@ -1158,6 +1171,7 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			uprintf("! Checkerboard test failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 
 	/* test Marching pattern */
@@ -1173,6 +1187,7 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			uprintf("! Marching test failed.\n");
 		}
+		CHECK_ECC(tResult)
 	}
 	
 	return tResult;
@@ -1281,13 +1296,19 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	}
 	uprintf("\n\n");
 
+#ifdef ECC
+	tRamTestResult = ramtest_ecc_test();
+#else
+	tRamTestResult = RAMTEST_RESULT_OK;
+#endif
+
 	/* Run test cases. */
 	ulLoopCnt = 0;
 
-	do
+	while(tRamTestResult==RAMTEST_RESULT_OK) 
 	{
 		++ulLoopCnt;
-
+		
 		uprintf("****************************************\n");
 		uprintf("*                                      *\n");
 		uprintf("*  Deterministic test - Loop %08d  *\n", ulLoopCnt);
@@ -1328,6 +1349,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			uprintf("****************************************\n");
 
 			tRamTestResult = ramtest_run_performance_tests(ptParameter);
+			CHECK_ECC(tRamTestResult)
 			if( tRamTestResult!=RAMTEST_RESULT_OK ) break;
 		}
 #endif
@@ -1343,7 +1365,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		{
 			break;
 		}
-	} while(tRamTestResult==RAMTEST_RESULT_OK);
+	};
 
 	ramtest_show_sdram_config( ptParameter->ulStart);
 

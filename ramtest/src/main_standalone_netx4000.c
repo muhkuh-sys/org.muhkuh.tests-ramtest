@@ -4,6 +4,7 @@
 #include "uprintf.h"
 #include "version.h"
 #include "main_standalone_common.h"
+#include "ramtest_ecc.h"
 #include "uart_standalone.h"
 
 #include "netx_io_areas.h"
@@ -201,7 +202,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 			tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
 			tTestParams.ulSize /= 2;
 		}
-
+	}
+	
   /* Set the progress callback. */
 	if (ptParam->ulStatusLedMmioNr == 0)
 	{
@@ -221,6 +223,10 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	 * With tTestParams.ulLoops=0 this function will only return if an error occurs.
 	 */
 	tRes = ramtest_run(&tTestParams);
+
+#ifdef ECC
+	ramtest_ecc_show();
+#endif
 
 	tTestParams.pfnProgress(&tTestParams, tRes);
 	
