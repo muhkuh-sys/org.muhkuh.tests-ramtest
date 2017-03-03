@@ -1020,7 +1020,7 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	})
 make_bootimage(imgpars)
 
-# Test for NXHX 4000 Rev. 2 with NXHX SDRSPI with 16 MB (IS42S16800F-7BLI
+# Test for NXHX 4000 Rev. 2 with NXHX SDRSPI with 16 MB (IS42S16800F-7BLI, all lines to SDRAM set to 8mA drive strength
 # CR7 uncached
 imgpars.target_name = 'ramtest_standalone_nxhx4000_intram_sdrspi16mb_hif_sdram_cr7.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
