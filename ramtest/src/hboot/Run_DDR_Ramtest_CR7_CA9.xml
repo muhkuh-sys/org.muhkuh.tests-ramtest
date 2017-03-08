@@ -59,6 +59,15 @@
 	</Hex>
 </Data>
 
+<!-- Clear core 0/core 1 sync flags -->
+<Data>
+	<Hex address="0x0501ffe0">
+		00 00 00 00
+		00 00 00 00
+		00 00 00 00
+	</Hex>
+</Data>
+ 
 <!-- R7: load ram test for A9 -->
 <Data>
 	<File name="@tElfCA9core0" />

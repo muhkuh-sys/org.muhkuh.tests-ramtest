@@ -49,44 +49,44 @@
 			<File name="@tElfCR7" />
 		</Data>
 		
-		<!-- AXI RAM test 05000000-0501ffff  Start           Size -->
-		<Data><Hex address="0x0003ff80"> 00 00 00 05    00 00 02 00 </Hex></Data>
+		<!-- AXI RAM test 07000000-0701ffff  Start           Size -->
+		<Data><Hex address="0x0003ff80"> 00 00 00 07    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- AXI RAM test 05020000-0503ffff  Start           Size -->
-		<Data><Hex address="0x0003ff80"> 00 00 02 05    00 00 02 00 </Hex></Data>
+		<!-- AXI RAM test 07020000-0703ffff  Start           Size -->
+		<Data><Hex address="0x0003ff80"> 00 00 02 07    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- AXI RAM test 05040000-0505ffff  Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 04 05    00 00 02 00 </Hex></Data>
+		<!-- AXI RAM test 07040000-0705ffff  Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 04 07    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- AXI RAM test 05060000-0507ffcf  Start           Size  (Exclude CA9 firmware vectors at 0507ffd0) -->
-		<Data><Hex address="0x0003ff80"> 00 00 06 05    d0 ff 01 00 </Hex></Data>
+		<!-- AXI RAM test 07060000-0707ffcf  Start           Size  (Exclude CA9 firmware vectors at 0507ffd0) -->
+		<Data><Hex address="0x0003ff80"> 00 00 06 07    d0 ff 01 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- Intram test 05080000-0509ffff   Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 08 05    00 00 02 00 </Hex></Data>
+		<!-- Intram test 07080000-0709ffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 08 07    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- Intram test 050a0000-050bffff   Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 0a 05    00 00 02 00 </Hex></Data>
+		<!-- Intram test 070a0000-070bffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0a 07    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- Intram test 050c0000-050dffff   Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 0c 05    00 00 02 00 </Hex></Data>
+		<!-- Intram test 070c0000-070dffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0c 07    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- Intram test 050e0000-050effff   Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 0e 05    00 00 01 00 </Hex></Data>
+		<!-- Intram test 070e0000-070effff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0e 07    00 00 01 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
-		<!-- Intram test 050f0000-050fffff   Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 0f 05    00 00 01 00 </Hex></Data>
+		<!-- Intram test 070f0000-070fffff   Start           Size  -->
+		<Data><Hex address="0x0003ff80"> 00 00 0f 07    00 00 01 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
 		<!-- Intram test 05100000-05107fff   Start           Size  -->
-		<Data><Hex address="0x0003ff80"> 00 00 10 05    00 80 00 00 </Hex></Data>
+		<Data><Hex address="0x0003ff80"> 00 00 10 07    00 80 00 00 </Hex></Data>
 		<Execute><File name="@tElfCR7" /><R0>0x0003ff80</R0></Execute>
 		
 		<!-- CR7 parameters -->
