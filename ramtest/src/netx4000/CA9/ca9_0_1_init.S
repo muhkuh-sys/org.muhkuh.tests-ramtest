@@ -25,7 +25,7 @@
 	.extern join_smp
 	.extern enable_maintenance_broadcast
 //	.extern init_global_exception_counters
-	
+	.extern mmu_table_init
 	.global start
 
    @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
