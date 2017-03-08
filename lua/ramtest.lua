@@ -11,7 +11,10 @@
 -- 29.04.15 SL * added performance test
 -- 19.08.15 SL * added bank size to get_sdram_geometry
 -- 21.08.15 SL * setup_sdram_hif_netx10/56 were not set in atPlatformAttributes
--- 11.07.17 SL * added netX 4000
+-- 11.07.16 SL * added netX 4000
+-- 23.02.17 SL * fixed chip types netx 4000 relaxed/90 mpw in decode_sdram_geometry
+--               fixed setup_sdram_netx4000 
+--               added portcontrol routines, call manually if required
 
 module("ramtest", package.seeall)
 
@@ -75,13 +78,12 @@ local function printf_ul(ch, ...)
 end
 
 
--- only tested with 32 bit SDRAM
-local function setup_sdram_hif_netx4000(tPlugin, atSdramAttributes)
+local function setup_sdram_netx4000(tPlugin, atSdramAttributes)
 	local tGeom = get_sdram_geometry(tPlugin, atSdramAttributes)
 	print_sdram_geometry(tGeom)
 	
 	-- get the number of required address signals
-	local numRowLines = 10+tGeom.ulRowBits
+	local numRowLines = 11+tGeom.ulRowBits
 	local numColumnLines = 8+tGeom.ulColumnBits
 	-- line A10 is not useable as column address signal.
 	if numColumnLines>=11 then
@@ -94,6 +96,10 @@ local function setup_sdram_hif_netx4000(tPlugin, atSdramAttributes)
 	assert( numAddrLines <= 25, 
 		"More than 25 address lines are not supported")
 		
+	printf("numRowLines:    %d", numRowLines)
+	printf("numColumnLines: %d", numColumnLines)
+	printf("numAddrLines  : %d", numAddrLines)
+		
 	local sel_mem_d         = 0 -- 27 - 24   32 bit on HIF MI
 	local sel_mem_a_width   = 0 -- 22 - 20   A0-A10
 	local en_mem_sdram_mi   = 0 --      18   disable
@@ -105,7 +111,7 @@ local function setup_sdram_hif_netx4000(tPlugin, atSdramAttributes)
 	-- 
 	if atSdramAttributes.interface == INTERFACE_SDRAM_MEM then
 	
-		sel_mem_d         = 3 -- 32 bit on MEM MI
+		sel_mem_d         = 15 -- 32 bit on MEM MI
 		sel_mem_a_width   = math.max(numAddrLines - 18, 0)
 		en_mem_sdram_mi   = 1 -- enable
 		mem_mi_cfg        = tGeom.ulBusWidthBits + 1  -- 0 (16 bits) -> 01, 1 (32 bits) -> 10
@@ -127,7 +133,7 @@ local function setup_sdram_hif_netx4000(tPlugin, atSdramAttributes)
 	end
 	
 	local ulVal_HIF_IO_CFG = 
-			2^24 * sel_mem_d        
+		2^24 * sel_mem_d        
 		+ 2^20 * sel_mem_a_width  
 		+ 2^18 * en_mem_sdram_mi  
 		+ 2^16 * mem_mi_cfg       
@@ -144,7 +150,72 @@ local function setup_sdram_hif_netx4000(tPlugin, atSdramAttributes)
 
 	local Addr_HIF_IO_CFG = 0xf4080200
 	tPlugin:write_data32(Addr_HIF_IO_CFG, ulVal_HIF_IO_CFG)
+	
+	--set_hif_portcontrol_romcode(tPlugin)
 end
+
+-- ------------------------------------------------------------------------------------------------------------
+PC_U0400 = 0x0001
+PC_U0600 = 0x0011
+PC_U0800 = 0x0021
+PC_U1200 = 0x0031
+PC_D0400 = 0x0003
+PC_D0600 = 0x0013
+PC_D0800 = 0x0023
+PC_D1200 = 0x0033
+
+-- Set Port control for 16 bit HIF SDRAM on netX 4000
+-- Set drive strength 8 mA
+
+-- Control signals on P10_3..10:
+--         3 hif_bhe1
+--         4 hif_bhe3
+--         5 hif_csn
+--         6 hif_rdn
+--         7 hif_wrn
+--         8 hif_rdy
+--         9 hif_dirq
+--         10 hif_sdclk
+--
+-- 07:       U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0800 U0800 U0800 U0800 U0800 U0800 U0800
+-- 08: U0800 
+-- 09:       U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600
+-- 0a: U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 D0600 
+
+function set_hif_portcontrol_nxhxsdrspi(tPlugin)
+	set_portcontrol(tPlugin, 7,  1,  8,  PC_U0800) -- P7_1..8   HIF_D0..D7    
+	set_portcontrol(tPlugin, 7,  9,  15, PC_U0800) -- P7_9..15  HIF_D8..D14   
+	set_portcontrol(tPlugin, 8,  0,  0,  PC_U0800) -- P8_0      HIF_D15
+	set_portcontrol(tPlugin, 9,  1,  15, PC_U0800) -- P9_1..15  HIF_A0..A14   
+	set_portcontrol(tPlugin, 10, 3,  9,  PC_U0800) -- P10_3..9                
+	set_portcontrol(tPlugin, 10, 10, 10, PC_D0800) -- P10_10                  
+end
+
+-- PORTCONTROL:
+--     00    01    02    03    04    05    06    07    08    09    0a    0b    0c    0d    0e    0f
+-- 07:       U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0800 U0800 U0800 U0800 U0800 U0800 U0800
+-- 08: U0800 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600
+-- 09: D0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600
+-- 0a: U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 D0600 
+
+function set_hif_portcontrol_romcode(tPlugin)
+	set_portcontrol(tPlugin, 7,  1,  8,  PC_U0600) -- P7_1..8   HIF_D0..D7    U0600
+	set_portcontrol(tPlugin, 7,  9,  15, PC_U0800) -- P7_9..15  HIF_D8..D14   U0800
+	set_portcontrol(tPlugin, 8,  0,  15, PC_U0600) -- P8_0      HIF_D15
+	set_portcontrol(tPlugin, 9,  0,  0,  PC_D0600) -- P9_1..15  HIF_A0..A14   U0600
+	set_portcontrol(tPlugin, 9,  1,  15, PC_U0600) -- P9_1..15  HIF_A0..A14   U0600
+	set_portcontrol(tPlugin, 10, 3,  9,  PC_U0600) -- P10_3..9                U0600
+	set_portcontrol(tPlugin, 10, 10, 10, PC_D0600) -- P10_10                  D0600
+end
+
+-- Set the range of PortControl registers Py_x0 .. Py_x1 to val
+function set_portcontrol(tPlugin, y, x0, x1, val)
+	local ADDR_PORTCONTROL = 0xfb100000 + 16 * y * 4
+	for x = x0, x1 do
+		tPlugin:write_data32(ADDR_PORTCONTROL + 4*x, val)
+	end
+end
+-- ------------------------------------------------------------------------------------------------------------
 
 
 
@@ -284,12 +355,12 @@ local atPlatformAttributes = {
 			[INTERFACE_SDRAM_MEM] = {
 				ulController = 0xf40c0140, 
 				ulArea_Start = 0x30000000,
-				setup = setup_sdram_hif_netx4000 
+				setup = setup_sdram_netx4000 
 			},
 			[INTERFACE_SDRAM_HIF] = {
 				ulController = 0xf40c0240,
 				ulArea_Start = 0x20000000,
-				setup = setup_sdram_hif_netx4000
+				setup = setup_sdram_netx4000
 			}
 		},
 	},
@@ -474,9 +545,9 @@ local function compare_netx_version(tPlugin, atRamAttributes)
 			romloader.ROMLOADER_CHIPTYP_NETX500,
 			romloader.ROMLOADER_CHIPTYP_NETX100
 		},
-    ['NETX90_MPW'] = {
-      romloader.ROMLOADER_CHIPTYP_NETX90_MPW,
-    },
+		['NETX90_MPW'] = {
+			romloader.ROMLOADER_CHIPTYP_NETX90_MPW,
+		},
 		['NETX56'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX56,
 			romloader.ROMLOADER_CHIPTYP_NETX56B
@@ -654,10 +725,11 @@ function decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
 	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B
-	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000RELAXED
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED
 	then
 		ulBusWidth = ulBusWidth * 2
-	elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 then
+	elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX90_MPW then
 		ulBusWidth = ulBusWidth
 	else
 		error("Unknown chiptyp!")
