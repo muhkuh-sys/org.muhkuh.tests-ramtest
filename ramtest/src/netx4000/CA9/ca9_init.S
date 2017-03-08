@@ -25,7 +25,7 @@
 	.extern join_smp
 	.extern enable_maintenance_broadcast
 //	.extern init_global_exception_counters
-	
+	.extern mmu_table_init
 	.global start
 
    @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
@@ -100,7 +100,7 @@ clear_bss:
 	mov r0, #0x0
 	mcr p15, 0, r0, c7, c5, 6     // BPIALL - Invalidate entire branch predictor array
 
-
+	
 #ifdef CA9_ENABLE_CACHES
 	// Enable only the icache for now (to speed up init process)
 	// but don't enable dcache, because the SCU is not yet on and hasn't been invalidated 

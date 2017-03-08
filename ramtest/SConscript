@@ -81,7 +81,7 @@ sources_standalone_netx4000_cr7_cached = """
 sources_standalone_netx4000_ca9_cached = """
 	src/netx4000/CA9/ca9_init.S
 	src/netx4000/CA9/v7a.S
-	src/netx4000/CA9/mmu.c
+	src/netx4000/CA9/mmu_s.S
 	src/netx4000/CA9/MP_SCU.s
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
@@ -93,7 +93,7 @@ sources_standalone_netx4000_ca9_cached = """
 sources_standalone_netx4000_ca9_core0_1_cached = """
 	src/netx4000/CA9/ca9_0_1_init.S
 	src/netx4000/CA9/v7a.S
-	src/netx4000/CA9/mmu.c
+	src/netx4000/CA9/mmu_s.S
 	src/netx4000/CA9/MP_SCU.s
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
@@ -1001,7 +1001,7 @@ class imgpars:
 	
 
 # image running on CA9 core 0 L1C, ECC, code: intram_rap0, test: ddr3 at 600 MHz 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_code_intram_rap0_test_ddr3_600_ca9_l1c_ecc.bin'
+imgpars.target_name = 'ramtest_standalone_nxhx4000_code_intram_rap0_test_ddr3_600_ca9_core0_l1c_ecc.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
