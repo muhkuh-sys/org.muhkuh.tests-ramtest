@@ -23,10 +23,11 @@ ENTRY(start)
 MEMORY
 {
 	ASSERT_EMPTY(rwx): ORIGIN = 0x00000000, LENGTH = 0
-	CODE(rx)         : ORIGIN = 0x05000000, LENGTH = 0x0001ff00  /* code for both cores and heap/stack for core 0 */
-	DATA1(rw)        : ORIGIN = 0x05020000, LENGTH = 0x0001ff00  /* heap/stack for core 1 */
+	CODE(rx)         : ORIGIN = 0x07000000, LENGTH = 0x0000ff00  /* code for both cores and heap/stack for core 0 */
+	DATA1(rw)        : ORIGIN = 0x07020000, LENGTH = 0x0000ff00  /* heap/stack for core 1 */
+	MMUTABLE(rw)     : ORIGIN = 0x05010000, LENGTH = 0x00004000  /* same address on core 0 and 1 */
 	FLAGS(rw)        : ORIGIN = 0x0501ffe0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
-	SERIALVECTORS(rw): ORIGIN = 0x0501fff0, LENGTH = 0x00000010
+	SERIALVECTORS(rw): ORIGIN = 0x0701fff0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
 }
 
 /* todo: serial vectors are the same on both CPUs */
@@ -55,11 +56,6 @@ SECTIONS
 		KEEP( *(.version_info) )
 		*(.init_code)
 		*(.text* .rodata*)
-	} >CODE
-
-	.parameter ALIGN(0x04000) :
-	{
-		*(.mmu_table)
 	} >CODE
 
 	.parameter ALIGN(0x0100) :
@@ -106,6 +102,11 @@ SECTIONS
 		. = . + 0x10;
 	} >SERIALVECTORS
 
+	.mmu_table ORIGIN(MMUTABLE) :
+	{
+		PROVIDE (mmu_table = .);
+		. = . + 0x4000;
+	} >MMUTABLE
 
 	/* Stabs debugging sections.  */
 	.stab          0 : { *(.stab) }

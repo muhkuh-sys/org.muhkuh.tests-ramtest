@@ -23,9 +23,10 @@ ENTRY(start)
 MEMORY
 {
 	ASSERT_EMPTY(rwx): ORIGIN = 0x00000000, LENGTH = 0
-	CODE(rx)         : ORIGIN = 0x05060000, LENGTH = 0x0001ff00
+	CODE(rx)         : ORIGIN = 0x07060000, LENGTH = 0x0001ff00
+	MMUTABLE(rw)     : ORIGIN = 0x05050000, LENGTH = 0x00004000  /* same address on core 0 and 1 */
 	FLAGS(rw)        : ORIGIN = 0x0505ffe0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
-	SERIALVECTORS(rw): ORIGIN = 0x0507fff0, LENGTH = 0x00000010  /* overwrites part of the CA9 firmware vectors */
+	SERIALVECTORS(rw): ORIGIN = 0x0707fff0, LENGTH = 0x00000010  /* overwrites part of the CA9 firmware vectors */
 }
 
 
@@ -53,11 +54,6 @@ SECTIONS
 		KEEP( *(.version_info) )
 		*(.init_code)
 		*(.text* .rodata*)
-	} >CODE
-
-	.parameter ALIGN(0x04000) :
-	{
-		*(.mmu_table)
 	} >CODE
 
 	.parameter ALIGN(0x0100) :
@@ -99,6 +95,11 @@ SECTIONS
 		. = . + 0x10;
 	} >SERIALVECTORS
 
+	.mmu_table ORIGIN(MMUTABLE) :
+	{
+		PROVIDE (mmu_table = .);
+		. = . + 0x4000;
+	} >MMUTABLE
 
 	/* Stabs debugging sections.  */
 	.stab          0 : { *(.stab) }
