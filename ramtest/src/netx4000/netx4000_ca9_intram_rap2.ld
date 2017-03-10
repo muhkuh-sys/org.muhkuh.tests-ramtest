@@ -24,7 +24,7 @@ MEMORY
 {
 	ASSERT_EMPTY(rwx): ORIGIN = 0x00000000, LENGTH = 0
 	CODE(rx)         : ORIGIN = 0x07040000, LENGTH = 0x0000ff00
-	MMUTABLE(rw)     : ORIGIN = 0x05050000, LENGTH = 0x00004000  /* same address on core 0 and 1 */
+	MMUTABLE(rw)     : ORIGIN = 0x07050000, LENGTH = 0x00004000  /* same address on core 0 and 1 */
 	FLAGS(rw)        : ORIGIN = 0x0505ffe0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
 	SERIALVECTORS(rw): ORIGIN = 0x0705fff0, LENGTH = 0x00000010
 }

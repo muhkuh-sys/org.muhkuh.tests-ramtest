@@ -25,7 +25,7 @@ MEMORY
 	ASSERT_EMPTY(rwx): ORIGIN = 0x00000000, LENGTH = 0
 	CODE(rx)         : ORIGIN = 0x07000000, LENGTH = 0x0000ff00  /* code for both cores and heap/stack for core 0 */
 	DATA1(rw)        : ORIGIN = 0x07020000, LENGTH = 0x0000ff00  /* heap/stack for core 1 */
-	MMUTABLE(rw)     : ORIGIN = 0x05010000, LENGTH = 0x00004000  /* same address on core 0 and 1 */
+	MMUTABLE(rw)     : ORIGIN = 0x07010000, LENGTH = 0x00004000  /* same address on core 0 and 1 */
 	FLAGS(rw)        : ORIGIN = 0x0501ffe0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
 	SERIALVECTORS(rw): ORIGIN = 0x0701fff0, LENGTH = 0x00000010  /* same address on core 0 and 1 */
 }
