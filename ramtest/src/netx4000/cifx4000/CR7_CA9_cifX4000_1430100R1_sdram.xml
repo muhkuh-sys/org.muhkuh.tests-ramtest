@@ -73,6 +73,15 @@
 			</Hex>
 		</Data>
 		
+		<!-- Clear core 0/core 1 sync flags -->
+		<Data>
+			<Hex address="0x0501ffe0">
+				00 00 00 00
+				00 00 00 00
+				00 00 00 00
+			</Hex>
+		</Data>
+		
 		<ExecuteCA9>
 			<Core0>
 				<File name="@tElfCA9core0" start="start_core0" />
