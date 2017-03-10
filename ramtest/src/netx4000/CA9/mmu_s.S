@@ -210,7 +210,6 @@ mmu_regions:
 MEM_REGION( 0x00000000,                             SIZE_1M,    MT_ROM_LO,            AP_ROM_LO, 1 ) /* ROM/TCM with r/w necessary before branch to high ROM mirror. */ 
 MEM_REGION( Addr_NX4000_CR7_rom,                    SIZE_1M,    MT_ROM_HI,            AP_RO_RO,  1 ) /* CR7/CA9 ROM high mirror, memory type defined by application  */ 
 MEM_REGION( Addr_NX4000_NX2RAP_intram_rap0,         SIZE_16M,   MT_INTRAM,            AP_RW_RW,  1 ) /* INTRAMs, memory type defined by application                  */ 
-MEM_REGION( Addr_NX4000_NX2RAP_intram_rap0,         SIZE_16M,   MT_INTRAM,            AP_RW_RW,  1 ) /* INTRAMs, memory type defined by application                  */ 
 MEM_REGION( Addr_NX4000_NX2RAP_intram_rap0_mirror1, SIZE_16M,   MT_INTRAM_MIRROR1,    AP_RW_RW,  1 ) /* INTRAMs normal shared memory type                            */ 
 MEM_REGION( Addr_NX4000_NX2RAP_intram_rap0_mirror2, SIZE_16M,   MT_INTRAM_MIRROR2,    AP_RW_RW,  1 ) /* INTRAMs device memory type                                   */ 
 MEM_REGION( Addr_NX4000_NX2RAP_nflash,              SIZE_16M,   MT_DEVICE,            AP_RW_RW,  1 ) /* PL353.IF1 (NAND)                                             */ 
