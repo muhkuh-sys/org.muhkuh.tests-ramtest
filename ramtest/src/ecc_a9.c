@@ -147,6 +147,8 @@ int ca9_l1_ecc_ctrl_trigger_errors(void){
 			__asm__("pld [%[ptr], #0]\n\t" : : [ptr] "r" (pulCnt) :);
 		}
 		
+		__asm__("dsb");
+		
 		/* setting/clearing bit 0 makes no visible difference to the value read */
 		ptCA9_EccCtrl->ulCPU0_DDATA = 0x3;
 		//ptCA9_EccCtrl->ulCPU0_DTAG = 0x3;
