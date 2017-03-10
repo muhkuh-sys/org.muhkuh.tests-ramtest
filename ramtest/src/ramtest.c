@@ -1281,6 +1281,15 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	{
 		uprintf("     Burst\n");
 	}
+	if( (ulCases&RAMTESTCASE_CA9SMP_ALTERNATE)!=0 )
+	{
+		uprintf("     L1C/SMP alternating R/W\n");
+	}
+	if( (ulCases&RAMTESTCASE_CA9SMP_BLOCK)!=0 )
+	{
+		uprintf("     L1C/SMP blocks/preload\n");
+	}
+	
 #if ASIC_TYP!=ASIC_TYP_NETX90_MPW
 	ramtest_print_performance_tests(ptParameter);
 #endif
@@ -1296,7 +1305,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	}
 	uprintf("\n\n");
 
-#ifdef ECC
+#ifdef ECC_TRIGGER
 	tRamTestResult = ramtest_ecc_test();
 #else
 	tRamTestResult = RAMTEST_RESULT_OK;
