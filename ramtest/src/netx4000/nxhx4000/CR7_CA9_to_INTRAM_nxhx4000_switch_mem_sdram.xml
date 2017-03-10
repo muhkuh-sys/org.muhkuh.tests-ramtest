@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+	
+		<Snip artifact="board_config_7813200R1_nxhx4000switch" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
+		
+		<!-- Activate the DDR RAM. -->
+		<MemoryDeviceUp device="MEMDEV_SDRAM_E"/>
+
+		<!-- Fill the complete MEM_SDRAM area with 0. -->
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.0">
+			<Parameter name="START">0x30000000</Parameter>
+			<Parameter name="END">0x30800000</Parameter>
+			<Parameter name="FILL">0x00000000</Parameter>
+		</Snip>
+
+		<!--
+		Run the DDR ram test on CR7, CA9 core 0 and CA9 core 1.
+		Open the firewalls, load ram test configurations, load and run ram tests.
+		-->
+		<!-- R7: Open the firewalls -->
+		<Data>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Execute>
+		
+		<!-- CR7 parameters -->
+		<Data>
+			<Hex address="0x0003ff80">
+				00 00 00 30 <!-- 0x30000000 Start address in MEM SDRAM -->
+				00 00 20 00 <!-- 0x00200000 Size in bytes -->
+				ff 01 00 00  <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ff80">
+				00 00 20 30 <!-- 0x30200000 Start address in MEM SDRAM -->
+				00 00 30 00 <!-- 0x00300000 Size in bytes -->
+				ff 01 00 00  <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 38 37 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0503ff80">
+				00 00 50 30 <!-- 0x30500000 Start address in MEM SDRAM -->
+				00 00 30 00 <!-- 0x00300000 Size in bytes -->
+				ff 01 00 00  <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 3a 39 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<!-- Clear core 0/core 1 sync flags -->
+		<Data>
+			<Hex address="0x0501ffe0">
+				00 00 00 00
+				00 00 00 00
+				00 00 00 00
+			</Hex>
+		</Data>
+		
+		<!-- R7: load ram test for A9 -->
+		<Data>
+			<File name="@tElfCA9core0" />
+		</Data>
+		
+		<Data>
+			<File name="@tElfCA9core1" />
+		</Data>
+		
+		<!-- R7: load ram test for R7 -->
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		
+		
+		<!-- A9: run ram test -->
+		<ExecuteCA9>
+			<Core0>
+				<File name="@tElfCA9core0" start="start_core0" />
+				<R0>0x0501ff80</R0> <!-- address of parameter block -->
+			</Core0>
+			<Core1>
+				<File name="@tElfCA9core1" start="start_core1" />
+				<R0>0x0503ff80</R0>
+			</Core1>
+		</ExecuteCA9>
+		
+		<!-- R7: run ram test -->
+		<Execute>
+			<File name="@tElfCR7" />
+			<R0>0x0003ff80</R0> <!-- address of parameter block -->
+		</Execute> 
+
+	</Chunks>
+</HBootImage>
