@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HBootSnippet>
+	<Info artifact="board_config_7813200R1_nxhx4000switch" group="com.hilscher.hboot.sniplib" vcs-id="none" version="1.0.0">
+		<License name="PROPRIETARY"/>
+		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
+		<Description>Hardware configuration for cifX 4000 1430.100R1: MMIO, Portcontrol, SDRAM</Description>
+		<Category>netx4000</Category>
+		<Category>SDRAM</Category>
+		<Category>memory</Category>
+		<Category>hardware configuration</Category>
+	</Info>
+	<Snippet>
+
+&lt;!-- 
+	IO setup for 7813.200 R1 (NXHX4000 Switch)
+
+	The following groups of signals are configured:
+	                             Hardware      PU/PD Drive  MMIO Inv  MMIO function
+	MMIO 42-45  2x Duo LED red/green 
+	MMIO 51-54  2x Duo LED red/green
+	MMIO 55-58  2x Duo LED PHY COM0 red, COM green, COM1 red, COM1 green
+	MMIO 64-67  extphy0 LED AS/LNK extphy1 LED AS/LNK
+	MMIO 70-73  PHY0 ACT/LNK, PHY1 ACT/LNK   	PHY0 LNK/ACT, PHY1 LNK/ACT  LED green/yellow
+	MMIO 74-75  Duo LED red/green
+	
+	RDY                                        PU    6mA
+	RUN                                        PU    6mA
+	
+	Port control is configured for the above pins. For all other pins, the default configuration is kept.
+	The MMIOs for UART and PHY LEDs are mapped to the respective signals.
+	The MMIOs for rotary switch, COM LEDs and Sync are not mapped to any PIO or GPIO yet. 
+	SDRAM is configured and enabled.
+	No Asic Ctrl or RAP_SYSCTRL setup is done (except setting up SDRAM/DDR RAM).
+	
+	*2 The PHY LNK/ACT signals seem to be 0 after reset. 
+	
+--&gt;
+		&lt;Options&gt;
+			&lt;Option id=&quot;RAW&quot; offset=&quot;0x12bc&quot;&gt;
+				&lt;U08&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 0 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 1 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 2 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 3 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 4 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 5 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 6 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 7 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 8 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 9 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 10 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 11 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 12 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 13 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 14 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 15 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 16 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 17 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 18 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 19 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 20 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 21 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 22 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 23 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 24 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 25 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 26 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 27 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 28 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 29 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 30 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 31 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 32 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 33 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 34 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 35 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 36 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 37 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 38 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 39 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 40 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 41 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 42 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 43 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 44 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 45 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 46 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 47 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 48 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 49 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 50 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 51 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 52 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 53 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 54 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 55 COM0 Red   --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 56 COM0 Green --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 57 COM1 Red   --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 58 COM1 Green --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 59 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 60 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 61 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 62 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 63 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 64 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 65 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 66 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 67 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 68 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 69 --&gt;
+					MMIO_CFG_PHY0_LED_PHY_CTRL_LNK,   &lt;!-- MMIO 70 CH0_Link --&gt;
+					MMIO_CFG_PHY0_LED_PHY_CTRL_ACT,   &lt;!-- MMIO 71 CH0_Act --&gt;
+					MMIO_CFG_PHY1_LED_PHY_CTRL_LNK,   &lt;!-- MMIO 72 CH1_Link--&gt;
+					MMIO_CFG_PHY1_LED_PHY_CTRL_ACT,   &lt;!-- MMIO 73 CH1_Act--&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 74 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 75 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 76 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 77 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 78 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 79 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 80 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 81 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 82 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 83 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 84 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 85 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 86 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 87 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 88 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 89 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 90 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 91 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 92 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 93 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 94 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 95 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 96 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 97 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 98 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 99 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 100 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 101 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 102 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 103 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 104 --&gt;
+					MMIO_CFG_PIO,   &lt;!-- MMIO 105 --&gt;
+					MMIO_CFG_PIO    &lt;!-- MMIO 106 --&gt;
+				&lt;/U08&gt;
+			&lt;/Option&gt;
+			
+		&lt;/Options&gt;
+			
+		&lt;!-- Apply the MMIO values. --&gt;
+		&lt;Data&gt;
+			&lt;Hex address=&quot;0x04000000&quot;&gt;
+				f0b4aff3538744f6be3044f65333c0f202004ff480744ff480660746c0f20203
+				cff20844cff20846a3f5123210f8015f13f8011fa2f2533241ea4521bb42e56f
+				e56746f82210efd1aff35385f0bc7047
+			&lt;/Hex&gt;
+		&lt;/Data&gt;
+		&lt;Execute&gt;
+			&lt;Address&gt;0x04000001&lt;/Address&gt;
+		&lt;/Execute&gt;
+
+		&lt;!-- Configure the SDRAM. --&gt;
+		&lt;Options&gt;
+			&lt;Option id=&quot;hif_hif_io&quot;&gt;
+				&lt;U32&gt;0x0f060060&lt;/U32&gt;
+			&lt;/Option&gt;
+
+			&lt;Option id=&quot;netx_mem_sdram&quot;&gt;
+				&lt;U32&gt;0x030d0001&lt;/U32&gt;    &lt;!-- SDRAM general_ctrl register --&gt;
+				&lt;U32&gt;0x01A23251&lt;/U32&gt;    &lt;!-- SDRAM timing_ctrl register --&gt;
+				&lt;U32&gt;0x00000033&lt;/U32&gt;    &lt;!-- SDRAM mr register --&gt;
+				&lt;U16&gt;100&lt;/U16&gt;           &lt;!-- SDRAM powerup timeout in milliseconds --&gt;
+			&lt;/Option&gt;
+		&lt;/Options&gt;
+
+</Snippet>
+</HBootSnippet>
