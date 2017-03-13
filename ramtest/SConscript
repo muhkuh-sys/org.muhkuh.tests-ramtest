@@ -750,19 +750,19 @@ make_bootimage(imgpars)
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_cr7,
-	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2,
-	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0,
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1
 	})
 	
-imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_switch_CR7_uncached_CA9_l2c_mem_sdram.bin'
+imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_switch_CR7_CA9_mem_sdram.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_switch_mem_sdram.xml'
 make_bootimage(imgpars)
 
-imgpars.target_name = 'test_sdram/ramtest_standalone_cifx4000_CR7_uncached_CA9_l2c_hif_sdram.bin'
+imgpars.target_name = 'test_sdram/ramtest_standalone_cifx4000_CR7_CA9_hif_sdram.bin'
 imgpars.xml_template = 'src/netx4000/cifx4000/CR7_CA9_cifX4000_1430100R1_sdram.xml'
 make_bootimage(imgpars)
 
-imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_sdrspi16mb_CR7_uncached_CA9_l2c_hif_sdram.bin'
+imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_sdrspi16mb_CR7_CA9_hif_sdram.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
 make_bootimage(imgpars)
 
