@@ -50,7 +50,7 @@
 		<!-- CR7 parameters -->
 		<Data>
 			<Hex address="0x0003ff80">
-				00 00 00 20 <!-- 0x20000000 Start address in MEM SDRAM -->
+				00 00 00 20 <!-- 0x20000000 Start address in HIF SDRAM -->
 				00 00 20 00 <!-- 0x00200000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
 				00 00 00 00 <!-- Loops -->
@@ -64,7 +64,7 @@
 		<!-- CA9 core 0 parameters -->
 		<Data>
 			<Hex address="0x0501ff80">
-				00 00 20 20 <!-- 0x20200000 Start address in MEM SDRAM -->
+				00 00 20 20 <!-- 0x20200000 Start address in HIF SDRAM -->
 				00 00 30 00 <!-- 0x00300000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
 				00 00 00 00 <!-- Loops -->
@@ -78,7 +78,7 @@
 		<Data>
 			<!-- CA9 core 1 parameters -->
 			<Hex address="0x0503ff80">
-				00 00 50 20 <!-- 0x20500000 Start address in MEM SDRAM -->
+				00 00 50 20 <!-- 0x20500000 Start address in HIF SDRAM -->
 				00 00 30 00 <!-- 0x00300000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
 				00 00 00 00 <!-- Loops -->
