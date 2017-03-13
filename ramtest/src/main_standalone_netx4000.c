@@ -196,9 +196,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	tTestParams.ulPerfTestCases = ptParam->ulPerfTestCases;
 	tTestParams.ulTagMask       = ptParam->ulTagMask;
 	tTestParams.ulTagValue      = ptParam->ulTagValue;
-		
-	/* Override the test case selection: use only the address sequence test */
-	//tTestParams.ulCases         = 0x80;
 	
 	if ((ptParam->ulStart >= 0x40000000UL) && (ptParam->ulStart <= 0x7fffffff))
 	{
@@ -239,8 +236,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 #endif
 
 	tTestParams.pfnProgress(&tTestParams, tRes);
-	
-	/* while(1); */
 	
 	if (tRes == RAMTEST_RESULT_OK) 
 	{
