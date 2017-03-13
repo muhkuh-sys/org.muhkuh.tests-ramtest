@@ -66,7 +66,7 @@ atEnv.DEFAULT.Version('#targets/version/version.h', 'templates/version.h')
 SConscript('ramtest/SConscript')
 Import('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
-Import('ramtest_standalone_cifx4000_sdram')
+#Import('ramtest_standalone_cifx4000_sdram')
 #Import('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
 
 SConscript('setup_hif_io/SConscript')
@@ -131,7 +131,7 @@ tArcList.AddFiles('standalone/',
 	ramtest_standalone_netx56,
 	ramtest_standalone_netx50,
 	ramtest_standalone_netx10,
-	ramtest_standalone_cifx4000_sdram,
+	#ramtest_standalone_cifx4000_sdram,
 	#ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
 	)
 tArcList.AddFiles('lua/',

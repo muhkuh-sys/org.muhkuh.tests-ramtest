@@ -406,6 +406,8 @@ bin_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.Ob
 
 
 
+
+
 #############################################################################################################
 #############################################################################################################
 
@@ -504,14 +506,28 @@ make_bootimage(imgpars)
 # LLRAM Test
 # CR7 in netx intram 0 (05080000-0509ffff) with/without L1 cache
 
-buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7
-buildpars.defines     = [['CPU_CR7', '1']]
-buildpars.ldfile      = 'src/netx4000/netx4000_cr7_netx_intram0.ld'
-buildpars.target_dir  = 'targets/netx4000_cr7_intram_netx0'
-buildpars.target_name = 'netx4000_ramtest_cr7_intram_netx0'
-elf_netx4000_s_cr7_intram_netx0 = build_elf_bin(buildpars)
+#buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7
+#buildpars.defines     = [['CPU_CR7', '1']]
+#buildpars.ldfile      = 'src/netx4000/netx4000_cr7_netx_intram0.ld'
+#buildpars.target_dir  = 'targets/netx4000_cr7_intram_netx0'
+#buildpars.target_name = 'netx4000_ramtest_cr7_intram_netx0'
+#elf_netx4000_s_cr7_intram_netx0 = build_elf_bin(buildpars)
 
 #see above: elf_netx4000_s_cr7_netx_intram_cached
+
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9
+buildpars.defines     = [['CPU_CA9']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap2.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap2'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap2'
+elf_netx4000_s_ca9_intram_rap2 = build_elf_bin(buildpars)
+
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9
+buildpars.defines     = [['CPU_CA9']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap3.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap3'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap3'
+elf_netx4000_s_ca9_intram_rap3 = build_elf_bin(buildpars)
 
 
 # NXHX 4000 intram test, CR7 with l1 cache enabled.
@@ -868,7 +884,7 @@ ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ra
 
 
 Export('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
-Export('ramtest_standalone_cifx4000_sdram')
+#Export('ramtest_standalone_cifx4000_sdram')
 #Export('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
 
 #----------------------------------------------------------------------------
