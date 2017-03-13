@@ -523,15 +523,15 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	})
 make_bootimage(imgpars)
 
-# NXHX 4000 intram test, CA9 with l1+l2 caches enabled.
+# NXHX 4000 intram test, CA9 without caching (test is performed in small blocks).
 imgpars.target_name = 'ramtest_standalone_nxhx4000_intrams_ca9_cached_l2.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9_to_INTRAM_nxhx4000_intrams.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
-	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2,
-	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached,
-	'tElfCA9core0_rap2'   : elf_netx4000_s_ca9_intram_rap2_cached_l2,
-	'tElfCA9core1_rap3'   : elf_netx4000_s_ca9_intram_rap3_cached,
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0,
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1,
+	'tElfCA9core0_rap2'   : elf_netx4000_s_ca9_intram_rap2,
+	'tElfCA9core1_rap3'   : elf_netx4000_s_ca9_intram_rap3,
 	'tElfCR7SyncA9'       : elf_netx4000_cr7_sync_ca9
 	})
 make_bootimage(imgpars)
