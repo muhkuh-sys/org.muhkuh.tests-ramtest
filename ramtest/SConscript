@@ -406,7 +406,8 @@ bin_netx4000_s_ca9_intram_rap3_cached = env_netx4000_s_ca9_intram_rap3_cached.Ob
 
 
 
-
+#############################################################################################################
+#############################################################################################################
 
 
 def build_elf_bin(pars):
@@ -425,24 +426,6 @@ def build_elf_bin(pars):
 class buildpars:
 	env         = atEnv.NETX4000_RELAXED
 	cpppath     = ['src/netx4000', 'src/netx4000/CA9', '#platform/src/netx4000']
-
-# ramtest for CA9 in intram_rap0 with L1, cache, L1C ECC and DDR ECC 
-buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
-buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['DDR_ECC'], ['CA9_L1C_ECC'], ['ECC_TRIGGER']]
-buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
-buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_cl1_ecc'
-buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_cl1_ecc'
-elf_netx4000_s_intram_rap0_ca9_l1c_ecc = build_elf_bin(buildpars)
-
-
-# ramtest for CA9 core 0/1 both in intram_rap0 with L1, cache, L1C ECC 
-buildpars.sources     = sources_common+sources_arm_assembler+ sources_standalone_netx4000_ca9_core0_1_cached
-buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['CA9_L1C_ECC'], ['ECC_TRIGGER'], ['SMP'], ['WRAP_UART']]
-buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0_1.ld'
-buildpars.target_dir  = 'targets/netx4000_ca9core01_intram_rap0_cl1_ecc'
-buildpars.target_name = 'netx4000_ramtest_ca9core01_intram_rap0_cl1_ecc'
-elf_netx4000_s_intram_rap0_1_ca9core0_1_l1c_ecc_smp = build_elf_bin(buildpars)
-
 
 
 def make_bootimage(pars):
@@ -472,6 +455,28 @@ class imgpars:
 	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	
 
+	
+#############################################################################################################
+#############################################################################################################
+
+# ramtest for CA9 in intram_rap0 with L1, cache, L1C ECC and DDR ECC 
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
+buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['DDR_ECC'], ['CA9_L1C_ECC'], ['ECC_TRIGGER']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_cl1_ecc'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_cl1_ecc'
+elf_netx4000_s_intram_rap0_ca9_l1c_ecc = build_elf_bin(buildpars)
+
+
+# ramtest for CA9 core 0/1 both in intram_rap0 with L1, cache, L1C ECC 
+buildpars.sources     = sources_common+sources_arm_assembler+ sources_standalone_netx4000_ca9_core0_1_cached
+buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['CA9_L1C_ECC'], ['ECC_TRIGGER'], ['SMP'], ['WRAP_UART']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0_1.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9core01_intram_rap0_cl1_ecc'
+buildpars.target_name = 'netx4000_ramtest_ca9core01_intram_rap0_cl1_ecc'
+elf_netx4000_s_intram_rap0_1_ca9core0_1_l1c_ecc_smp = build_elf_bin(buildpars)
+
+
 # image running on CA9 core 0 L1C, ECC, code: intram_rap0, test: ddr3 at 600 MHz 
 imgpars.target_name = 'ramtest_standalone_nxhx4000_code_intram_rap0_test_ddr3_600_ca9_core0_l1c_ecc.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
@@ -492,16 +497,6 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	})
 make_bootimage(imgpars)
 
-# Test for NXHX 4000 Rev. 2 with NXHX SDRSPI with 16 MB (IS42S16800F-7BLI, all lines to SDRAM set to 8mA drive strength
-# CR7 uncached
-imgpars.target_name = 'ramtest_standalone_nxhx4000_intram_sdrspi16mb_hif_sdram_cr7.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
-imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
-	'tElfCR7'             : elf_netx4000_s_cr7
-	})
-make_bootimage(imgpars)
-
-
 #############################################################################################################
 # netx 4000 
 #############################################################################################################
@@ -520,7 +515,7 @@ elf_netx4000_s_cr7_intram_netx0 = build_elf_bin(buildpars)
 
 
 # NXHX 4000 intram test, CR7 with l1 cache enabled.
-imgpars.target_name = 'ramtest_standalone_nxhx4000_intrams_cr7_cached__.bin'
+imgpars.target_name = 'ramtest_standalone_nxhx4000_intrams_cr7_cached.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_intrams.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7'             : elf_netx4000_s_cr7_cached,
@@ -529,7 +524,7 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 make_bootimage(imgpars)
 
 # NXHX 4000 intram test, CA9 with l1+l2 caches enabled.
-imgpars.target_name = 'ramtest_standalone_nxhx4000_intrams_ca9_cached_l2__.bin'
+imgpars.target_name = 'ramtest_standalone_nxhx4000_intrams_ca9_cached_l2.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9_to_INTRAM_nxhx4000_intrams.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
@@ -549,14 +544,15 @@ make_bootimage(imgpars)
 
 # CR7 with L1 cache, CA9 with L1/2 cache
 # 16 bit/32 bit/32 bit ECC with 400 and 600 MHz
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_noECC_cr7_ca9.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz_noECC.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_cr7_cached,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
 	})
+
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_noECC_cr7_ca9.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz_noECC.xml'
 make_bootimage(imgpars)
 
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_noECC_HalfDP_cr7_ca9.bin'
@@ -603,36 +599,36 @@ buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap1_l1c_ecc'
 elf_netx4000_s_ca9_intram_rap1_l1c_ecc = build_elf_bin(buildpars)
 
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_core0_1_cached
-buildpars.defines     = [['CPU_CA9'], ['SMP'],               ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC']]
+buildpars.defines     = [['CPU_CA9'], ['SMP'], ['WRAP_UART'], ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC']]
 buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0_1.ld'
 buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_1_smp_l2c_ecc'
 buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_1_smp_l2c_ecc'
 elf_netx4000_s_ca9_rap_intram0_1_smp_l2c_ecc = build_elf_bin(buildpars)
 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_cr7_ca9_cached.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_cr7_llram_l1c_ecc,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_intram_rap0_l2c_ecc,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_intram_rap1_l1c_ecc
 	})
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_cr7_ca9_cached.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
-
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_400MHz_ECC_cr7_ca9_cached.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_400MHz.xml'
 make_bootimage(imgpars)
 
 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_cr7_ca9_smp_cached.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
-imgpars.HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000301ff}
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_cr7_llram_l1c_ecc,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_rap_intram0_1_smp_l2c_ecc,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_rap_intram0_1_smp_l2c_ecc
 	})
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_cr7_ca9_smp_cached.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+imgpars.HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000301ff}
 make_bootimage(imgpars)
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_400MHz_ECC_cr7_ca9_smp_cached.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_400MHz.xml'
@@ -653,14 +649,14 @@ imgpars.HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 #----------------------------------------------------------------------------
 
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7
-buildpars.defines     = [['CPU_CR7', '1'], ['ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
+buildpars.defines     = [['CPU_CR7', '1'],                    ['ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
 buildpars.ldfile      = 'src/netx4000/netx4000_cr7_llram.ld'
 buildpars.target_dir  = 'targets/netx4000_cr7_ecc_trigger'
 buildpars.target_name = 'netx4000_ramtest_cr7_ecc_trigger'
 elf_netx4000_s_llram_cr7_ecc_trigger = build_elf_bin(buildpars)
 
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7_cached
-buildpars.defines     = [['CPU_CR7', '1'], ['ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
+buildpars.defines     = [['CPU_CR7', '1'],                    ['ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
 buildpars.ldfile      = 'src/netx4000/netx4000_cr7_llram.ld'
 buildpars.target_dir  = 'targets/netx4000_cr7_l1c_ecc_trigger'
 buildpars.target_name = 'netx4000_ramtest_cr7_l1c_ecc_trigger'
@@ -674,7 +670,7 @@ buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_l1c_ecc_trigger'
 elf_netx4000_s_ca9_intram_rap0_l1c_ecc_trigger = build_elf_bin(buildpars)
 
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
-buildpars.defines     = [['CPU_CA9'], ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
+buildpars.defines     = [['CPU_CA9'],                         ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
 buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
 buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_l2c_ecc_trigger'
 buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_l2c_ecc_trigger'
@@ -686,50 +682,48 @@ elf_netx4000_s_ca9_intram_rap0_l2c_ecc_trigger = build_elf_bin(buildpars)
 # Variants:
 # CR7 + CA9 and CR7 only
 # CR7 with/without cache
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_cr7_ca9_cached.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_llram_cr7_ecc_trigger,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
 	})
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_cr7_ca9_cached.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
-
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_ECC_trigger.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_cr7_cached_ca9_cached.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_llram_cr7_l1c_ecc_trigger,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
 	})
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_cr7_cached_ca9_cached.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
-
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_l1c_ECC_trigger.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_cached.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_intram_rap0_l1c_ecc_trigger,
 	})
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_cached.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_cached_l2.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_intram_rap0_l2c_ecc_trigger,
 	})
+imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_cached_l2.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
 #############################################################################################################
@@ -756,9 +750,17 @@ imgpars.target_name = 'ramtest_standalone_nxhx4000_sdrspi16mb_CR7_uncached_CA9_l
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
 make_bootimage(imgpars)
 
-imgpars.target_name = 'ramtest_standalone_cifx4000_sdram_cr7.bin'
-imgpars.xml_template = 'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml'
-ramtest_standalone_cifx4000_sdram = make_bootimage(imgpars)
+# # optional
+# imgpars.target_name = 'ramtest_standalone_cifx4000_sdram_cr7.bin'
+# imgpars.xml_template = 'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml'
+# ramtest_standalone_cifx4000_sdram = make_bootimage(imgpars)
+# 
+# # optional
+# # Test for NXHX 4000 Rev. 2 with NXHX SDRSPI with 16 MB (IS42S16800F-7BLI, all lines to SDRAM set to 8mA drive strength
+# # CR7 uncached
+# imgpars.target_name = 'ramtest_standalone_nxhx4000_intram_sdrspi16mb_hif_sdram_cr7.bin'
+# imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
+# make_bootimage(imgpars)
 
 #############################################################################################################
 # Cache tests
@@ -772,16 +774,19 @@ ramtest_standalone_cifx4000_sdram = make_bootimage(imgpars)
 
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
-	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_cr7,
-	'tElfCA9core0'        : elf_netx4000_s_ca9_core0,
-	'tElfCA9core1'        : elf_netx4000_s_ca9_core1
 	})
 	
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_cr7.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0,
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1
+	})
+	
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_core0.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
@@ -791,16 +796,19 @@ imgpars.xml_template = 'src/netx4000/nxhx4000/CA9_to_INTRAM_nxhx4000_ddr3_600MHz
 make_bootimage(imgpars)
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
-	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
 	'tElfCR7'             : elf_netx4000_s_cr7_cached,
-	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached,
-	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
 	})
 
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_cr7_cached.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
+	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached,
+	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
+	})
+	
 imgpars.target_name = 'ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_core0_cached.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
@@ -812,7 +820,6 @@ make_bootimage(imgpars)
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
-	'tElfCR7'             : elf_netx4000_s_cr7_cached,
 	'tElfCA9core0'        : elf_netx4000_s_ca9_core0_cached_l2,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1_cached
 	})
