@@ -61,7 +61,7 @@ start:
 	// region  1: ROM POR, ITCM and DTCM mirror.
 	MACRO_MPU_REGION  1, 1, HOSTADDR(CR7_ITCM), "0003ffff", MPU_MT_Normal_Buffered_NonShareable, MPU_AP_RW_RW
 	
-	// region  2: LLRAM
+	// region  2: LLRAM, netX/RAP/HS/Eth Intram and mirrors
 	MACRO_MPU_REGION  2, 1, HOSTADDR(CR7_llram), "03ffffff", MPU_MT_Normal_Buffered_NonShareable, MPU_AP_RW_RW
 	
 	// region  3: ROM
