@@ -783,6 +783,7 @@ make_bootimage(imgpars)
 # CR7 uncached 
 # CR7 with cache
 # CA9 core 0 uncached
+# CA9 core 0 uncached, with MMU config
 # CA9 core 0 with L1 cache
 # CA9 core 0 with L2 cache
 #############################################################################################################
@@ -848,7 +849,40 @@ imgpars.target_name = 'test_cache/ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_ca
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
 
-#dummy
+
+# Enable the MMU, but not the caches.
+# Branch prediction is already enabled by the ROM code.
+
+sources_standalone_netx4000_ca9_single_core = """
+	src/netx4000/CA9/ca9_init_single_core.S
+	src/netx4000/CA9/v7a.S
+	src/netx4000/CA9/mmu_s.S
+	src/netx4000/CA9/MP_SCU.s
+	src/main_standalone_netx4000.c
+	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
+	src/ecc_a9.c
+"""
+
+# Note: defines differ from the other init code variants!
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_single_core
+buildpars.defines     = [['CPU_CA9'], ['CA9_ENABLE_MMU']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_single_core_mmu_nocache'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_single_core_mmu_nocache'
+elf_netx4000_s_intram_rap0_ca9_single_core_mmu_nocache = build_elf_bin(buildpars)
+
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
+	'tElfCA9core0'        : elf_netx4000_s_intram_rap0_ca9_single_core_mmu_nocache,
+	})
+	
+imgpars.target_name = 'test_cache/ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_core0_mmu_nocache.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+make_bootimage(imgpars)
+
+
 #############################################################################################################
 # netx 500, 50, 10, 51, 52
 env_netx500_s = atEnv.NETX500.Clone()
