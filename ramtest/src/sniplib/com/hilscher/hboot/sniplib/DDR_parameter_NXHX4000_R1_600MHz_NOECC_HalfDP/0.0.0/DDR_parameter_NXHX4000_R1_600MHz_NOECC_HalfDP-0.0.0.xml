@@ -72,7 +72,7 @@
 			&lt;WriteCtrl register=&quot;55&quot;  data=&quot;0x01010101&quot;/&gt;
 			&lt;WriteCtrl register=&quot;56&quot;  data=&quot;0x01000001&quot;/&gt;
 			&lt;WriteCtrl register=&quot;57&quot;  data=&quot;0x00000103&quot;/&gt;
-			&lt;WriteCtrl register=&quot;58&quot;  data=&quot;0x00000c00&quot;/&gt;
+			&lt;WriteCtrl register=&quot;58&quot;  data=&quot;0x00000c00 | MSK_NX4000_DDR_CTRL_CTL58_REDUC &quot;/&gt;
 			&lt;WriteCtrl register=&quot;59&quot;  data=&quot;0x00000000&quot;/&gt;
 			&lt;WriteCtrl register=&quot;60&quot;  data=&quot;0x00000001&quot;/&gt;
 			&lt;WriteCtrl register=&quot;61&quot;  data=&quot;0x00000000&quot;/&gt;
