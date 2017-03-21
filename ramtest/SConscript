@@ -158,7 +158,7 @@ env_netx4000_t.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
 env_netx4000_t.Append(CPPPATH = aCppPath)
 src_netx4000_t = env_netx4000_t.SetBuildPath('targets/netx4000/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
 elf_netx4000_t = env_netx4000_t.Elf('targets/netx4000/muhkuh_test/ramtest.elf', src_netx4000_t + env_netx4000_t['PLATFORM_LIBRARY'])
-ramtest_netx4000 = env_netx4000_t.ObjCopy('targets/netx4000/muhkuh_test/ramtest_netx4000.bin', elf_netx4000_t)
+ramtest_netx4000 = env_netx4000_t.ObjCopy('targets/netx4000/muhkuh_test/ramtest_netx4000_relaxed.bin', elf_netx4000_t)
 
 env_netx500_t = atEnv.NETX500.Clone()
 env_netx500_t.Replace(LDFILE = 'src/netx500/netx500.ld')
