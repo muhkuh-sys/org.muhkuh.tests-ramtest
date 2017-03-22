@@ -1,3 +1,4 @@
+#include <string.h>
 
 #include "netx_io_areas.h"
 
@@ -31,7 +32,10 @@ TEST_RESULT_T test_main(TEST_PARAMETER_T *ptTestParam)
 
 	ptTestParams->pfnProgress = progress_rdyrun;
 	ptTestParams->ulProgress = 0;
-
+	
+	/* No signal when a loop has finished */
+	ptTestParams->pfnLoopFinished = NULL;
+	
 	tRamTestResult = ramtest_run(ptTestParams);
 
 	/* Translate RAMTEST result to TEST result. */

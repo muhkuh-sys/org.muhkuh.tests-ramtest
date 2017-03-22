@@ -1388,6 +1388,12 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			uprintf("* OK *\n");
 		}
 
+		if (ptParameter->pfnLoopFinished != NULL)
+		{
+			ptParameter->pfnLoopFinished(ptParameter);
+			ptParameter->pfnProgress(ptParameter, tRamTestResult);
+		}
+		
 		if( ulLoopMax!=0 && ulLoopCnt>=ulLoopMax )
 		{
 			break;

@@ -105,6 +105,13 @@ void alternate_leds(unsigned long ulLedMMIOs)
 }
 
 
+void ramtest_progress_loop_finished(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter);
+void ramtest_progress_loop_finished(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter)
+{
+	unsigned long ulLedMmioNr = ptRamTestParameter->ulProgress & 0xffff0000UL;
+	alternate_leds(ulLedMmioNr);
+}
+
 void ramtest_mmio_led_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult);
 void ramtest_mmio_led_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult)
 {
@@ -272,7 +279,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	uprintf("tag mask: 0x%08x  tag value: 0x%08x \n", tTestParams.ulTagMask, tTestParams.ulTagValue );
 	
 	ulStatusLedMmioNr = ptParam->ulStatusLedMmioNr;
-	
+	/* flash LEDs when a loop has finished */
+	tTestParams.pfnLoopFinished = ramtest_progress_loop_finished;
 	
 	/*
 	 * Run the RAM test.

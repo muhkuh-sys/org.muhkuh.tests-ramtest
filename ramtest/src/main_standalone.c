@@ -117,6 +117,9 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	tTestParams.ulProgress = 0;
 #endif
 
+	/* No signal when a loop has finished */
+	tTestParams.pfnLoopFinished = NULL;
+
 	/* Setup the SDRAM. */
 	iResult = sdram_setup(tTestParams.ulStart, ulSdramGeneralCtrl, ulSdramTimingCtrl, ulSdramMr);
 	if( iResult==0 )

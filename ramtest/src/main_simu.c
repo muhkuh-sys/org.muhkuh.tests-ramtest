@@ -1,4 +1,4 @@
-
+#include <string.h>
 #include "ramtest.h"
 #include "systime.h"
 #include "setup_sdram.h"
@@ -100,6 +100,9 @@ int main(void)
 	/* Execute once. (ignored by perf. test) */
 	tTestParams.ulLoops = 1;
 
+	/* No signal when a loop has finished */
+	tTestParams.pfnLoopFinished = NULL;
+	
 	/* TODO: initialize the system */
 	/* ram_perftest_init_netx(); */
 	

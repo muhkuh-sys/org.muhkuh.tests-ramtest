@@ -64,6 +64,7 @@ typedef enum
 struct RAMTEST_PARAMETER_STRUCT;
 typedef void (*PFN_RAMTEST_PROGRESS_T) (struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult);
 
+typedef void (*PFN_RAMTEST_LOOP_FINISHED_T) (struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter);
 
 typedef struct RAMTEST_PARAMETER_STRUCT
 {
@@ -79,6 +80,7 @@ typedef struct RAMTEST_PARAMETER_STRUCT
 	PFN_RAMTEST_PROGRESS_T pfnProgress;
 	unsigned long ulProgress;
 	unsigned long ulTimes[32];
+	PFN_RAMTEST_LOOP_FINISHED_T pfnLoopFinished; /* called when a loop is complete if non-NULL */
 	
 	unsigned long ulTagMask;
 	unsigned long ulTagValue;
