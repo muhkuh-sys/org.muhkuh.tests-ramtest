@@ -459,6 +459,7 @@ class imgpars:
 
 	
 #############################################################################################################
+# 
 #############################################################################################################
 
 # ramtest for CA9 in intram_rap0 with L1, cache, L1C ECC and DDR ECC 
@@ -500,21 +501,18 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 make_bootimage(imgpars)
 
 #############################################################################################################
-# netx 4000 
+# Intram test
 #############################################################################################################
 
-# LLRAM Test
-# CR7 in netx intram 0 (05080000-0509ffff) with/without L1 cache
+# CR7 in netx intram 0 (05080000-0509ffff) uncached
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7
+buildpars.defines     = [['CPU_CR7', '1']]
+buildpars.ldfile      = 'src/netx4000/netx4000_cr7_netx_intram0.ld'
+buildpars.target_dir  = 'targets/netx4000_cr7_intram_netx0'
+buildpars.target_name = 'netx4000_ramtest_cr7_intram_netx0'
+elf_netx4000_s_cr7_intram_netx0 = build_elf_bin(buildpars)
 
-#buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7
-#buildpars.defines     = [['CPU_CR7', '1']]
-#buildpars.ldfile      = 'src/netx4000/netx4000_cr7_netx_intram0.ld'
-#buildpars.target_dir  = 'targets/netx4000_cr7_intram_netx0'
-#buildpars.target_name = 'netx4000_ramtest_cr7_intram_netx0'
-#elf_netx4000_s_cr7_intram_netx0 = build_elf_bin(buildpars)
-
-#see above: elf_netx4000_s_cr7_netx_intram_cached
-
+# CA9 in RAP intram 2 uncached
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9
 buildpars.defines     = [['CPU_CA9']]
 buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap2.ld'
@@ -522,6 +520,7 @@ buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap2'
 buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap2'
 elf_netx4000_s_ca9_intram_rap2 = build_elf_bin(buildpars)
 
+# CA9 in RAP intram 3 uncached
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9
 buildpars.defines     = [['CPU_CA9']]
 buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap3.ld'
@@ -530,14 +529,15 @@ buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap3'
 elf_netx4000_s_ca9_intram_rap3 = build_elf_bin(buildpars)
 
 
-# NXHX 4000 intram test, CR7 with l1 cache enabled.
-imgpars.target_name = 'test_intram/ramtest_standalone_nxhx4000_intrams_cr7_cached.bin'
+# NXHX 4000 intram test, CR7 uncached
+imgpars.target_name = 'test_intram/ramtest_standalone_nxhx4000_intrams_cr7.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_intrams.xml'
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
-	'tElfCR7'             : elf_netx4000_s_cr7_cached,
-	'tElfCR7_netx_intram' : elf_netx4000_s_cr7_netx_intram_cached
+	'tElfCR7'             : elf_netx4000_s_cr7,
+	'tElfCR7_netx_intram' : elf_netx4000_s_cr7_intram_netx0
 	})
 make_bootimage(imgpars)
+
 
 # NXHX 4000 intram test, CA9 without caching (test is performed in small blocks).
 imgpars.target_name = 'test_intram/ramtest_standalone_nxhx4000_intrams_ca9.bin'
