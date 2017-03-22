@@ -12,15 +12,15 @@
 
 	<!-- R7: Write the ramtest parameters for R7 and A9
 		core              CR7           CA9 core 0    CA9 core 1
-		test area start   0x40000000    0x4c000000    0x6000000
-		test area end     0x4bffffff    0x65ffffff    0x7fffffff
-		test area size    0x0c000000    0x1a000000    0x1a000000
+		test area start   0x40000000    0x50000000    0x68000000
+		test area end     0x4fffffff    0x67ffffff    0x7fffffff
+		test area size    0x10000000    0x18000000    0x18000000
 		unsigned 32 bit values as bytes in little endian order -->
 <!-- CR7 parameters -->
 <Data>
 	<Hex address="0x0003ff80">
 		00 00 00 40 <!-- 0x40000000 Start address of DDR RAM -->
-		00 00 00 0c <!-- 0x0c000000 Size in bytes -->
+		00 00 00 10 <!-- 0x10000000 Size in bytes -->
 		%%'%02x %02x %02x %02x' % (TEST_CASES & 0xff, (TEST_CASES >> 8) & 0xff, (TEST_CASES >> 16) & 0xff, (TEST_CASES >> 24) & 0xff)%%  <!-- Test Cases -->
 		00 00 00 00 <!-- Loops -->
 		00 00 00 00 <!-- PerfTestCases -->
@@ -33,8 +33,8 @@
 <!-- CA9 core 0 parameters -->
 <Data>
 	<Hex address="0x0501ff80">
-		00 00 00 4c <!-- 0x4c000000 Start address of DDR RAM -->
-		00 00 00 1a <!-- 0x1a000000 Size in bytes -->
+		00 00 00 50 <!-- 0x50000000 Start address of DDR RAM -->
+		00 00 00 18 <!-- 0x18000000 Size in bytes -->
 		%%'%02x %02x %02x %02x' % (TEST_CASES & 0xff, (TEST_CASES >> 8) & 0xff, (TEST_CASES >> 16) & 0xff, (TEST_CASES >> 24) & 0xff)%%  <!-- Test Cases -->
 		00 00 00 00 <!-- Loops -->
 		00 00 00 00 <!-- PerfTestCases -->
@@ -47,8 +47,8 @@
 <Data>
 	<!-- CA9 core 1 parameters -->
 	<Hex address="0x0503ff80">
-		00 00 00 66 <!-- 0x66000000 Start address of DDR RAM -->
-		00 00 00 1a <!-- 0x1a000000 Size in bytes -->
+		00 00 00 68 <!-- 0x68000000 Start address of DDR RAM -->
+		00 00 00 18 <!-- 0x18000000 Size in bytes -->
 		%%'%02x %02x %02x %02x' % (TEST_CASES & 0xff, (TEST_CASES >> 8) & 0xff, (TEST_CASES >> 16) & 0xff, (TEST_CASES >> 24) & 0xff)%%  <!-- Test Cases -->
 		00 00 00 00 <!-- Loops -->
 		00 00 00 00 <!-- PerfTestCases -->
