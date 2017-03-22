@@ -8,6 +8,7 @@
 #include "uart_standalone.h"
 #include "uart_wrapper.h"
 #include "netx_io_areas.h"
+#include "rdy_run.h"
 
 /*-------------------------------------------------------------------------*/
 
@@ -28,19 +29,89 @@ const unsigned long MMIO_LED_OFF = 0x000300ffUL;
 #define LED_GREEN 1
 #define LED_YELLOW 2
 
+void set_mmio_leds(unsigned long ulMMIOLed, int iLedStates);
+void set_mmio_leds(unsigned long ulMMIOLed, int iLedStates)
+{
+	unsigned long ulProgressLedMmioNr  = (ulMMIOLed >> 16) & 0xff;
+	unsigned long ulErrorLedMmioNr = (ulMMIOLed >> 24) & 0xff;
+	
+	HOSTDEF(ptMmioCtrlArea);
+	unsigned long ulProgressLedState;
+	unsigned long ulErrorLedState;
+	
+	/* set leds */
+	switch(iLedStates) 
+	{
+		case LED_OFF:
+			ulProgressLedState = MMIO_LED_OFF;
+			ulErrorLedState = MMIO_LED_OFF;
+			break;
+		case LED_GREEN:
+			ulProgressLedState = MMIO_LED_ON;
+			ulErrorLedState = MMIO_LED_OFF;
+			break;
+		case LED_YELLOW:
+			ulProgressLedState = MMIO_LED_OFF;
+			ulErrorLedState = MMIO_LED_ON;
+			break;
+		/* default to error? */
+		default:
+			ulProgressLedState = MMIO_LED_OFF;
+			ulErrorLedState = MMIO_LED_ON;
+			break;
+	}
+	
+	ptMmioCtrlArea->aulMmio_cfg[ulProgressLedMmioNr] = ulProgressLedState;
+	ptMmioCtrlArea->aulMmio_cfg[ulErrorLedMmioNr] = ulErrorLedState;
+}
+
+
+
+
+void systime_wait_ms(unsigned long ulDelay_ms);
+void systime_wait_ms(unsigned long ulDelay_ms)
+{
+	unsigned long ulStart = systime_get_ms();
+	while (!systime_elapsed(ulStart, ulDelay_ms)) {}
+}
+
+
+void alternate_leds(unsigned long ulLedMMIOs);
+void alternate_leds(unsigned long ulLedMMIOs)
+{
+	int i;
+	if (ulLedMMIOs == 0)
+	{
+		for (i=1; i<=16; i++) 
+		{
+			rdy_run_setLEDs(RDYRUN_GREEN);
+			systime_wait_ms(200);
+			rdy_run_setLEDs(RDYRUN_YELLOW);
+			systime_wait_ms(200);
+		}
+		rdy_run_setLEDs(RDYRUN_OFF);
+	}
+	else
+	{
+		for (i=1; i<=16; i++) 
+		{
+			set_mmio_leds(ulLedMMIOs, LED_GREEN);
+			systime_wait_ms(200);
+			set_mmio_leds(ulLedMMIOs, LED_YELLOW);
+			systime_wait_ms(200);
+		}
+		set_mmio_leds(ulLedMMIOs, LED_OFF);
+	}
+}
+
+
 void ramtest_mmio_led_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult);
 void ramtest_mmio_led_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParameter, RAMTEST_RESULT_T tResult)
 {
 
-	unsigned long ulProgressRaw     =  ptRamTestParameter->ulProgress;
-	unsigned long ulProgressLedMmioNr  = (ulProgressRaw >> 16) & 0xff;
-	unsigned long ulErrorLedMmioNr = (ulProgressRaw >> 24) & 0xff;
-	unsigned long ulProgress        =  ulProgressRaw & 1;
-	
-	HOSTDEF(ptMmioCtrlArea);
+	unsigned long ulProgress  = ptRamTestParameter->ulProgress & 1;
+	unsigned long ulLedMmioNr = ptRamTestParameter->ulProgress & 0xffff0000UL;
 	int iLedStates;
-	unsigned long ulProgressLedState;
-	unsigned long ulErrorLedState;
 	
 	if( tResult==RAMTEST_RESULT_OK )
 	{
@@ -60,35 +131,9 @@ void ramtest_mmio_led_progress(struct RAMTEST_PARAMETER_STRUCT *ptRamTestParamet
 		iLedStates = LED_YELLOW;
 	}
 	
-	/* set leds */
-	switch(iLedStates) 
-	{
-		case LED_OFF:
-			ulProgressLedState = MMIO_LED_OFF;
-			ulErrorLedState = MMIO_LED_OFF;
-			break;
-		case LED_GREEN:
-			ulProgressLedState = MMIO_LED_ON;
-			ulErrorLedState = MMIO_LED_OFF;
-			break;
-		case LED_YELLOW:
-			ulProgressLedState = MMIO_LED_OFF;
-			ulErrorLedState = MMIO_LED_ON;
-			break;
-	}
-	
-	ptMmioCtrlArea->aulMmio_cfg[ulProgressLedMmioNr] = ulProgressLedState;
-	ptMmioCtrlArea->aulMmio_cfg[ulErrorLedMmioNr] = ulErrorLedState;
-	
+	set_mmio_leds(ulLedMmioNr, iLedStates);
 }
 
-
-void systime_wait_ms(unsigned long ulDelay_ms);
-void systime_wait_ms(unsigned long ulDelay_ms)
-{
-	unsigned long ulStart = systime_get_ms();
-	while (!systime_elapsed(ulStart, ulDelay_ms)) {}
-}
 
 /* ulUseUart
     0: clear serial vectors
@@ -146,6 +191,7 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	RAMTEST_RESULT_T tRes;
 	HOSTDEF(ptDdrCtrlArea);
 	unsigned long fDdrCtrlReduc;
+	unsigned long ulStatusLedMmioNr;
 	
 #ifdef CPU_CR7
 	systime_init();
@@ -225,11 +271,17 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	
 	uprintf("tag mask: 0x%08x  tag value: 0x%08x \n", tTestParams.ulTagMask, tTestParams.ulTagValue );
 	
+	ulStatusLedMmioNr = ptParam->ulStatusLedMmioNr;
+	
+	
 	/*
 	 * Run the RAM test.
 	 * With tTestParams.ulLoops=0 this function will only return if an error occurs.
 	 */
 	tRes = ramtest_run(&tTestParams);
+
+	/* signal end of test */
+	alternate_leds(ulStatusLedMmioNr);
 
 #ifdef ECC
 	ramtest_ecc_show();
