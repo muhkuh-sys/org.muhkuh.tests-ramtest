@@ -288,9 +288,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	 */
 	tRes = ramtest_run(&tTestParams);
 
-	/* signal end of test */
-	alternate_leds(ulStatusLedMmioNr);
-
 #ifdef ECC
 	ramtest_ecc_show();
 #endif
