@@ -759,7 +759,8 @@ make_bootimage(imgpars)
 
 #############################################################################################################
 # SDRAM tests
-#
+# CR7/CA9 single versions run once,
+# CR7/CA9 combined versions run endlessly
 #############################################################################################################
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({

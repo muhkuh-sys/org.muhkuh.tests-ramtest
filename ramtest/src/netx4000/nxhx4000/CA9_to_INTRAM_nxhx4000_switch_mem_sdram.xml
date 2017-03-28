@@ -32,7 +32,7 @@
 				00 00 00 30 <!-- 0x30000000 Start address in MEM SDRAM -->
 				00 00 40 00 <!-- 0x00400000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
-				00 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 38 37 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
 				00 00 00 00 <!-- Do not use UART -->
@@ -46,7 +46,7 @@
 				00 00 40 30 <!-- 0x30400000 Start address in MEM SDRAM -->
 				00 00 40 00 <!-- 0x00400000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
-				00 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 3a 39 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
 				00 00 00 00 <!-- Do not use UART -->

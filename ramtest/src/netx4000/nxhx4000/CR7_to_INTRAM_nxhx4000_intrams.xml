@@ -35,7 +35,7 @@
 				00 00 00 00 <!-- Start address of test area -->
 				00 00 00 00 <!-- Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				10 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 00 00 <!-- Status LED MMIO numbers -->
 				01 00 00 00 <!-- Enable UART -->
@@ -95,7 +95,7 @@
 				00 00 00 00 <!-- Start address of test area -->
 				00 00 00 00 <!-- Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				10 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 00 00 <!-- Status LED MMIO numbers -->
 				01 00 00 00 <!-- Enable UART -->
@@ -119,6 +119,10 @@
 		<!-- DTCM test 00020000-0003ffff   Start           Size  (overwrites data from ROM code) -->
 		<Data><Hex address="0x0509ff80"> 00 00 02 00    00 00 02 00 </Hex></Data>
 		<Execute><File name="@tElfCR7_netx_intram" /><R0>0x0509ff80</R0></Execute>
+		
+		<Execute>
+			<Address>WFE_Loop</Address>
+		</Execute>
 		
 	</Chunks>
 </HBootImage>

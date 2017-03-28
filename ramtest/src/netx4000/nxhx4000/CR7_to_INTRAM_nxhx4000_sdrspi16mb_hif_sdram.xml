@@ -24,7 +24,7 @@
 				00 00 00 20 <!-- 0x20000000 Start address of HIF SDRAM -->
 				00 00 00 01 <!-- 0x01000000 Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				00 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 00 00 <!-- Status LED MMIO numbers -->
 				01 00 00 00 <!-- Enable UART -->
@@ -36,6 +36,10 @@
 		<Execute>
 			<File name="@tElfCR7" />
 			<R0>0x0003ff80</R0> <!-- address of parameter block -->
+		</Execute>
+		
+		<Execute>
+			<Address>WFE_Loop</Address>
 		</Execute>
 		
 	</Chunks>

@@ -39,7 +39,7 @@
 				00 00 00 00 <!-- Start address of test area -->
 				00 00 00 00 <!-- Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				10 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
 				01 00 00 00 <!-- use UART -->
@@ -53,7 +53,7 @@
 				00 00 00 00 <!-- Start address of test area -->
 				00 00 00 00 <!-- Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				10 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
 				00 00 00 00 <!-- do not use UART -->
@@ -147,7 +147,7 @@
 				00 00 00 00 <!-- Start address of test area -->
 				00 00 00 00 <!-- Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				10 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
 				01 00 00 00 <!-- use UART -->
@@ -161,7 +161,7 @@
 				00 00 00 00 <!-- Start address of test area -->
 				00 00 00 00 <!-- Size in bytes -->
 				ff 01 00 00 <!-- Test Cases -->
-				10 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
 				00 00 00 00 <!-- do not use UART -->
@@ -192,6 +192,9 @@
 								<Core1><File name="@tElfCA9core1_rap3" start="start_core1" /><R0>0x0507ff80</R0> </Core1></ExecuteCA9> 
 		<Execute>          <File name="@tElfCR7SyncA9" /></Execute>
 
+		<Execute>
+			<Address>WFE_Loop</Address>
+		</Execute>
 		
 	</Chunks>
 </HBootImage>

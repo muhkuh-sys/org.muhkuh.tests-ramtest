@@ -35,7 +35,7 @@
 				00 00 00 20 <!-- 0x20000000 Start address in HIF SDRAM -->
 				00 00 80 00 <!-- 0x00800000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
-				00 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 33 34 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
 				01 00 00 00 <!-- Use UART -->
@@ -49,7 +49,7 @@
 				00 00 80 20 <!-- 0x20800000 Start address in HIF SDRAM -->
 				00 00 80 00 <!-- 0x00800000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
-				00 00 00 00 <!-- Loops -->
+				01 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
 				00 00 00 00 <!-- Do not use UART -->
