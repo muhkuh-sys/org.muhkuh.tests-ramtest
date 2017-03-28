@@ -1,0 +1,21 @@
+		<!-- Configure the SDRAM. -->
+		<!-- NXHX SDRSPI module with IS42S16800F-7BLI 16 MB -->
+		<Options>
+			<!-- HIF IO config: must enable A11 line --> 
+			<Option id="hif_hif_io">
+				<U32>0x000301a0</U32>
+			</Option>
+
+			<Option id="netx_hif_sdram">
+				<U32>0x030c0111</U32>    <!-- SDRAM general_ctrl register -->
+				<U32>0x03a22151</U32>    <!-- SDRAM timing_ctrl register   SDCLK phase: 2 Sample phase: 3 Recommended by BS -->
+				<!--U32>0x02a22151</U32-->    <!-- SDRAM timing_ctrl register   SDCLK phase: 2 Sample phase: 2 (Bjoern HIF IF)-->
+				<!--U32>0x03b22151</U32-->    <!-- SDRAM timing_ctrl register   SDCLK phase: 3 Sample phase: 3 -->
+				<!--U32>0x02c22151</U32-->    <!-- SDRAM timing_ctrl register   clock phase 4   sample phase 2 -->
+				<U32>0x00000033</U32>    <!-- SDRAM mr register -->
+				<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
+			</Option>
+		</Options>
+		
+		<!-- Activate the SDRAM. -->
+		<MemoryDeviceUp device="MEMDEV_SDRAM_H" />

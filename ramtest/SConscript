@@ -759,7 +759,7 @@ make_bootimage(imgpars)
 
 #############################################################################################################
 # SDRAM tests
-# CR7 without cache, CA9 with L2 cache
+#
 #############################################################################################################
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
@@ -768,31 +768,28 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCA9core0'        : elf_netx4000_s_ca9_core0,
 	'tElfCA9core1'        : elf_netx4000_s_ca9_core1
 	})
+
+aSDRAMTests = (
+('nxhx4000_hif_sdram_sdrspi16mb_cr7_ca9', 'nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'),
+('nxhx4000_hif_sdram_sdrspi16mb_cr7',     'nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'),
+('nxhx4000_hif_sdram_sdrspi16mb_ca9',     'nxhx4000/CA9_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'),
+
+('cifx4000_hif_sdram_cr7_ca9',            'cifx4000/CR7_CA9_cifX4000_1430100R1_sdram.xml'),
+('cifx4000_hif_sdram_cr7',                'cifx4000/CR7_cifX4000_1430100R1_sdram.xml'),
+('cifx4000_hif_sdram_ca9',                'cifx4000/CA9_cifX4000_1430100R1_sdram.xml'),
+
+('nxhx4000_switch_mem_sdram_cr7_ca9',     'nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_switch_mem_sdram.xml'),
+('nxhx4000_switch_mem_sdram_cr7',         'nxhx4000/CR7_to_INTRAM_nxhx4000_switch_mem_sdram.xml'),
+('nxhx4000_switch_mem_sdram_ca9',         'nxhx4000/CA9_to_INTRAM_nxhx4000_switch_mem_sdram.xml'),
+)
+
+for tEntry in aSDRAMTests:
+	imgpars.target_name ='test_sdram/ramtest_standalone_%s.bin' % tEntry[0]
+	imgpars.xml_template = 'src/netx4000/%s' % tEntry[1]
+	print imgpars.xml_template, " ==> ", imgpars.target_name
+	make_bootimage(imgpars)
+
 	
-imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_switch_CR7_CA9_mem_sdram.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_switch_mem_sdram.xml'
-make_bootimage(imgpars)
-
-imgpars.target_name = 'test_sdram/ramtest_standalone_cifx4000_CR7_CA9_hif_sdram.bin'
-imgpars.xml_template = 'src/netx4000/cifx4000/CR7_CA9_cifX4000_1430100R1_sdram.xml'
-make_bootimage(imgpars)
-
-imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_sdrspi16mb_CR7_CA9_hif_sdram.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_CA9_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
-make_bootimage(imgpars)
-
-# # optional
-# imgpars.target_name = 'test_sdram/ramtest_standalone_cifx4000_sdram_cr7.bin'
-# imgpars.xml_template = 'src/netx4000/cifx4000/CR7_cifx4000_1430100R1_sdram.xml'
-# ramtest_standalone_cifx4000_sdram = make_bootimage(imgpars)
-# 
-# # optional
-# # Test for NXHX 4000 Rev. 2 with NXHX SDRSPI with 16 MB (IS42S16800F-7BLI, all lines to SDRAM set to 8mA drive strength
-# # CR7 uncached
-# imgpars.target_name = 'test_sdram/ramtest_standalone_nxhx4000_intram_sdrspi16mb_hif_sdram_cr7.bin'
-# imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'
-# make_bootimage(imgpars)
-
 #############################################################################################################
 # Cache tests
 # CR7 uncached 
