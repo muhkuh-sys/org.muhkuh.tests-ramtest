@@ -92,8 +92,8 @@
 					DFLT_VAL_NX4000_PORTCONTROL_P4_9,             <!-- P4_9  MMIO25 -->
 					<!-- MMIO 26, 27: P4_10-P4_11  
 								TWF8BC33ALV04SZ pd 6mA SEL:00 (netX default) DRV:01 (6mA) UDC:11 (pulldown) -->
-					0x0013,                                       <!-- P3_10 MMIO26 netX UART 0 RXD-->
-					0x0013,                                       <!-- P3_11 MMIO27 netX UART 0 TXD-->
+					0x0013,                                       <!-- P4_10 MMIO26 netX UART 0 RXD-->
+					0x0013,                                       <!-- P4_11 MMIO27 netX UART 0 TXD-->
 					DFLT_VAL_NX4000_PORTCONTROL_P4_12,            <!-- P4_12 MMIO28 -->
 					DFLT_VAL_NX4000_PORTCONTROL_P4_13,            <!-- P4_13 MMIO29 -->
 					DFLT_VAL_NX4000_PORTCONTROL_P4_14,            <!-- P4_14 MMIO30 -->
@@ -143,7 +143,7 @@
 			<Option id="RAW" offset="0x147c">
 				<U16>
 					<!-- P07 -->
-					DFLT_VAL_NX4000_PORTCONTROL_P7_0,             <!-- P7_0  HIF_A17 -->
+					0x0021,            <!-- P7_0  HIF_A17 8 mA pu -->
 					0x0021,            <!-- P7_1  HIF_D0  8 mA pu -->
 					0x0021,            <!-- P7_2  HIF_D1  8 mA pu -->
 					0x0021,            <!-- P7_3  HIF_D2  8 mA pu -->
@@ -197,8 +197,8 @@
 					0x0021,            <!-- P9_15 HIF_A14 8 mA pu -->
 
 					<!-- P10 -->
-					DFLT_VAL_NX4000_PORTCONTROL_P10_0,            <!-- P10_0  HIF_A15 -->
-					DFLT_VAL_NX4000_PORTCONTROL_P10_1,            <!-- P10_1  HIF_A16 -->
+					0x0021,            <!-- P10_0  HIF_A15 8 mA pu -->
+					0x0021,            <!-- P10_1  HIF_A16 8 mA pu -->
 					DFLT_VAL_NX4000_PORTCONTROL_P10_2,            <!-- P10_2  HIF_D31 -->
 					0x0021,            <!-- P10_3  HIF_BHE1 8mA pu -->
 					0x0021,            <!-- P10_4  HIF_BHE3 8mA pu -->
@@ -206,8 +206,8 @@
 					0x0021,            <!-- P10_6  HIF_RDN  8mA pu -->
 					0x0021,            <!-- P10_7  HIF_WRN  8mA pu -->
 					0x0021,            <!-- P10_8  HIF_RDY  8mA pu -->
-					0x0021,            <!-- P10_9  HIF_DIRQ 8mA pd -->
-					0x0023,           <!-- P10_10 HIF_SDCLK -->
+					0x0021,            <!-- P10_9  HIF_DIRQ 8mA pu -->
+					0x0023,            <!-- P10_10 HIF_SDCLK 8mA pd -->
 					0xFFFF,                                       <!-- P10_11 is not available -->
 					0xFFFF,                                       <!-- P10_12 is not available -->
 					0xFFFF,                                       <!-- P10_13 is not available -->
