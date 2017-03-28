@@ -4,25 +4,7 @@
 	
 		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
 
-		<!-- Configure the SDRAM. -->
-		<!-- NXHX SDRSPI module with IS42S16800F-7BLI 16 MB -->
-		<Options>
-			<!-- HIF IO config: must enable A11 line --> 
-			<Option id="hif_hif_io">
-				<U32>0x000301a0</U32>
-			</Option>
-
-			<Option id="netx_hif_sdram">
-				<U32>0x030c0111</U32>    <!-- SDRAM general_ctrl register -->
-				<U32>0x03a22152</U32>    <!-- SDRAM timing_ctrl register   SDCLK phase: 2 Sample phase: 3 -->
-				<U32>0x00000033</U32>    <!-- SDRAM mr register -->
-				<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
-			</Option>
-		</Options>
-		
-		<!-- Activate the SDRAM. -->
-		<MemoryDeviceUp device="MEMDEV_SDRAM_H" />
-
+		<Include name="setup_sdram_nxhx4000_sdrspi16mb_hif_sdram.xml" />
 		<Include name="portcontrol_nxhx4000_hif_sdram_16bit_8mA.xml"/>
 		
 		<!-- Display the HW/memory configuration -->
@@ -51,7 +33,7 @@
 		<Data>
 			<Hex address="0x0003ff80">
 				00 00 00 20 <!-- 0x20000000 Start address in HIF SDRAM -->
-				00 00 20 00 <!-- 0x00200000 Size in bytes -->
+				00 00 40 00 <!-- 0x00400000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
 				00 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
@@ -64,8 +46,8 @@
 		<!-- CA9 core 0 parameters -->
 		<Data>
 			<Hex address="0x0501ff80">
-				00 00 20 20 <!-- 0x20200000 Start address in HIF SDRAM -->
-				00 00 30 00 <!-- 0x00300000 Size in bytes -->
+				00 00 40 20 <!-- 0x20400000 Start address in HIF SDRAM -->
+				00 00 60 00 <!-- 0x00600000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
 				00 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
@@ -78,8 +60,8 @@
 		<Data>
 			<!-- CA9 core 1 parameters -->
 			<Hex address="0x0503ff80">
-				00 00 50 20 <!-- 0x20500000 Start address in HIF SDRAM -->
-				00 00 30 00 <!-- 0x00300000 Size in bytes -->
+				00 00 a0 20 <!-- 0x20a00000 Start address in HIF SDRAM -->
+				00 00 60 00 <!-- 0x00600000 Size in bytes -->
 				ff 01 00 00  <!-- Test Cases -->
 				00 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
