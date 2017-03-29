@@ -198,7 +198,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	RAMTEST_RESULT_T tRes;
 	HOSTDEF(ptDdrCtrlArea);
 	unsigned long fDdrCtrlReduc;
-	unsigned long ulStatusLedMmioNr;
 	
 #ifdef CPU_CR7
 	systime_init();
@@ -278,7 +277,6 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	
 	uprintf("tag mask: 0x%08x  tag value: 0x%08x \n", tTestParams.ulTagMask, tTestParams.ulTagValue );
 	
-	ulStatusLedMmioNr = ptParam->ulStatusLedMmioNr;
 	/* flash LEDs when a loop has finished */
 	tTestParams.pfnLoopFinished = ramtest_progress_loop_finished;
 	
