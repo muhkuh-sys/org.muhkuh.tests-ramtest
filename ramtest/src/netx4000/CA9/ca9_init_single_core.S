@@ -1,8 +1,8 @@
 /* 
 	define as needed:
 	CA9_ENABLE_MMU
-	CA9_ENABLE_CACHES
-	CA9_NO_L2C_ENABLE 
+	CA9_ENABLE_L1_CACHE
+	CA9_ENABLE_L2_CACHE
 	
 	do not define: 
 	darm, 
@@ -89,7 +89,7 @@ clear_bss:
 	mcr p15, 0, r0, c7, c5, 6     // BPIALL - Invalidate entire branch predictor array
 
 	
-#ifdef CA9_ENABLE_CACHES
+#ifdef CA9_ENABLE_L1_CACHE
 	// Enable only the icache for now (to speed up init process)
 	// but don't enable dcache, because the SCU is not yet on and hasn't been invalidated 
 	// (according to R-JK this may be bad)
@@ -265,8 +265,7 @@ core0_pre_init:
 	#endif
 
 #ifndef darm
-#ifdef CA9_ENABLE_CACHES
-#ifndef CA9_NO_L2C_ENABLE
+#ifdef CA9_ENABLE_L2_CACHE
   // sim_asm_message("init.s: Enable L2 cache (PL310).", disp_only, r1);
   ldr   r0, =0xFAF10000 // base address
   mov   r1, #0
@@ -283,7 +282,6 @@ l2c_invalidate:
   mov   r1, #1
   str   r1, [r0, #0x100]  // enable controller
 #endif
-#endif
 #endif //infndef darm
 
 
@@ -292,7 +290,7 @@ l2c_invalidate:
 //-----------------------------------------------------------------------------
 prepare_jump_to_main:
 
-#ifdef CA9_ENABLE_CACHES
+#ifdef CA9_ENABLE_L1_CACHE
 	// Enable dcache
 	// icache has been enabled earlier
 	// -----------------------
@@ -309,7 +307,7 @@ prepare_jump_to_main:
 //	ORR     r0,r0,#1<<2                    // L1 prefetch enable
 	MCR     p15,0,r0,c1,c0,1               // write Aux Control reg
 #endif
-#endif //ifdef CA9_ENABLE_CACHES
+#endif //ifdef CA9_ENABLE_L1_CACHE
 
 	@ restore r0/r1
 	ldmfd   sp!, {r0, r1}
