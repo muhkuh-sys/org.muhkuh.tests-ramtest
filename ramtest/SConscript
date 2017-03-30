@@ -135,6 +135,7 @@ sources_cr7_sync_ca9 = """
 	src/netx4000/cr7_sync_ca9.S
 """
 
+
 # Defines Overview:
 # ['CPU_CR7', '1']          main_standalone_netx4000: systime_init(); 
 # ['CPU_CA9']               not checked
@@ -145,6 +146,26 @@ sources_cr7_sync_ca9 = """
 # ['ECC_TRIGGER']           trigger ECC error
 # ['SMP']                   enable cache coherency tests
 # ['WRAP_UART']             for SMP: use UART depending on CPU ID
+
+
+sources_standalone_netx4000_ca9_single_core = """
+	src/netx4000/CA9/ca9_init_single_core.S
+	src/netx4000/CA9/v7a.S
+	src/netx4000/CA9/mmu_s.S
+	src/netx4000/CA9/MP_SCU.s
+	src/main_standalone_netx4000.c
+	src/main_standalone_common.c
+	src/ramtest_ecc.c
+	src/ecc_ddr.c
+	src/ecc_a9.c
+"""
+
+# Note: defines for sources_standalone_netx4000_ca9_single_core differ from the other init code variants!
+# sources_standalone_netx4000_ca9_single_core
+#
+# ['CA9_ENABLE_MMU']        Enable MMU, but not the cache. Branch prediction is already enabled by the ROM code.
+# ['CA9_ENABLE_L1_CACHE']   Enable L1 cache
+# ['CA9_ENABLE_L2_CACHE']   Enable L2 cache
 
 #----------------------------------------------------------------------------
 #
@@ -462,15 +483,6 @@ class imgpars:
 # 
 #############################################################################################################
 
-# ramtest for CA9 in intram_rap0 with L1, cache, L1C ECC and DDR ECC 
-buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
-buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['DDR_ECC'], ['CA9_L1C_ECC'], ['ECC_TRIGGER']]
-buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
-buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_cl1_ecc'
-buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_cl1_ecc'
-elf_netx4000_s_intram_rap0_ca9_l1c_ecc = build_elf_bin(buildpars)
-
-
 # ramtest for CA9 core 0/1 both in intram_rap0 with L1, cache, L1C ECC 
 buildpars.sources     = sources_common+sources_arm_assembler+ sources_standalone_netx4000_ca9_core0_1_cached
 buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'], ['ECC'], ['CA9_L1C_ECC'], ['ECC_TRIGGER'], ['SMP'], ['WRAP_UART']]
@@ -478,16 +490,6 @@ buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0_1.ld'
 buildpars.target_dir  = 'targets/netx4000_ca9core01_intram_rap0_cl1_ecc'
 buildpars.target_name = 'netx4000_ramtest_ca9core01_intram_rap0_cl1_ecc'
 elf_netx4000_s_intram_rap0_1_ca9core0_1_l1c_ecc_smp = build_elf_bin(buildpars)
-
-
-# image running on CA9 core 0 L1C, ECC, code: intram_rap0, test: ddr3 at 600 MHz 
-imgpars.target_name = 'ramtest_standalone_nxhx4000_code_intram_rap0_test_ddr3_600_ca9_core0_l1c_ecc.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
-imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
-	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
-	'tElfCA9core0'        : elf_netx4000_s_intram_rap0_ca9_l1c_ecc
-	})
-make_bootimage(imgpars)
 
 # CA9/L1C coherency tests
 # CPU: CA9 core 0/1, L1C, ECC, SMP
@@ -693,20 +695,6 @@ buildpars.target_dir  = 'targets/netx4000_cr7_l1c_ecc_trigger'
 buildpars.target_name = 'netx4000_ramtest_cr7_l1c_ecc_trigger'
 elf_netx4000_s_llram_cr7_l1c_ecc_trigger = build_elf_bin(buildpars)
 
-buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
-buildpars.defines     = [['CPU_CA9'], ['CA9_NO_L2C_ENABLE'] , ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
-buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
-buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_l1c_ecc_trigger'
-buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_l1c_ecc_trigger'
-elf_netx4000_s_ca9_intram_rap0_l1c_ecc_trigger = build_elf_bin(buildpars)
-
-buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_cached
-buildpars.defines     = [['CPU_CA9'],                         ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
-buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
-buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_l2c_ecc_trigger'
-buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_l2c_ecc_trigger'
-elf_netx4000_s_ca9_intram_rap0_l2c_ecc_trigger = build_elf_bin(buildpars)
-
 
 # ECC test
 # Trigger an ECC error on CR7.
@@ -741,21 +729,50 @@ imgpars.xml_template = 'src/netx4000/nxhx4000/CR7_to_INTRAM_nxhx4000_ddr3_600MHz
 make_bootimage(imgpars)
 
 
-imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
-	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
-	'tElfCA9core0'        : elf_netx4000_s_ca9_intram_rap0_l1c_ecc_trigger,
-	})
-imgpars.target_name = 'test_ecc/ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_cached.bin'
-imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
-make_bootimage(imgpars)
+#  CA9 single-core RAP_Intram0  L1C 
+#  CA9 single-core RAP_Intram0  L2C
+#  Note: defines for init code differ from the other init code variants!
+buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_single_core
+buildpars.defines     = [['CPU_CA9'], ['CA9_ENABLE_MMU'], ['CA9_ENABLE_L1_CACHE'],                         
+                         ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
+buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_single_core_l1c_ecc_trigger'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_single_core_l1c_ecc_trigger'
+elf_netx4000_s_intram_rap0_ca9_single_core_l1c_ecc_trigger = build_elf_bin(buildpars)
+
+buildpars.defines     = [['CPU_CA9'], ['CA9_ENABLE_MMU'], ['CA9_ENABLE_L1_CACHE'], ['CA9_ENABLE_L2_CACHE'], 
+                         ['ECC'], ['CA9_L1C_ECC'], ['DDR_ECC'], ['ECC_TRIGGER']]
+buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_single_core_l2c_ecc_trigger'
+buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_single_core_l2c_ecc_trigger'
+elf_netx4000_s_intram_rap0_ca9_single_core_l2c_ecc_trigger = build_elf_bin(buildpars)
+
+
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
-	'tElfCA9core0'        : elf_netx4000_s_ca9_intram_rap0_l2c_ecc_trigger,
+	'tElfCA9core0'        : elf_netx4000_s_intram_rap0_ca9_single_core_l1c_ecc_trigger,
+	'tElfCA9core1'        : elf_netx4000_s_intram_rap0_ca9_single_core_l1c_ecc_trigger,
 	})
-imgpars.target_name = 'test_ecc/ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_cached_l2.bin'
+imgpars.target_name = 'test_ecc/ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_l1c.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
+imgpars.target_name = 'test_ecc/ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core1_l1c.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core1_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+make_bootimage(imgpars)
+
+
+imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
+	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
+	'tElfCA9core0'        : elf_netx4000_s_intram_rap0_ca9_single_core_l2c_ecc_trigger,
+	'tElfCA9core1'        : elf_netx4000_s_intram_rap0_ca9_single_core_l2c_ecc_trigger,
+	})
+imgpars.target_name = 'test_ecc/ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core0_l2c.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+make_bootimage(imgpars)
+imgpars.target_name = 'test_ecc/ramtest_standalone_nxhx4000_ddr3_600MHz_ECC_trigger_ca9_core1_l2c.bin'
+imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core1_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
+make_bootimage(imgpars)
+
 
 #############################################################################################################
 # SDRAM tests
@@ -866,18 +883,6 @@ make_bootimage(imgpars)
 # Enable the MMU, but not the caches.
 # Branch prediction is already enabled by the ROM code.
 
-sources_standalone_netx4000_ca9_single_core = """
-	src/netx4000/CA9/ca9_init_single_core.S
-	src/netx4000/CA9/v7a.S
-	src/netx4000/CA9/mmu_s.S
-	src/netx4000/CA9/MP_SCU.s
-	src/main_standalone_netx4000.c
-	src/main_standalone_common.c
-	src/ramtest_ecc.c
-	src/ecc_ddr.c
-	src/ecc_a9.c
-"""
-
 # Note: defines differ from the other init code variants!
 buildpars.sources     = sources_common+sources_arm_assembler+sources_standalone_netx4000_ca9_single_core
 buildpars.defines     = [['CPU_CA9'], ['CA9_ENABLE_MMU']]
@@ -885,6 +890,7 @@ buildpars.ldfile      = 'src/netx4000/netx4000_ca9_intram_rap0.ld'
 buildpars.target_dir  = 'targets/netx4000_ca9_intram_rap0_single_core_mmu_nocache'
 buildpars.target_name = 'netx4000_ramtest_ca9_intram_rap0_single_core_mmu_nocache'
 elf_netx4000_s_intram_rap0_ca9_single_core_mmu_nocache = build_elf_bin(buildpars)
+
 
 imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCR7OpenFirewalls': elf_netx4000_cr7_openfirewalls,
@@ -894,6 +900,7 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 imgpars.target_name = 'test_cache/ramtest_standalone_nxhx4000_ddr3_600MHz_ca9_core0_mmu_nocache.bin'
 imgpars.xml_template = 'src/netx4000/nxhx4000/CA9core0_to_INTRAM_nxhx4000_ddr3_600MHz.xml'
 make_bootimage(imgpars)
+
 
 
 #############################################################################################################
