@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <HBootImage type="REGULAR">
 	<Chunks>
-		<!-- Display the HW/memory configuration -->
-		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
 	
 		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
 
@@ -11,6 +9,13 @@
 		
 		<!-- Display the HW/memory configuration -->
 		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+		
+		<!-- Fill the SDRAM with 0. -->
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.0">
+			<Parameter name="START">0x20000000</Parameter>
+			<Parameter name="END">0x21000000</Parameter>
+			<Parameter name="FILL">0x00000000</Parameter>
+		</Snip>
 		
 		<!-- Load the ram test on CR7. -->
 		<Data>
