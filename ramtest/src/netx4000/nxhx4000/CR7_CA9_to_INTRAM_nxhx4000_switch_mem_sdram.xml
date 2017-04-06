@@ -4,10 +4,10 @@
 	
 		<Snip artifact="board_config_7813200R1_nxhx4000switch" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
 		
-		<!-- Activate the DDR RAM. -->
+		<!-- Activate the EXTMEM SDRAM. -->
 		<MemoryDeviceUp device="MEMDEV_SDRAM_E"/>
 
-		<!-- Fill the complete MEM_SDRAM area with 0. -->
+		<!-- Fill the SDRAM with 0. -->
 		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.0">
 			<Parameter name="START">0x30000000</Parameter>
 			<Parameter name="END">0x30800000</Parameter>
@@ -15,7 +15,7 @@
 		</Snip>
 
 		<!--
-		Run the DDR ram test on CR7, CA9 core 0 and CA9 core 1.
+		Run the ram test on CR7, CA9 core 0 and CA9 core 1.
 		Open the firewalls, load ram test configurations, load and run ram tests.
 		-->
 		<!-- R7: Open the firewalls -->
