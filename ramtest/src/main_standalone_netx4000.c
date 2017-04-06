@@ -199,9 +199,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	HOSTDEF(ptDdrCtrlArea);
 	unsigned long fDdrCtrlReduc;
 	
-#ifdef CPU_CR7
+	/* It is OK to call systime_init from multiple CPUs, because it writes constants to the border and count regs. */
 	systime_init();
-#endif
 
 	if (ptParam->ulUseUart == 0)
 	{
