@@ -1,9 +1,9 @@
-module("@MODULE_NAME@", package.seeall)
+module("test@ID@", package.seeall)
 
 require("parameters")
 require("ramtest")
 
-CFG_strTestName = "@TEST_NAME@"
+CFG_strTestName = "@NAME@"
 
 CFG_aParameterDefinitions = {
 	{

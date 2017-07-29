@@ -107,17 +107,19 @@ tDoc = atEnv.DEFAULT.Asciidoc('targets/doc/org.muhkuh.tests.ramtest.html', 'READ
 # 
 # Build the artifacts.
 #
+strGroup = 'org.muhkuh.tests'
+strModule = 'ramtest'
 
-aArtifactServer = ('nexus@netx01', 'muhkuh', 'muhkuh_snapshots')
-strArtifactGroup = 'tests.muhkuh.org'
+# Split the group by dots.
+aGroup = strGroup.split('.')
+# Build the path for all artifacts.
+strModulePath = 'targets/jonchki/repository/%s/%s/%s' % ('/'.join(aGroup), strModule, PROJECT_VERSION)
 
-aArtifactGroupReverse = strArtifactGroup.split('.')
-aArtifactGroupReverse.reverse()
+# Set the name of the artifact.
+strArtifact0 = 'lua5.1-ramtest'
 
-
-strArtifactId = 'ramtest'
-tArcList = atEnv.DEFAULT.ArchiveList('zip')
-tArcList.AddFiles('netx/',
+tArcList0 = atEnv.DEFAULT.ArchiveList('zip')
+tArcList0.AddFiles('netx/',
 	ramtest_netx10,
 	ramtest_netx50,
 	ramtest_netx56,
@@ -125,7 +127,7 @@ tArcList.AddFiles('netx/',
 	ramtest_netx4000,
 	setup_netx56,
 	setup_netx90_mpw)
-tArcList.AddFiles('standalone/',
+tArcList0.AddFiles('standalone/',
 #	ramtest_standalone_netx4000,
 	ramtest_standalone_netx500,
 	ramtest_standalone_netx56,
@@ -134,32 +136,25 @@ tArcList.AddFiles('standalone/',
 	#ramtest_standalone_cifx4000_sdram,
 	#ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
 	)
-tArcList.AddFiles('lua/',
+tArcList0.AddFiles('lua/',
 	'lua/ramtest.lua')
-tArcList.AddFiles('templates/',
+tArcList0.AddFiles('templates/',
 	'lua/attributes_template.lua',
 	'lua/ramtest_template.lua',
 	'lua/test.lua',
 	'lua/timing_phase_test_template.lua')
-tArcList.AddFiles('doc/',
+tArcList0.AddFiles('doc/',
 	tDoc)
-tArcList.AddFiles('',
-	'ivy/org.muhkuh.tests.ramtest/install.xml')
+tArcList0.AddFiles('',
+	'installer/jonchki/lua5.1/install.lua',
+	'installer/jonchki/lua5.1/install_testcase.lua')
 
-strArtifactPath = 'targets/ivy/repository/%s/%s/%s' % ('/'.join(aArtifactGroupReverse),strArtifactId,PROJECT_VERSION)
-tArc = atEnv.DEFAULT.Archive(os.path.join(strArtifactPath, '%s-%s.zip' % (strArtifactId,PROJECT_VERSION)), None, ARCHIVE_CONTENTS=tArcList)
-tIvy = atEnv.DEFAULT.Version(os.path.join(strArtifactPath, 'ivy-%s.xml' % PROJECT_VERSION), 'ivy/%s.%s/ivy.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
-tPom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strArtifactPath, '%s-%s.pom' % (strArtifactId,PROJECT_VERSION)), 'ivy/%s.%s/pom.xml' % ('.'.join(aArtifactGroupReverse),strArtifactId))
+tArtifact0 = atEnv.DEFAULT.Archive(os.path.join(strModulePath, '%s-%s.zip' % (strArtifact0, PROJECT_VERSION)), None, ARCHIVE_CONTENTS = tArcList0)
+tArtifact0Hash = atEnv.DEFAULT.Hash('%s.hash' % tArtifact0[0].get_path(), tArtifact0[0].get_path(), HASH_ALGORITHM='md5,sha1,sha224,sha256,sha384,sha512', HASH_TEMPLATE='${ID_UC}:${HASH}\n')
+tConfiguration0 = atEnv.DEFAULT.Version(os.path.join(strModulePath, '%s-%s.xml' % (strArtifact0, PROJECT_VERSION)), 'installer/jonchki/lua5.1/%s.xml' % strModule)
+tConfiguration0Hash = atEnv.DEFAULT.Hash('%s.hash' % tConfiguration0[0].get_path(), tConfiguration0[0].get_path(), HASH_ALGORITHM='md5,sha1,sha224,sha256,sha384,sha512', HASH_TEMPLATE='${ID_UC}:${HASH}\n')
+tArtifact0Pom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strModulePath, '%s-%s.pom' % (strArtifact0, PROJECT_VERSION)), 'installer/jonchki/lua5.1/pom.xml')
 
-
-# Build the artifact list for the deploy operation to bintray.
-atEnv.DEFAULT.AddArtifact(tArc, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'zip')
-atEnv.DEFAULT.AddArtifact(tIvy, aArtifactServer, strArtifactGroup, strArtifactId, PROJECT_VERSION, 'ivy')
-tArtifacts = atEnv.DEFAULT.Artifact('targets/artifacts.xml', None)
-
-# Copy the artifacts to a fixed filename to allow a deploy to github.
-Command('targets/ivy/%s.zip' % strArtifactId,  tArc,  Copy("$TARGET", "$SOURCE"))
-Command('targets/ivy/ivy.xml', tIvy,  Copy("$TARGET", "$SOURCE"))
 
 #----------------------------------------------------------------------------
 #
