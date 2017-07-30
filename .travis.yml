@@ -1,3 +1,5 @@
+dist: trusty
+sudo: false
 language: python
 python:
   - '2.7'
@@ -7,40 +9,21 @@ python:
 sudo: false
 
 
+# Install the packages needed for the build.
+#  lib32z1 is needed to run 32bit programs, in this case the GCC crosscompiler
+#  from "gcc-arm-embedded" (https://launchpad.net/gcc-arm-embedded).
+addons:
+  apt:
+    packages:
+      - lib32z1
+
+
 # Cache the .mbs folder.
 cache:
   directories:
   - $HOME/.mbs
-  - $HOME/.ant/lib
-
-
-env:
-  global:
-    - secure: kT+E7RhRFG1aNAUB42xGlC1yAKODmDYgQBYSodkweMK5YaKpzQOmf1nrRB+hJ1QM1BTPnCd2PGwGOs+ADPEvjNpZSFBbg6/VoAHPKrSNW0GGRNeaMZSDI4m4WP01V4JURvEREM1Vu/88ILmtlNrij6mo2IlO5lPYS8hr35e6qtw=
-
-
-install:
-  - pip install -q requests
 
 
 # This is the command to build the whole project and pack the results in a distributable form.
 script:
-  - python mbs/mbs
-
-
-# Deploy the artifact to Bintray.
-after_success:
-  - python ivy/deploy.py targets/artifacts.xml
-
-
-deploy:
-  provider: releases
-  api_key:
-    secure: U51ag90+ot5k7oXVlB4zK9/QK64ybevz/wq2nm3/ljW05E3Yz7TBepr3WNDb1PSzmTV77MhVwmNtXehJxko4EItWWSYhz2x9fG6XJFSYW5O4L8U6sjl2LMpI8EG88kqJ4YVctMl8IZZPdWMM8pnArh8tj6PDvW6CjkG4/HoKXE8=
-  file:
-    - targets/ivy/ramtest.zip
-    - targets/ivy/ivy.xml
-  skip_cleanup: true
-  on:
-    repo: muhkuh-sys/org.muhkuh.tests-ramtest
-    tags: true
+  - python2.7 mbs/mbs
