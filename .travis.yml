@@ -5,10 +5,6 @@ python:
   - '2.7'
 
 
-# Use the new container-based infrastructure. No "sudo" is possible now.
-sudo: false
-
-
 # Install the packages needed for the build.
 #  lib32z1 is needed to run 32bit programs, in this case the GCC crosscompiler
 #  from "gcc-arm-embedded" (https://launchpad.net/gcc-arm-embedded).
