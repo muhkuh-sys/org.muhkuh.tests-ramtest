@@ -381,8 +381,6 @@ local function setup_ddr_netx4000(tPlugin, atDdrAttributes)
   if ulMdupResult~=0 then
     error(string.format('Falied to setup the DDR controller: 0x%08x', ulMdupResult))
   end
-  
-  error('Continue here!')
 end
 
 
@@ -743,8 +741,6 @@ function setup_ram(tPlugin, atRamAttributes)
     if pfnSetup~=nil then
       pfnSetup(tPlugin, atRamAttributes)
     end
-
-    error('Continue here...')
 
 	else
 		error("Unknown interface ID:"..tInterface)
