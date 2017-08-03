@@ -35,8 +35,8 @@ CFG_aParameterDefinitions = {
 		default=nil,
 		help="This specifies the chip type for the parameter set.",
 		mandatory=false,
-		validate=parameters.test_uint32,
-		constrains=nil
+		validate=parameters.test_choice_single,
+		constrains="NETX4000_RELAXED,NETX500,NETX90_MPW,NETX56,NETX50,NETX10"
 	},
 	{
 		name="sdram_general_ctrl",
@@ -173,8 +173,8 @@ function run(aParameters)
 		if aParameters["sdram_netx"]==nil or aParameters["sdram_general_ctrl"]==nil or aParameters["sdram_timing_ctrl"]==nil or aParameters["sdram_mr"]==nil then
 			error("The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
 		end
-		
-		atRamAttributes["netX"]          = tonumber(aParameters["sdram_netx"])
+
+		atRamAttributes["netX"]          = aParameters["sdram_netx"]
 		atRamAttributes["general_ctrl"]  = tonumber(aParameters["sdram_general_ctrl"])
 		atRamAttributes["timing_ctrl"]   = tonumber(aParameters["sdram_timing_ctrl"])
 		atRamAttributes["mr"]            = tonumber(aParameters["sdram_mr"])
