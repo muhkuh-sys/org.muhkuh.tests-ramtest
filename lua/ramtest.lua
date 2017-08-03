@@ -67,6 +67,7 @@ INTERFACE_SDRAM_HIF      = 1
 INTERFACE_SDRAM_MEM      = 2
 INTERFACE_SRAM_HIF       = 3
 INTERFACE_SRAM_MEM       = 4
+INTERFACE_DDR            = 5
 
 
 local function printf(...) print(string.format(...)) end
@@ -348,6 +349,44 @@ local function setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
 end
 
 
+
+local function setup_ddr_netx4000(tPlugin, atDdrAttributes)
+  -- Is the RAP system running with 400 or 600MHz?
+  local ulSpeed = 400
+  local tConfiguration = atDdrAttributes['ddr_parameter_400']
+  -- Read the RAP_SYSCTRL_BOOTMODE register.
+  local ulValue = tPlugin:read_data32(0xf8000000)
+  -- Get the SET_PLL_1200 bit.
+  ulValue = bit.band(ulValue, 0x00000100)
+  if ulValue~=0 then
+    ulSpeed = 600
+    local tConfiguration = atDdrAttributes['ddr_parameter_600']
+  end
+  print(string.format('The RAP system is running with %dMHz.', ulSpeed))
+  if tConfiguration==nil then
+    error(string.format('No DDR parameter provided for %dMHz.', ulSpeed))
+  end
+
+  -- Apply the parameters.
+  -- Basically this is a programatic version of the "LCFG" console command.
+  local sizConfiguration = string.len(tConfiguration)
+  local strSize = string.char( bit.band(sizConfiguration,0xff), bit.band(bit.rshift(sizConfiguration,8),0xff), bit.band(bit.rshift(sizConfiguration,16),0xff), bit.band(bit.rshift(sizConfiguration,24),0xff) )
+  local ulOptionsResult = tester.mbin_simple_run(nil, tPlugin, 'netx/apply_options_netx4000_relaxed.bin', strSize .. tConfiguration)
+  if ulOptionsResult~=0 then
+    error(string.format('Falied to apply the option file for %dMHz: 0x%08x', ulSpeed, ulOptionsResult))
+  end
+
+  -- Setup the DDR controller.
+  local ulMdupResult = tester.mbin_simple_run(nil, tPlugin, 'netx/mdup_netx4000_relaxed.bin', 10)
+  if ulMdupResult~=0 then
+    error(string.format('Falied to setup the DDR controller: 0x%08x', ulMdupResult))
+  end
+  
+  error('Continue here!')
+end
+
+
+
 local atPlatformAttributes = {
 	[romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED] = {
 		strAsic = 'netx4000_relaxed',
@@ -363,6 +402,10 @@ local atPlatformAttributes = {
 				setup = setup_sdram_netx4000
 			}
 		},
+		ddr = {
+		  ulArea_Start = 0x40000000,
+		  setup = setup_ddr_netx4000
+		}
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX500] = {
@@ -389,7 +432,8 @@ local atPlatformAttributes = {
 					[3] = 0xD8000000
 				}
 			},
-		}
+		},
+		ddr = nil
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX100] = {
@@ -416,7 +460,8 @@ local atPlatformAttributes = {
 					[3] = 0xD8000000
 				}
 			},
-		}
+		},
+		ddr = nil
 	},
 
   [romloader.ROMLOADER_CHIPTYP_NETX90_MPW] = {
@@ -429,7 +474,8 @@ local atPlatformAttributes = {
         ulArea_Start = 0x10000000,
         setup = setup_sdram_hif_netx90_mpw
       }
-    }
+    },
+    ddr = nil
   },
 
 	[romloader.ROMLOADER_CHIPTYP_NETX56] = {
@@ -445,7 +491,8 @@ local atPlatformAttributes = {
 				ulArea_Start = 0x40000000,
 				setup = setup_sdram_hif_netx56
 			}
-		}
+		},
+		ddr = nil
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX56B] = {
@@ -461,7 +508,8 @@ local atPlatformAttributes = {
 				ulArea_Start = 0x40000000,
 				setup = setup_sdram_hif_netx56
 			}
-		}
+		},
+		ddr = nil
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX50] = {
@@ -474,7 +522,8 @@ local atPlatformAttributes = {
 			},
 			[INTERFACE_SDRAM_HIF] = {
 			}
-		}
+		},
+		ddr = nil
 	},
 
 	[romloader.ROMLOADER_CHIPTYP_NETX10] = {
@@ -487,7 +536,8 @@ local atPlatformAttributes = {
 				ulArea_Start = 0x80000000,
 				setup = setup_sdram_hif_netx10
 			}
-		}
+		},
+		ddr = nil
 	}
 }
 
@@ -532,6 +582,24 @@ local function get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
 	end
 	
 	return atInterface
+end
+
+
+
+local function get_ddr_interface_attributes(tPlugin, tInterface)
+  -- Get the platform attributes for the chip type.
+  local tChipType = tPlugin:GetChiptyp()
+  local atPlatform = atPlatformAttributes[tChipType]
+  if atPlatform==nil then
+    error("Unknown chip type: ", tChipType)
+  end
+  -- Get the interface attributes.
+  local atDdrInterface = atPlatform.ddr
+  if atDdrInterface==nil then
+    error("Chiptype has no ddr attributes: ", tChipType)
+  end
+  
+  return atDdrInterface
 end
 
 
@@ -665,6 +733,19 @@ function setup_ram(tPlugin, atRamAttributes)
 
 		-- Setup the RAM controller.
 		tPlugin:write_data32(ulController, atRamAttributes.sram_ctrl)
+
+  elseif tInterface==INTERFACE_DDR then
+    -- Get the interface attributes.
+    local atInterface = get_ddr_interface_attributes(tPlugin, atRamAttributes.interface)
+    
+    -- Call the setup function for the platform and interface.
+    local pfnSetup = atInterface.setup
+    if pfnSetup~=nil then
+      pfnSetup(tPlugin, atRamAttributes)
+    end
+
+    error('Continue here...')
+
 	else
 		error("Unknown interface ID:"..tInterface)
 	end
@@ -808,6 +889,13 @@ function get_ram_area(tPlugin, atRamAttributes)
 		ulRamStart = atInterface.aulArea_Start[ulChipSelect]
 		ulRamSize = atRamAttributes.sram_size
 		
+  elseif tInterface==INTERFACE_DDR then
+    local atInterface = get_ddr_interface_attributes(tPlugin, tInterface)
+    ulRamStart = atInterface.ulArea_Start
+    
+    -- Get the size from the exponent parameter.
+    ulRamSize = math.pow(2, atRamAttributes.size_exponent)
+    
 	else
 		error("Unknown interface ID:"..tInterface)
 	end
