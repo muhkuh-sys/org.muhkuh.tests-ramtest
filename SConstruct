@@ -64,7 +64,7 @@ atEnv.DEFAULT.Version('#targets/version/version.h', 'templates/version.h')
 # Build all sub-projects.
 #
 SConscript('ramtest/SConscript')
-Import('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Import('ramtest_netx4000_relaxed', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
 #Import('ramtest_standalone_cifx4000_sdram')
 #Import('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
@@ -124,7 +124,7 @@ tArcList0.AddFiles('netx/',
 	ramtest_netx50,
 	ramtest_netx56,
 	ramtest_netx500,
-	ramtest_netx4000,
+	ramtest_netx4000_relaxed,
 	setup_netx56,
 	setup_netx90_mpw)
 tArcList0.AddFiles('standalone/',
@@ -161,18 +161,23 @@ tArtifact0Pom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strModulePath, '%s-%s
 # Make a local demo installation.
 #
 # Copy all binary binaries.
-Command('targets/testbench/netx/ramtest_netx10.bin',     ramtest_netx10,     Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/netx/ramtest_netx50.bin',     ramtest_netx50,     Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/netx/ramtest_netx56.bin',     ramtest_netx56,     Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/netx/ramtest_netx90_mpw.bin', ramtest_netx90_mpw, Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/netx/ramtest_netx500.bin',    ramtest_netx500,    Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/netx/ramtest_netx4000.bin',   ramtest_netx4000,   Copy("$TARGET", "$SOURCE"))
+atCopy = {
+    'targets/testbench/netx/ramtest_netx10.bin':            ramtest_netx10,
+    'targets/testbench/netx/ramtest_netx50.bin':            ramtest_netx50,
+    'targets/testbench/netx/ramtest_netx56.bin':            ramtest_netx56,
+    'targets/testbench/netx/ramtest_netx90_mpw.bin':        ramtest_netx90_mpw,
+    'targets/testbench/netx/ramtest_netx500.bin':           ramtest_netx500,
+    'targets/testbench/netx/ramtest_netx4000_relaxed.bin':  ramtest_netx4000_relaxed,
 
-Command('targets/testbench/netx/setup_netx56.bin',       setup_netx56,       Copy("$TARGET", "$SOURCE"))
-Command('targets/testbench/netx/setup_netx90_mpw.bin',   setup_netx90_mpw,   Copy("$TARGET", "$SOURCE"))
+    'targets/testbench/netx/setup_netx56.bin':              setup_netx56,
+    'targets/testbench/netx/setup_netx90_mpw.bin':          setup_netx90_mpw,
 
-# Copy all LUA scripts.
-Command('targets/testbench/lua/ramtest.lua',             'lua/ramtest.lua',  Copy("$TARGET", "$SOURCE"))
+    # Copy all LUA scripts.
+    'targets/testbench/lua/ramtest.lua':                    'lua/ramtest.lua'
+}
+for strPathDst, strPathSrc in atCopy.iteritems():
+    Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))
+
 
 #----------------------------------------------------------------------------
 #

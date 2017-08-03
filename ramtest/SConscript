@@ -174,12 +174,12 @@ sources_standalone_netx4000_ca9_single_core = """
 aCppPath = ['src', '#platform/src', '#platform/src/lib', '#targets/version']
 
 
-env_netx4000_t = atEnv.NETX4000_RELAXED.Clone()
-env_netx4000_t.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
-env_netx4000_t.Append(CPPPATH = aCppPath)
-src_netx4000_t = env_netx4000_t.SetBuildPath('targets/netx4000/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
-elf_netx4000_t = env_netx4000_t.Elf('targets/netx4000/muhkuh_test/ramtest.elf', src_netx4000_t + env_netx4000_t['PLATFORM_LIBRARY'])
-ramtest_netx4000 = env_netx4000_t.ObjCopy('targets/netx4000/muhkuh_test/ramtest_netx4000_relaxed.bin', elf_netx4000_t)
+env_netx4000_relaxed_t = atEnv.NETX4000_RELAXED.Clone()
+env_netx4000_relaxed_t.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
+env_netx4000_relaxed_t.Append(CPPPATH = aCppPath)
+src_netx4000_relaxed_t = env_netx4000_relaxed_t.SetBuildPath('targets/netx4000_relaxed/muhkuh_test', 'src', sources_common+sources_arm_assembler+sources_test)
+elf_netx4000_relaxed_t = env_netx4000_relaxed_t.Elf('targets/netx4000_relaxed/muhkuh_test/ramtest.elf', src_netx4000_relaxed_t + env_netx4000_relaxed_t['PLATFORM_LIBRARY'])
+ramtest_netx4000_relaxed = env_netx4000_relaxed_t.ObjCopy('targets/netx4000_relaxed/muhkuh_test/ramtest_netx4000_relaxed.bin', elf_netx4000_relaxed_t)
 
 env_netx500_t = atEnv.NETX500.Clone()
 env_netx500_t.Replace(LDFILE = 'src/netx500/netx500.ld')
@@ -224,7 +224,7 @@ src_netx10_t = env_netx10_t.SetBuildPath('targets/netx10/muhkuh_test', 'src', so
 elf_netx10_t = env_netx10_t.Elf('targets/netx10/muhkuh_test/ramtest.elf', src_netx10_t + env_netx10_t['PLATFORM_LIBRARY'])
 ramtest_netx10 = env_netx10_t.ObjCopy('targets/netx10/muhkuh_test/ramtest_netx10.bin', elf_netx10_t)
 
-Export('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Export('ramtest_netx4000_relaxed', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 
 
 
