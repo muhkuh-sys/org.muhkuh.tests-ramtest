@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+#-------------------------------------------------------------------------#
+#   Copyright (C) 2017 by Christoph Thelen                                #
+#   doc_bacardi@users.sourceforge.net                                     #
+#                                                                         #
+#   This program is free software; you can redistribute it and/or modify  #
+#   it under the terms of the GNU General Public License as published by  #
+#   the Free Software Foundation; either version 2 of the License, or     #
+#   (at your option) any later version.                                   #
+#                                                                         #
+#   This program is distributed in the hope that it will be useful,       #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#   GNU General Public License for more details.                          #
+#                                                                         #
+#   You should have received a copy of the GNU General Public License     #
+#   along with this program; if not, write to the                         #
+#   Free Software Foundation, Inc.,                                       #
+#   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
+#-------------------------------------------------------------------------#
+
+
+#----------------------------------------------------------------------------
+#
+# Import all required environments.
+#
+Import('atEnv')
+
+
+#----------------------------------------------------------------------------
+# This is the list of sources. The elements must be separated with whitespace
+# (i.e. spaces, tabs, newlines). The amount of whitespace does not matter.
+sources = """
+	src/header.S
+	src/init_netx_test.S
+"""
+
+
+#----------------------------------------------------------------------------
+#
+# Build all files.
+#
+aCppPath = ['src', '#platform/src', '#platform/src/lib']
+
+tEnv4000R = atEnv.NETX4000_RELAXED.Clone()
+tEnv4000R.Replace(LDFILE = 'src/netx4000/netx4000.ld')
+tEnv4000R.Append(CPPPATH = aCppPath)
+tSrc4000R = tEnv4000R.SetBuildPath('targets/netx4000', 'src', sources)
+tElf4000R = tEnv4000R.Elf('targets/netx4000/apply_options.elf', tSrc4000R)
+apply_options_netx4000_relaxed = tEnv4000R.ObjCopy('targets/netx4000/apply_options_netx4000_relaxed.bin', tElf4000R)
+
+Export('apply_options_netx4000_relaxed')

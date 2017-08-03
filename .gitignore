@@ -4,6 +4,8 @@
 
 # Ignore all files in the targets folders.
 /targets/
+/apply_options/targets/
+/mdup/targets/
 /ramtest/targets/
 /setup_hif_io/targets/
 

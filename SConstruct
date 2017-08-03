@@ -72,6 +72,12 @@ Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_stand
 SConscript('setup_hif_io/SConscript')
 Import('setup_netx56', 'setup_netx90_mpw')
 
+SConscript('apply_options/SConscript')
+Import('apply_options_netx4000_relaxed')
+
+SConscript('mdup/SConscript')
+Import('mdup_netx4000_relaxed')
+
 
 #----------------------------------------------------------------------------
 #
@@ -126,7 +132,9 @@ tArcList0.AddFiles('netx/',
 	ramtest_netx500,
 	ramtest_netx4000_relaxed,
 	setup_netx56,
-	setup_netx90_mpw)
+	setup_netx90_mpw,
+	apply_options_netx4000_relaxed,
+	mdup_netx4000_relaxed)
 tArcList0.AddFiles('standalone/',
 #	ramtest_standalone_netx4000,
 	ramtest_standalone_netx500,
@@ -162,18 +170,20 @@ tArtifact0Pom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strModulePath, '%s-%s
 #
 # Copy all binary binaries.
 atCopy = {
-    'targets/testbench/netx/ramtest_netx10.bin':            ramtest_netx10,
-    'targets/testbench/netx/ramtest_netx50.bin':            ramtest_netx50,
-    'targets/testbench/netx/ramtest_netx56.bin':            ramtest_netx56,
-    'targets/testbench/netx/ramtest_netx90_mpw.bin':        ramtest_netx90_mpw,
-    'targets/testbench/netx/ramtest_netx500.bin':           ramtest_netx500,
-    'targets/testbench/netx/ramtest_netx4000_relaxed.bin':  ramtest_netx4000_relaxed,
+    'targets/testbench/netx/ramtest_netx10.bin':                  ramtest_netx10,
+    'targets/testbench/netx/ramtest_netx50.bin':                  ramtest_netx50,
+    'targets/testbench/netx/ramtest_netx56.bin':                  ramtest_netx56,
+    'targets/testbench/netx/ramtest_netx90_mpw.bin':              ramtest_netx90_mpw,
+    'targets/testbench/netx/ramtest_netx500.bin':                 ramtest_netx500,
+    'targets/testbench/netx/ramtest_netx4000_relaxed.bin':        ramtest_netx4000_relaxed,
 
-    'targets/testbench/netx/setup_netx56.bin':              setup_netx56,
-    'targets/testbench/netx/setup_netx90_mpw.bin':          setup_netx90_mpw,
+    'targets/testbench/netx/setup_netx56.bin':                    setup_netx56,
+    'targets/testbench/netx/setup_netx90_mpw.bin':                setup_netx90_mpw,
+    'targets/testbench/netx/apply_options_netx4000_relaxed.bin':  apply_options_netx4000_relaxed,
+    'targets/testbench/netx/mdup_netx4000_relaxed.bin':           mdup_netx4000_relaxed,
 
     # Copy all LUA scripts.
-    'targets/testbench/lua/ramtest.lua':                    'lua/ramtest.lua'
+    'targets/testbench/lua/ramtest.lua':                          'lua/ramtest.lua'
 }
 for strPathDst, strPathSrc in atCopy.iteritems():
     Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))
