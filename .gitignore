@@ -11,3 +11,6 @@
 
 # Ignore all compiled python modules.
 *.pyc
+
+# Ignore the local Eclipse settings.
+/.settings/
