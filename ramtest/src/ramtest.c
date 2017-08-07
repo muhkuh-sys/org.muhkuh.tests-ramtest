@@ -23,6 +23,11 @@ void memcpy32(volatile unsigned long* pulDest, volatile unsigned long *pulSrc, s
 #define CHECK_ECC(res)
 #endif
 
+#ifdef SMP
+#       include "ramtest_smp.h"
+#endif
+
+
 /********************************************************************
                       helper functions
  ********************************************************************/
