@@ -68,6 +68,7 @@ Import('ramtest_netx4000_relaxed', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ram
 Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
 #Import('ramtest_standalone_cifx4000_sdram')
 #Import('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
+Import('tRamtestLua')
 
 SConscript('setup_hif_io/SConscript')
 Import('setup_netx56', 'setup_netx90_mpw')
@@ -146,7 +147,7 @@ tArcList0.AddFiles('standalone/',
 	#ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
 	)
 tArcList0.AddFiles('lua/',
-	'lua/ramtest.lua')
+	tRamtestLua)
 tArcList0.AddFiles('templates/',
 	'lua/attributes_template.lua',
 	'lua/ramtest_template.lua',
@@ -184,7 +185,7 @@ atCopy = {
     'targets/testbench/netx/mdup_netx4000_relaxed.bin':           mdup_netx4000_relaxed,
 
     # Copy all LUA scripts.
-    'targets/testbench/lua/ramtest.lua':                          'lua/ramtest.lua'
+    'targets/testbench/lua/ramtest.lua':                          tRamtestLua
 }
 for strPathDst, strPathSrc in atCopy.iteritems():
     Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))

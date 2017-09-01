@@ -22,8 +22,9 @@
 
 #----------------------------------------------------------------------------
 #
-# Import all required objects.
+# Import all required objects and modules.
 #
+import os.path
 Import('atEnv')
 
 
@@ -951,3 +952,10 @@ env_netx500_d.Append(CPPPATH = aCppPath)
 src_netx500_d = env_netx500_d.SetBuildPath('targets/netx500/debugger', 'src', sources_common+sources_arm_assembler+sources_debugger)
 elf_netx500_d = env_netx500_d.Elf('targets/netx500/debugger/ramtest_netx500.elf', src_netx500_d + env_netx500_d['PLATFORM_LIBRARY'])
 
+#----------------------------------------------------------------------------
+#
+# Filter the LUA script.
+# All versions have the same symbols. Take them from the netX500 version.
+#
+tRamtestLua = env_netx500_t.GccSymbolTemplate(os.path.join('targets', 'lua', 'ramtest.lua'), elf_netx500_t, GCCSYMBOLTEMPLATE_TEMPLATE=File('#/lua/ramtest.lua'))
+Export('tRamtestLua')
