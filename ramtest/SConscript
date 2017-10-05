@@ -793,6 +793,8 @@ aSDRAMTests = (
 ('nxhx4000_hif_sdram_sdrspi16mb_cr7',     'nxhx4000/CR7_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'),
 ('nxhx4000_hif_sdram_sdrspi16mb_ca9',     'nxhx4000/CA9_to_INTRAM_nxhx4000_sdrspi16mb_hif_sdram.xml'),
 
+('nxhx4000r3_hif_sdram_32mb_cr7_ca9',     'nxhx4000/CR7_CA9_to_INTRAM_nxhx4000r3_32mb_hif_sdram.xml'),
+
 ('cifx4000_hif_sdram_cr7_ca9',            'cifx4000/CR7_CA9_cifX4000_1430100R1_sdram.xml'),
 ('cifx4000_hif_sdram_cr7',                'cifx4000/CR7_cifX4000_1430100R1_sdram.xml'),
 ('cifx4000_hif_sdram_ca9',                'cifx4000/CA9_cifX4000_1430100R1_sdram.xml'),
