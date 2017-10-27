@@ -8,7 +8,7 @@
 		<MemoryDeviceUp device="MEMDEV_SDRAM_H" />
 		
 		<!-- Display the HW/memory configuration -->
-		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+		<Snip artifact="show_hwconfig_auto_netx4000" group="org.muhkuh.hboot.sniplib" version="1.0.2"/>
 		
 		<!-- Load the ram test on CR7. -->
 		<Data>

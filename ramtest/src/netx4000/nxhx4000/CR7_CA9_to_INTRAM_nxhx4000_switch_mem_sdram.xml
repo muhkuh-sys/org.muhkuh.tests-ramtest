@@ -8,7 +8,7 @@
 		<MemoryDeviceUp device="MEMDEV_SDRAM_E"/>
 
 		<!-- Fill the SDRAM with 0. -->
-		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.0">
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.1">
 			<Parameter name="START">0x30000000</Parameter>
 			<Parameter name="END">0x30800000</Parameter>
 			<Parameter name="FILL">0x00000000</Parameter>

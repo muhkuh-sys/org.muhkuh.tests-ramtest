@@ -474,7 +474,7 @@ def make_bootimage(pars):
 class imgpars:
 	env = env_netx4000_s_cr7
 	target_dir = 'targets/netx4000/standalone'
-	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['ramtest/src/sniplib']
+	HBOOTIMAGE_SNIPLIB_SEARCHPATHS=['sniplib', 'ramtest/src/sniplib']
 	HBOOTIMAGE_INCLUDE_PATHS=['ramtest/src/hboot']
 	HBOOTIMAGE_DEFINES={'TEST_CASES': 0x000001ff}
 	

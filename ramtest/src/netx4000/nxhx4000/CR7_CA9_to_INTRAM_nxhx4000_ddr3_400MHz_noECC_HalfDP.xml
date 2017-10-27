@@ -9,10 +9,10 @@
 		<Snip artifact="MMIO_config_NXHX4000_R1" group="com.hilscher.hboot.sniplib" version="1.0.0"/>
 
 		<!-- Display the HW/memory configuration -->
-		<Snip artifact="show_hwconfig_auto" group="org.muhkuh.hboot.sniplib" version="1.0.0"/>
+		<Snip artifact="show_hwconfig_auto_netx4000" group="org.muhkuh.hboot.sniplib" version="1.0.2"/>
 
 		<!-- Fill the complete DDRLO area with 0. -->
-		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.0">
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.1">
 			<Parameter name="START">0x40000000</Parameter>
 			<Parameter name="END">0x80000000</Parameter>
 			<Parameter name="FILL">0x00000000</Parameter>
