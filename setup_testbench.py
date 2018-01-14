@@ -63,6 +63,13 @@ strCfg_jonchkiProjectConfiguration = os.path.join(
     'testbench',
     'jonchkicfg.xml'
 )
+strCfg_jonchkiFinalizer = os.path.join(
+    strCfg_projectFolder,
+    'installer',
+    'jonchki',
+    'testbench',
+    'finalizer.lua'
+)
 # This is the template for the artifact file. It has 2 "%s" for the
 # project version.
 strCfg_artifactTemplate = os.path.join(
@@ -135,6 +142,7 @@ sys.stderr.flush()
 astrArguments = [strJonchki]
 astrArguments.extend(['--syscfg', strCfg_jonchkiSystemConfiguration])
 astrArguments.extend(['--prjcfg', strCfg_jonchkiProjectConfiguration])
+astrArguments.extend(['--finalizer', strCfg_jonchkiFinalizer])
 astrArguments.append(strArtifactCfg)
 astrArguments.extend(sys.argv[1:])
 sys.exit(subprocess.call(astrArguments))
