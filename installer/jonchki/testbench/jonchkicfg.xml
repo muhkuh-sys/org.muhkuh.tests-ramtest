@@ -1,6 +1,14 @@
 <jonchkicfg>
 	<repositories>
 		<!-- This local repository contains the build artefacts from this project. -->
+		<repository id="local_build_artifacts" type="file" cacheable="false" rescan="0">
+			<root>targets/jonchki/repository</root>
+			<versions>[group]/[module]</versions>
+			<config>[group]/[module]/[version]/[artifact]-[version].[extension]</config>
+			<artifact>[group]/[module]/[version]/[artifact]-[version].[extension]</artifact>
+		</repository>
+
+		<!-- This repository contains local packages. -->
 		<repository id="local_packages" type="file" cacheable="false" rescan="0">
 			<root>installer/jonchki/repository_local_packages</root>
 			<versions>[group]/[module]</versions>
