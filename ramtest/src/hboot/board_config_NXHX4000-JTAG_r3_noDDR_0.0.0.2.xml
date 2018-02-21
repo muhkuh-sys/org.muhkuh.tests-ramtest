@@ -644,11 +644,11 @@
 </Data>                                                                 
 <!-- Apply the ASIC_CTRL Registers -->                                  
 <Data>                                                                  
-	<File name="ramtest\src\apply_asic_ctrl_netx4000.elf" />                    
+	<File name="ramtest/src/apply_asic_ctrl_netx4000.elf" />                    
 </Data>                                                                 
                                                                         
 <Execute>                                                               
-	<File name="ramtest\src\apply_asic_ctrl_netx4000.elf" />                    
+	<File name="ramtest/src/apply_asic_ctrl_netx4000.elf" />                    
 	<R0>0x04000000</R0>	                                                
 </Execute>                                                              
 
