@@ -42,26 +42,47 @@ int_status [6] Set to ’b1 if another un-correctable ECC event has been detecte
 ddr_ecc_check: check int_status[3:6] != 0000
 ddr_ecc_ack: write 1 to int_ack[3:6]
 ddr_ecc_print: print ECC status info
+
+
+Changes in netx 4000 full:
+--------------------------
+Regs 39-41 are the same
+Regs 42-48 are at the same locations with the same contents, except address registers are one bit larger.
+Regs 61-63 have moved to 158-160, with some bits addedl
+
 */
 
 #include "ecc_ddr.h"
 #include "netx_io_areas.h"
 #include "uprintf.h"
 
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#define REGNO_INT_STATUS 61
+#define REGNO_INT_ACK 62
+#define REGNO_INT_MASK 61
+#endif
+
+#if ASIC_TYP==ASIC_TYP_NETX4000
+#define REGNO_INT_STATUS 158
+#define REGNO_INT_ACK 159
+#define REGNO_INT_MASK 160
+#endif
+
+
 /* returns 0: no error, !=0: error */
 unsigned long ddr_ecc_check_status(void)
 {
 	NX4000_DEF_ptDdrCtrlArea;
 	unsigned long ulStatus;
-	ulStatus = ptDdrCtrlArea->aulDDR_CTRL_CTL[61] & 0x00000078UL;
+	ulStatus = ptDdrCtrlArea->aulDDR_CTRL_CTL[REGNO_INT_STATUS] & 0x00000078UL;
 	return ulStatus;
 }
 
 void ddr_ecc_ack(void)
 {
 	NX4000_DEF_ptDdrCtrlArea;
-	//ptDdrCtrlArea->aulDDR_CTRL_CTL[61] &= 0x00000078UL;
-	ptDdrCtrlArea->aulDDR_CTRL_CTL[62] = ptDdrCtrlArea->aulDDR_CTRL_CTL[61] & 0x00000078UL;
+	//ptDdrCtrlArea->aulDDR_CTRL_CTL[REGNO_INT_STATUS] &= 0x00000078UL;
+	ptDdrCtrlArea->aulDDR_CTRL_CTL[REGNO_INT_ACK] = ptDdrCtrlArea->aulDDR_CTRL_CTL[REGNO_INT_STATUS] & 0x00000078UL;
 }
 
 void ddr_ecc_print(void)
@@ -85,7 +106,7 @@ void ddr_ecc_print(void)
 	ulECC_U_ID = tDDR_CTL48.bf.ECC_U_ID;
 	ulECC_C_ID = tDDR_CTL48.bf.ECC_C_ID;
 	
-	unsigned long ulStatus = ptDdrCtrlArea->aulDDR_CTRL_CTL[61] & 0x00000078UL;
+	unsigned long ulStatus = ptDdrCtrlArea->aulDDR_CTRL_CTL[REGNO_INT_STATUS] & 0x00000078UL;
 	if (ulStatus == 0) 
 	{
 		uprintf("DDR ECC: no error\n");

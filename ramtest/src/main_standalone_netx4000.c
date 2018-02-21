@@ -160,6 +160,11 @@ typedef struct RAMTEST_STANDALONE_NETX4000_PARAMETER_STRUCT
 	unsigned long ulTagValue;
 } RAMTEST_STANDALONE_NETX4000_PARAMETER_T; 
 
+/*
+    Changes in DDR_CTRL registers between netx 4000 Relaxed and Full:
+    Reg. 9, 10, 58, 125: equal
+    Reg. 152: Bit 0 is ECC_EN, other bits changed.
+*/
 void print_ddr_config(void);
 void print_ddr_config(void)
 {
@@ -196,8 +201,8 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 {
 	RAMTEST_PARAMETER_T tTestParams;
 	RAMTEST_RESULT_T tRes;
-	HOSTDEF(ptDdrCtrlArea);
-	unsigned long fDdrCtrlReduc;
+//	HOSTDEF(ptDdrCtrlArea);
+//	unsigned long fDdrCtrlReduc;
 	
 	/* It is OK to call systime_init from multiple CPUs, because it writes constants to the border and count regs. */
 	systime_init();
@@ -248,18 +253,19 @@ void ramtest_main(const RAMTEST_STANDALONE_NETX4000_PARAMETER_T* ptParam)
 	tTestParams.ulTagMask       = ptParam->ulTagMask;
 	tTestParams.ulTagValue      = ptParam->ulTagValue;
 	
-	if ((ptParam->ulStart >= 0x40000000UL) && (ptParam->ulStart <= 0x7fffffff))
+	
+	if ((ptParam->ulStart >= 0x40000000UL) && (ptParam->ulStart <= 0xbfffffff))
 	{
 		print_ddr_config();
     
-		/* If the DDR ctrl is configured for 16 bit, divide the start offsets and sizes by two. */
-		fDdrCtrlReduc = (ptDdrCtrlArea->aulDDR_CTRL_CTL[58] & MSK_NX4000_DDR_CTRL_CTL58_REDUC) >> SRT_NX4000_DDR_CTRL_CTL58_REDUC;
-		if (fDdrCtrlReduc) 
-		{
-			uprintf("Adjusting area start/size for 16 bit DDR mode.\n");
-			tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
-			tTestParams.ulSize /= 2;
-		}
+//		/* If the DDR ctrl is configured for 16 bit, divide the start offsets and sizes by two. */
+//		fDdrCtrlReduc = (ptDdrCtrlArea->aulDDR_CTRL_CTL[58] & MSK_NX4000_DDR_CTRL_CTL58_REDUC) >> SRT_NX4000_DDR_CTRL_CTL58_REDUC;
+//		if (fDdrCtrlReduc) 
+//		{
+//			uprintf("Adjusting area start/size for 16 bit DDR mode.\n");
+//			tTestParams.ulStart -= (tTestParams.ulStart - 0x40000000)/2;
+//			tTestParams.ulSize /= 2;
+//		}
 	}
 	
   /* Set the progress callback. */

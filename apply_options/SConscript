@@ -42,11 +42,11 @@ sources = """
 #
 aCppPath = ['src', '#platform/src', '#platform/src/lib']
 
-tEnv4000R = atEnv.NETX4000_RELAXED.Clone()
+tEnv4000R = atEnv.NETX4000.Clone()
 tEnv4000R.Replace(LDFILE = 'src/netx4000/netx4000.ld')
 tEnv4000R.Append(CPPPATH = aCppPath)
 tSrc4000R = tEnv4000R.SetBuildPath('targets/netx4000', 'src', sources)
 tElf4000R = tEnv4000R.Elf('targets/netx4000/apply_options.elf', tSrc4000R)
-apply_options_netx4000_relaxed = tEnv4000R.ObjCopy('targets/netx4000/apply_options_netx4000_relaxed.bin', tElf4000R)
+apply_options_netx4000 = tEnv4000R.ObjCopy('targets/netx4000/apply_options_netx4000.bin', tElf4000R)
 
-Export('apply_options_netx4000_relaxed')
+Export('apply_options_netx4000')

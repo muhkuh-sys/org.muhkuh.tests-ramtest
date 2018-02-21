@@ -22,7 +22,8 @@ ulChecks     = ulChecks + ramtest.CHECK_DATABUS
 ulChecks     = ulChecks + ramtest.CHECK_MARCHC
 ulChecks     = ulChecks + ramtest.CHECK_BURST
 ulChecks     = ulChecks + ramtest.CHECK_CHECKERBOARD
-ulChecks     = ulChecks + ramtest.CHECK_SEQUENCE
+ulChecks     = ulChecks + ramtest.CHECK_SEQUENCE_32BIT_ADDR
+ulChecks     = ulChecks + ramtest.CHECK_SEQUENCE_32BIT_CNT
 ulChecks     = ulChecks + ramtest.CHECK_MEMCPY
 
 ulLoops      = 0x1

@@ -43,12 +43,12 @@ sources = """
 #
 aCppPath = ['src', '#platform/src', '#platform/src/lib']
 
-tEnv4000R = atEnv.NETX4000_RELAXED.Clone()
+tEnv4000R = atEnv.NETX4000.Clone()
 tEnv4000R.Replace(LDFILE = 'src/netx4000/netx4000.ld')
 tEnv4000R.Append(CPPPATH = aCppPath)
 tSrc4000R = tEnv4000R.SetBuildPath('targets/netx4000', 'src', sources)
 tElf4000R = tEnv4000R.Elf('targets/netx4000/mdup.elf', tSrc4000R + tEnv4000R['PLATFORM_LIBRARY'])
 tTxt4000R = tEnv4000R.ObjDump('targets/netx4000/mdup.txt', tElf4000R, OBJDUMP_FLAGS=['--disassemble-all', '--disassemble', '--source', '--all-headers', '--wide'])
-mdup_netx4000_relaxed = tEnv4000R.ObjCopy('targets/netx4000/mdup_netx4000_relaxed.bin', tElf4000R)
+mdup_netx4000 = tEnv4000R.ObjCopy('targets/netx4000/mdup_netx4000.bin', tElf4000R)
 
-Export('mdup_netx4000_relaxed')
+Export('mdup_netx4000')

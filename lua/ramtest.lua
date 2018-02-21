@@ -22,17 +22,18 @@ require("bit")
 require("romloader")
 
 -- Flags for functional tests
-CHECK_DATABUS            = ${RAMTESTCASE_DATABUS}
-CHECK_08BIT              = ${RAMTESTCASE_08BIT}
-CHECK_16BIT              = ${RAMTESTCASE_16BIT}
-CHECK_32BIT              = ${RAMTESTCASE_32BIT}
-CHECK_MARCHC             = ${RAMTESTCASE_MARCHC}
-CHECK_CHECKERBOARD       = ${RAMTESTCASE_CHECKERBOARD}
-CHECK_BURST              = ${RAMTESTCASE_BURST}
-CHECK_SEQUENCE           = ${RAMTESTCASE_SEQUENCE}
-CHECK_MEMCPY             = ${RAMTESTCASE_MEMCPY}
-CHECK_CA9SMP_ALTERNATE   = ${RAMTESTCASE_CA9SMP_ALTERNATE}
-CHECK_CA9SMP_BLOCK       = ${RAMTESTCASE_CA9SMP_BLOCK}
+CHECK_DATABUS            	= ${RAMTESTCASE_DATABUS}
+CHECK_08BIT              	= ${RAMTESTCASE_08BIT}
+CHECK_16BIT              	= ${RAMTESTCASE_16BIT}
+CHECK_32BIT              	= ${RAMTESTCASE_32BIT}
+CHECK_MARCHC             	= ${RAMTESTCASE_MARCHC}
+CHECK_CHECKERBOARD       	= ${RAMTESTCASE_CHECKERBOARD}
+CHECK_BURST              	= ${RAMTESTCASE_BURST}
+CHECK_SEQUENCE_32BIT_ADDR   = ${RAMTESTCASE_SEQUENCE_32BIT_ADDR}
+CHECK_SEQUENCE_32BIT_CNT    = ${RAMTESTCASE_SEQUENCE_32BIT_CNT}
+CHECK_MEMCPY             	= ${RAMTESTCASE_MEMCPY}
+CHECK_CA9SMP_ALTERNATE   	= ${RAMTESTCASE_CA9SMP_ALTERNATE}
+CHECK_CA9SMP_BLOCK       	= ${RAMTESTCASE_CA9SMP_BLOCK}
 
 
 -- Flags for performance tests
@@ -374,13 +375,13 @@ local function setup_ddr_netx4000(tPlugin, atDdrAttributes)
   -- Basically this is a programatic version of the "LCFG" console command.
   local sizConfiguration = string.len(tConfiguration)
   local strSize = string.char( bit.band(sizConfiguration,0xff), bit.band(bit.rshift(sizConfiguration,8),0xff), bit.band(bit.rshift(sizConfiguration,16),0xff), bit.band(bit.rshift(sizConfiguration,24),0xff) )
-  local ulOptionsResult = tester.mbin_simple_run(nil, tPlugin, 'netx/apply_options_netx4000_relaxed.bin', strSize .. tConfiguration)
+  local ulOptionsResult = tester.mbin_simple_run(nil, tPlugin, 'netx/apply_options_netx4000.bin', strSize .. tConfiguration)
   if ulOptionsResult~=0 then
     error(string.format('Falied to apply the option file for %dMHz: 0x%08x', ulSpeed, ulOptionsResult))
   end
 
   -- Setup the DDR controller.
-  local ulMdupResult = tester.mbin_simple_run(nil, tPlugin, 'netx/mdup_netx4000_relaxed.bin', 10)
+  local ulMdupResult = tester.mbin_simple_run(nil, tPlugin, 'netx/mdup_netx4000.bin', 10)
   if ulMdupResult~=0 then
     error(string.format('Falied to setup the DDR controller: 0x%08x', ulMdupResult))
   end
@@ -389,6 +390,26 @@ end
 
 
 local atPlatformAttributes = {
+	[romloader.ROMLOADER_CHIPTYP_NETX4000] = {
+		strAsic = 'netx4000',
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0xf40c0140, 
+				ulArea_Start = 0x30000000,
+				setup = setup_sdram_netx4000 
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0xf40c0240,
+				ulArea_Start = 0x20000000,
+				setup = setup_sdram_netx4000
+			}
+		},
+		ddr = {
+		  ulArea_Start = 0x40000000,
+		  setup = setup_ddr_netx4000
+		}
+	},
+
 	[romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED] = {
 		strAsic = 'netx4000_relaxed',
 		sdram = {

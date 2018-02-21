@@ -554,7 +554,7 @@ static RAMTEST_RESULT_T ram_test_marching(RAMTEST_PARAMETER_T *ptRamTestParamete
 /* Test access sequence. 
    mem[addr] = tag(addr, core_number), e.g. mem[0x40123456] := 0x11123456 on CR7
 */
-static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter)
+static RAMTEST_RESULT_T ram_test_sequence_addr_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter)
 {
 	RAMTEST_RESULT_T tResult;
 	volatile unsigned long *pulStart;
@@ -609,6 +609,67 @@ static RAMTEST_RESULT_T ram_test_count_addr_32bit(RAMTEST_PARAMETER_T *ptRamTest
 }
 
 
+/* Test access sequence. 
+   mem[addr] = n, where n is a 32 bit counter.
+*/
+static RAMTEST_RESULT_T ram_test_sequence_count_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter)
+{
+	RAMTEST_RESULT_T tResult;
+	volatile unsigned long *pulStart;
+	volatile unsigned long *pulEnd;
+	volatile unsigned long *pulCnt;
+	unsigned long ulCnt;
+	unsigned long ulReadBack;
+
+	tResult = RAMTEST_RESULT_OK;
+	pulStart = (volatile unsigned long*)(ptRamTestParameter->ulStart);
+	pulEnd   = (volatile unsigned long*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
+
+
+	/* fill ram */
+	ulCnt = 0;
+	pulCnt = pulStart;
+	while(pulCnt<pulEnd)
+	{
+		*(pulCnt) = ulCnt;
+		++pulCnt;
+		++ulCnt;
+	}
+	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
+
+
+	/* Read back and compare */
+
+	ulCnt = 0;
+	pulCnt = pulStart;
+	while (pulCnt<pulEnd)
+	{
+		ulReadBack = *pulCnt;
+
+		if (ulReadBack != ulCnt)
+		{
+			uprintf("! 32 bit access at address 0x%08x failed (offset 0x%08x)\n", (unsigned long)pulCnt, (unsigned long)(pulCnt-pulStart));
+			uprintf("! wrote value:     0x%08x\n", ulCnt);
+			uprintf("! read back value: 0x%08x\n", ulReadBack);
+			
+			volatile unsigned long *pulAddr = adjust_hexdump_addr((volatile unsigned long*) pulCnt, (volatile unsigned long*) pulStart, (volatile unsigned long*) pulEnd, 64);
+			hexdump_read_multi(pulAddr, 10);
+			
+			tResult = RAMTEST_RESULT_FAILED;
+			break;
+		}
+		++pulCnt;
+		++ulCnt;
+	}
+
+	ptRamTestParameter->pfnProgress(ptRamTestParameter, RAMTEST_RESULT_OK);
+
+	return tResult;
+}
+
+
+
+
 /*
  * Memcopy test
  * Uses two buffers (2 KB) in Intram/LLRAM
@@ -640,17 +701,17 @@ static RAMTEST_RESULT_T ram_test_memcpy(RAMTEST_PARAMETER_T *ptRamTestParameter)
 {
 	RAMTEST_RESULT_T tResult;
 	unsigned char* pucStart;
-	unsigned char* pucEnd;
+	//unsigned char* pucEnd;
 	unsigned char* pucAddr4K;
 	unsigned long aulBuf1[512];
 	unsigned long aulBuf2[512];
 	
 	tResult = RAMTEST_RESULT_OK;
 	pucStart = (unsigned char*)(ptRamTestParameter->ulStart);
-	pucEnd   = (unsigned char*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
+	//pucEnd   = (unsigned char*)(ptRamTestParameter->ulStart + ptRamTestParameter->ulSize);
 	pucAddr4K = pucStart;
 	
-	if ((pucEnd - pucStart) < 8192)
+	if (ptRamTestParameter->ulSize < 8192UL)
 	{
 		uprintf("Cannot execute memcopy test - test area is too small.\n");
 		tResult = RAMTEST_RESULT_FAILED;
@@ -1147,18 +1208,33 @@ RAMTEST_RESULT_T ramtest_deterministic(RAMTEST_PARAMETER_T *ptParameter)
 	}
 
 	/* test access sequence */
-	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
+	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE_32BIT_ADDR)!=0 )
 	{
-		uprintf(". Testing Access Sequence...\n");
-//		tResult = ram_test_count_32bit(ptParameter);
-		tResult = ram_test_count_addr_32bit(ptParameter);
+		uprintf(". Testing Access Sequence (address)...\n");
+		tResult = ram_test_sequence_addr_32bit(ptParameter);
 		if( tResult==RAMTEST_RESULT_OK )
 		{
-			uprintf(". Access Sequence test OK\n");
+			uprintf(". Access Sequence test (address)OK\n");
 		}
 		else
 		{
-			uprintf("! Access Sequence test failed.\n");
+			uprintf("! Access Sequence test (address) failed.\n");
+		}
+		CHECK_ECC(tResult)
+	}
+
+	/* test access sequence */
+	if( tResult==RAMTEST_RESULT_OK && (ulCases&RAMTESTCASE_SEQUENCE_32BIT_CNT)!=0 )
+	{
+		uprintf(". Testing Access Sequence (32 bit counter)...\n");
+		tResult = ram_test_sequence_count_32bit(ptParameter);
+		if( tResult==RAMTEST_RESULT_OK )
+		{
+			uprintf(". Access Sequence test (32 bit counter) OK\n");
+		}
+		else
+		{
+			uprintf("! Access Sequence test (32 bit counter) failed.\n");
 		}
 		CHECK_ECC(tResult)
 	}
@@ -1262,10 +1338,15 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	{
 		uprintf("     Checkerboard\n");
 	}
-	if( (ulCases&RAMTESTCASE_SEQUENCE)!=0 )
+	if( (ulCases&RAMTESTCASE_SEQUENCE_32BIT_ADDR)!=0 )
 	{
-		uprintf("     Access sequence\n");
+		uprintf("     Access sequence (32 bit address)\n");
 	}
+	if( (ulCases&RAMTESTCASE_SEQUENCE_32BIT_CNT)!=0 )
+	{
+		uprintf("     Access sequence (32 bit counter)\n");
+	}
+
 	if( (ulCases&RAMTESTCASE_MEMCPY)!=0 )
 	{
 		uprintf("     memcpy\n");
