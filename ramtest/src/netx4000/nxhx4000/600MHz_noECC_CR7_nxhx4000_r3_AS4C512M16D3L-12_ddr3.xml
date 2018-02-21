@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Include name="board_config_NXHX4000-JTAG_r3_noDDR_0.0.0.2.xml" />	
+		<!-- Configure the DDR3 RAM with ECC. 2 x AS4C512M16D3L-12 (+ 1x AS4C512M16D3L-12 for ECC) 2 Gbyte / 32 Bit -->
+		<Snip artifact="DDR3_AS4C512M16D3L-12_netX4000_NXHX4000_R3_600MHz_NOECC" group="com.hilscher.comp.ddr3" version="1.0.1" />
+		<MemoryDeviceUp device="MEMDEV_DDR"/>
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto_netx4000" group="org.muhkuh.hboot.sniplib" version="1.0.2" />
+
+		<!-- Fill the complete DDRLO area with 0. -->
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.1">
+			<Parameter name="START">0x40000000</Parameter>                                  
+			<Parameter name="END">0xC0000000</Parameter>                                    
+			<Parameter name="FILL">0x00000000</Parameter>                                   
+		</Snip> 																			
+
+		<!-- CR7 parameters -->
+		<Data>
+			<Hex address="0x0003ff80">
+				00 00 00 40 <!-- 0x40000000 Start address of DDR RAM -->
+				00 00 00 80 <!-- 0x80000000 Size in bytes -->
+				ff 03 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers -->
+				01 00 00 00 <!-- Enable UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<!-- R7: load ram test for R7 -->
+		<Data>
+			<File name="@tElfCR7_l1c" />
+		</Data>
+		
+		<!-- R7: run ram test -->
+		<Execute>
+			<File name="@tElfCR7_l1c" />
+			<R0>0x0003ff80</R0> <!-- address of parameter block -->
+		</Execute>
+
+	</Chunks>
+</HBootImage>

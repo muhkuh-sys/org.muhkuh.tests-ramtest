@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HBootSnippet>
+	<Info artifact="DDR3_AS4C512M16D3L-12_netX4000_NXHX4000_R3_600MHz_ECC" group="com.hilscher.comp.ddr3" version="1.0.1">
+		<License name="PROPRIETARY"/>
+		<Author name="Hilscher Gesellschaft für Systemautomation mbH" url="http://www.hilscher.com"/>
+		<VCS id="GIT333a48106396" url="http://andreass@scm.netx01.hilscher.local/git/netx4000/ddr_parameter"/>
+		<Description>Parameter for the DDR3 memory from Alliance memory AS4C512M16D3L-12 on the Hilscher NXHX 4000 JTAG+ R3 board at 600MHz with activated ECC. netX4000 (FULL) is used</Description>
+		<Category>NETX4000</Category>
+		<Category>DDR</Category>
+		<Category>memory</Category>
+		<Category>hardware configuration</Category>
+	</Info>
+	<Snippet>&lt;Options&gt;
+	&lt;Option id=&quot;ddr&quot;&gt;
+		&lt;U32&gt;10000&lt;/U32&gt;   &lt;!-- The number of ticks to wait for the power up. --&gt;
+		&lt;DDR&gt;
+			&lt;!-- Configure the DDR control registers. --&gt;
+			&lt;WriteCtrl register=&quot;0&quot;   data=&quot;0x00000600&quot;/&gt;
+      &lt;!-- register 1 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;2&quot;   data=&quot;0x00000006&quot;/&gt;
+      &lt;!-- registers 3 - 5 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;6&quot;   data=&quot;0x0001d4a9&quot;/&gt;
+			&lt;WriteCtrl register=&quot;7&quot;   data=&quot;0x000493a5&quot;/&gt;
+			&lt;WriteCtrl register=&quot;8&quot;   data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;9&quot;   data=&quot;0x12000200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;10&quot;  data=&quot;0x04040007&quot;/&gt;
+			&lt;WriteCtrl register=&quot;11&quot;  data=&quot;0x05151e05&quot;/&gt;
+			&lt;WriteCtrl register=&quot;12&quot;  data=&quot;0x04051809&quot;/&gt;
+			&lt;WriteCtrl register=&quot;13&quot;  data=&quot;0x00a47f0c&quot;/&gt;
+			&lt;WriteCtrl register=&quot;14&quot;  data=&quot;0x09000503&quot;/&gt;
+			&lt;WriteCtrl register=&quot;15&quot;  data=&quot;0x01000009&quot;/&gt;
+			&lt;WriteCtrl register=&quot;16&quot;  data=&quot;0x09031301&quot;/&gt;
+			&lt;WriteCtrl register=&quot;17&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;18&quot;  data=&quot;0x00010000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;19&quot;  data=&quot;0x123f00d2&quot;/&gt;
+      &lt;!-- register 20 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;21&quot;  data=&quot;0x000f0004&quot;/&gt;
+			&lt;WriteCtrl register=&quot;22&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;23&quot;  data=&quot;0x00d80200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;24&quot;  data=&quot;0x00010000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;25&quot;  data=&quot;0x00060600&quot;/&gt;
+			&lt;WriteCtrl register=&quot;26&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;27&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;28&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;29&quot;  data=&quot;0x00000000&quot;/&gt;
+      &lt;!-- registers 30 - 31 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;32&quot;  data=&quot;0x00460a50&quot;/&gt;
+			&lt;WriteCtrl register=&quot;33&quot;  data=&quot;0x00000010&quot;/&gt;
+			&lt;WriteCtrl register=&quot;34&quot;  data=&quot;0x00000000&quot;/&gt;
+      &lt;!-- registers 35 - 38 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;39&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;40&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;41&quot;  data=&quot;0x00000000&quot;/&gt;
+      &lt;!-- registers 42 - 48 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;49&quot;  data=&quot;0x01000200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;50&quot;  data=&quot;0x02000040&quot;/&gt;
+			&lt;WriteCtrl register=&quot;51&quot;  data=&quot;0x00000040&quot;/&gt;
+      &lt;!-- register 52 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;53&quot;  data=&quot;0x01000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;54&quot;  data=&quot;0x01ffff0a&quot;/&gt;
+			&lt;WriteCtrl register=&quot;55&quot;  data=&quot;0x01010101&quot;/&gt;
+			&lt;WriteCtrl register=&quot;56&quot;  data=&quot;0x01000001&quot;/&gt;
+			&lt;WriteCtrl register=&quot;57&quot;  data=&quot;0x00000103&quot;/&gt;
+			&lt;WriteCtrl register=&quot;58&quot;  data=&quot;0x00000c00&quot;/&gt;
+			&lt;WriteCtrl register=&quot;59&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;60&quot;  data=&quot;0x00000001&quot;/&gt;
+      &lt;!-- registers 61 - 69 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;70&quot;  data=&quot;0x01000606&quot;/&gt;
+      &lt;!-- registers 71 - 72 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;73&quot;  data=&quot;0x00000400&quot;/&gt;
+			&lt;WriteCtrl register=&quot;74&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;75&quot;  data=&quot;0x00000000&quot;/&gt;
+      &lt;!-- registers 76 - 77 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;78&quot;  data=&quot;0x280d0000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;79&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;80&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;81&quot;  data=&quot;0x00010001&quot;/&gt;
+			&lt;WriteCtrl register=&quot;82&quot;  data=&quot;0x00010001&quot;/&gt;
+			&lt;WriteCtrl register=&quot;83&quot;  data=&quot;0x00000001&quot;/&gt;
+			&lt;WriteCtrl register=&quot;84&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;85&quot;  data=&quot;0x00000000&quot;/&gt;
+      &lt;!-- register 86 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;87&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;88&quot;  data=&quot;0x00012222&quot;/&gt;
+      &lt;!-- register 89 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;90&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;91&quot;  data=&quot;0x00222200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;92&quot;  data=&quot;0x00000001&quot;/&gt;
+      &lt;!-- register 93 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;94&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;95&quot;  data=&quot;0x00012222&quot;/&gt;
+      &lt;!-- register 96 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;97&quot;  data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;98&quot;  data=&quot;0x00222200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;99&quot;  data=&quot;0x00000001&quot;/&gt;
+      &lt;!-- register 100 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;101&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;102&quot; data=&quot;0x00012222&quot;/&gt;
+			&lt;WriteCtrl register=&quot;103&quot; data=&quot;0x01020201&quot;/&gt;
+			&lt;WriteCtrl register=&quot;104&quot; data=&quot;0x02010202&quot;/&gt;
+			&lt;WriteCtrl register=&quot;105&quot; data=&quot;0x02020102&quot;/&gt;
+			&lt;WriteCtrl register=&quot;106&quot; data=&quot;0x00020201&quot;/&gt;
+			&lt;WriteCtrl register=&quot;107&quot; data=&quot;0x05050000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;108&quot; data=&quot;0x00000505&quot;/&gt;
+			&lt;WriteCtrl register=&quot;109&quot; data=&quot;0x04040064&quot;/&gt;
+			&lt;WriteCtrl register=&quot;110&quot; data=&quot;0x00010404&quot;/&gt;
+			&lt;WriteCtrl register=&quot;111&quot; data=&quot;0x03030064&quot;/&gt;
+			&lt;WriteCtrl register=&quot;112&quot; data=&quot;0x00020303&quot;/&gt;
+			&lt;WriteCtrl register=&quot;113&quot; data=&quot;0x02020064&quot;/&gt;
+			&lt;WriteCtrl register=&quot;114&quot; data=&quot;0x00030202&quot;/&gt;
+			&lt;WriteCtrl register=&quot;115&quot; data=&quot;0x01010064&quot;/&gt;
+			&lt;WriteCtrl register=&quot;116&quot; data=&quot;0x00040101&quot;/&gt;
+			&lt;WriteCtrl register=&quot;117&quot; data=&quot;0x00000064&quot;/&gt;
+			&lt;WriteCtrl register=&quot;118&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;119&quot; data=&quot;0x00001A00&quot;/&gt;
+			&lt;WriteCtrl register=&quot;120&quot; data=&quot;0x00247e05&quot;/&gt;
+			&lt;WriteCtrl register=&quot;121&quot; data=&quot;0x02000200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;122&quot; data=&quot;0x02000200&quot;/&gt;
+			&lt;WriteCtrl register=&quot;123&quot; data=&quot;0x0000247e&quot;/&gt;
+			&lt;WriteCtrl register=&quot;124&quot; data=&quot;0x00016cec&quot;/&gt;
+			&lt;WriteCtrl register=&quot;125&quot; data=&quot;0x0 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL125_TDFI_DRAM_CLK_DISABLE | 0x2 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL125_TDFI_CTRL_DELAY | 0x08 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL125_WRLAT_ADJ | 0x08 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL125_RDLAT_ADJ&quot;/&gt;
+			&lt;WriteCtrl register=&quot;126&quot; data=&quot;0x000a0a05&quot;/&gt;
+			&lt;WriteCtrl register=&quot;127&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;128&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;129&quot; data=&quot;0x04038000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;130&quot; data=&quot;0x07060a07&quot;/&gt;
+			&lt;WriteCtrl register=&quot;131&quot; data=&quot;0x00ffff24&quot;/&gt;
+			&lt;WriteCtrl register=&quot;132&quot; data=&quot;0x000f0010&quot;/&gt;
+			&lt;WriteCtrl register=&quot;133&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;134&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;135&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;136&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;137&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;138&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;139&quot; data=&quot;0x00000204&quot;/&gt;
+      &lt;!-- register 140 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;141&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;142&quot; data=&quot;0x00000001&quot;/&gt;
+      &lt;!-- registers 143 - 149 are read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;150&quot; data=&quot;0x01000000&quot;/&gt;
+      &lt;!-- register 151 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;152&quot; data=&quot;0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL152_ECC_EN&quot;/&gt;
+			&lt;WriteCtrl register=&quot;153&quot; data=&quot;0x03e80010&quot;/&gt;
+			&lt;WriteCtrl register=&quot;154&quot; data=&quot;0x00000064&quot;/&gt;
+			&lt;WriteCtrl register=&quot;155&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;156&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;157&quot; data=&quot;0x01000000&quot;/&gt;
+      &lt;!-- register 158 is read only and therefore here not included --&gt;
+			&lt;WriteCtrl register=&quot;159&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;160&quot; data=&quot;0x2000000 &amp;lt;&amp;lt; SRT_NX4000_DDR_CTRL_CTL160_INT_MASK&quot;/&gt;
+			&lt;WriteCtrl register=&quot;161&quot; data=&quot;0x00000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;162&quot; data=&quot;0x00000000&quot;/&gt;      
+
+
+			&lt;!-- IF voltage and software reset release. --&gt;
+			&lt;WritePhy register=&quot;0&quot;  data=&quot;(0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_FUNCCTRL_IFSEL) | MSK_NX4000_DDR_PHY_FUNCCTRL_FUNCRSTB&quot;/&gt;
+
+			&lt;!-- DLL control mode setting.
+			     SDLY control from MDLL,
+			     self-reset mode,
+			     normal mode,
+			     SRCLK/HRCLK frequency range setting and
+			     MDLL standby. --&gt;
+			&lt;WritePhy register=&quot;1&quot;  data=&quot;(0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_DLLCTRL_MFSL)&quot;/&gt;
+
+			&lt;!-- Initialize the FIFOs. --&gt;
+			&lt;WritePhy register=&quot;6&quot;  data=&quot;MSK_NX4000_DDR_PHY_FIFOINIT_RDPTINITEXE | MSK_NX4000_DDR_PHY_FIFOINIT_WRPTINITEXE&quot;/&gt;
+
+			&lt;!-- ZQ calibration setting.
+			     DFICLK frequency range setting,
+			     calibration execution intervals setting,
+			     mode settings,
+			     beginning value settings and
+			     ZQ calibration resets. --&gt;
+			&lt;WritePhy register=&quot;2&quot;  data=&quot;(0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQCALCTRL_ZQCALUPD) | (0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQCALCTRL_ZQCALFREQ) | (0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQCALCTRL_ZQCALITVL) | MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALMODE | MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALSTRV&quot;/&gt;
+
+			&lt;!-- Delay for 100us or more. --&gt;
+			&lt;Delay ticks=&quot;2000&quot;/&gt;
+
+			&lt;!-- Command/Address output phase setting,
+			     I/F FIFO mode setting,
+			     I/F FIFO read pointer value setting,
+			     driver impedance setting,
+			     slew rate setting,
+			     ODT use/unuse setting,
+			     DNV mode setting and
+			     DRAM I/F setting. --&gt;
+			&lt;WritePhy register=&quot;3&quot;  data=&quot;(0x3 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_CAPHASE) | MSK_NX4000_DDR_PHY_ZQODTCTRL_WRFIFOEN | (0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_FIFORPINIT) | (0x5 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_ZQDATA) | (0x5 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_ZQCK) | (0x5 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_ZQCMDAD) | (0x2 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_PHYODT) | MSK_NX4000_DDR_PHY_ZQODTCTRL_PHYODTEN | (0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQODTCTRL_DRAMIF)&quot;/&gt;
+
+			&lt;!-- Delay for 200us or more. --&gt;
+			&lt;Delay ticks=&quot;4000&quot;/&gt;
+
+			&lt;!-- ODT timing setting,
+			     BEN (receiver bias enable) timing setting and
+			     IEN (receiver input enable) timing setting. --&gt;
+			&lt;WritePhy register=&quot;4&quot;  data=&quot;(0xe &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PHYODTONT) | (0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PHYODTOFT) | (0x4 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PDQODTONT) | (0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PDQODTOFT) | (0xe &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PHYBENONT) | (0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PHYBENOFT) | (0x4 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PHYIENONT) | (0x2 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDCTRL_PHYIENOFT)&quot;/&gt;
+
+			&lt;!-- Read reclocking timing setting,
+			     command and DQ output mode setting. --&gt;
+			&lt;WritePhy register=&quot;5&quot;  data=&quot;MSK_NX4000_DDR_PHY_RDTMG_RDMODE | (0xb &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDTMG_RDENVALID) | (0x2 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_RDTMG_WDOMODE)&quot;/&gt;
+
+			&lt;!-- BL/RL/WL setting,
+			     output setting at DFIDATABYTEDISABLE mode,
+			     MRESETB output enable settings,
+			     MCKE,
+			     MODT output enable setting,
+			     address and command output enable setting. --&gt;
+			&lt;WritePhy register=&quot;7&quot;  data=&quot;(0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_OUTCTRL_CKOBUFEN) | (0x2 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_OUTCTRL_MBL) | (0x9 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_OUTCTRL_MRL) | (0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_OUTCTRL_MWL) | MSK_NX4000_DDR_PHY_OUTCTRL_RESETBOE | MSK_NX4000_DDR_PHY_OUTCTRL_CKEODTOE | MSK_NX4000_DDR_PHY_OUTCTRL_ADCMDOE&quot;/&gt;
+
+			&lt;!-- Release the reset. --&gt;
+			&lt;WritePhy register=&quot;2&quot;  data=&quot;(0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQCALCTRL_ZQCALUPD) | (0x1 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQCALCTRL_ZQCALFREQ) | (0x7 &amp;lt;&amp;lt; SRT_NX4000_DDR_PHY_ZQCALCTRL_ZQCALITVL) | MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALMODE | MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALSTRV | MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALRSTB&quot;/&gt;
+
+			&lt;!-- Wait for calibration done. --&gt;
+			&lt;PollPhy  register=&quot;2&quot;  mask=&quot;MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALEND&quot; data=&quot;MSK_NX4000_DDR_PHY_ZQCALCTRL_ZQCALEND&quot; ticks=&quot;1000000&quot;/&gt;
+
+			&lt;!-- Delay for 500us or more. --&gt;
+			&lt;Delay ticks=&quot;10000&quot;/&gt;
+
+
+			&lt;!-- Start the netX 4000 (FULL) DDR controller. --&gt;
+			&lt;WriteCtrl register=&quot;0&quot;   data=&quot;0x00000600 | MSK_NX4000_DDR_CTRL_CTL0_START&quot;/&gt;
+			&lt;PollCtrl  register=&quot;158&quot;  mask=&quot;0x800&quot; data=&quot;0x800&quot; ticks=&quot;1000000&quot;/&gt;
+			&lt;WriteCtrl register=&quot;159&quot;  data=&quot;0x800&quot;/&gt;
+		&lt;/DDR&gt;
+	&lt;/Option&gt;
+&lt;/Options&gt;
+</Snippet>
+</HBootSnippet>

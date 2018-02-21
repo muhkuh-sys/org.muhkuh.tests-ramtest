@@ -1,0 +1,662 @@
+<!-- 
+
+	Board configuration file for NXHX 4000-JTAG+ R3 board. 
+	
+  revision history
+  V 0.0.0.1 GD 2017-12-21
+	initial
+  
+  
+  V 0.0.0.2 AS 2018-01-30
+	Update to new template for usage with netx full
+  
+ 		
+-->
+	
+<Options>
+	
+	<!-- IF SPM is needed, SDRAM can not be used -->
+ 
+	<!-- Set the portcontrol values. -->
+	<Option id="RAW" offset="0x1408">
+		<U16>
+			<!-- P00 -->
+			<!-- Rdy/Run: P0_0, P0_1  
+					TWF8BC33ALV04SZ pu 6mA  SEL:00 (netX default) DRV:01 (6mA) UDC:01 (pullup) -->
+			<!-- definition of values
+			0xabcd:  d: pullUpDown control  0|2 => no pull resistor ; 1 => pullup ; 3 => pulldown
+					c: drive strength 0 => 4mA; 1 => 6mA; 2 => 8mA ; 3 => 12mA 
+					b: control information for RGMII pads 
+					a: select one of several mux options -->  
+			0x0011,                                       <!-- P0_0 RDY -->
+			0x0011,                                       <!-- P0_1 RUN -->
+			0x0000,							              <!-- P0_2 RST_OUT -->
+			0xFFFF,                                       <!-- P0_3 is not available -->
+			0xFFFF,                                       <!-- P0_4 is not available -->
+			0xFFFF,                                       <!-- P0_5 is not available -->
+			0xFFFF,                                       <!-- P0_6 is not available -->
+			0xFFFF,                                       <!-- P0_7 is not available -->
+			0xFFFF,                                       <!-- P0_8 is not available -->
+			0xFFFF,                                       <!-- P0_9 is not available -->
+			0xFFFF,                                       <!-- P0_10 is not available -->
+			0xFFFF,                                       <!-- P0_11 is not available -->
+			0xFFFF,                                       <!-- P0_12 is not available -->
+			0xFFFF,                                       <!-- P0_13 is not available -->
+			0xFFFF,                                       <!-- P0_14 is not available -->
+			0xFFFF,                                       <!-- P0_15 is not available -->			
+			<!-- P01 -->
+			<!-- Default funktion is SQI interface
+             No pull resitors at SQI interface, except CS0N
+             SQI_CS0N ha pull up resistor
+             6mA driver at SQI signals except clock
+             8mA driver at SQI clock               -->
+			0x0020,                                       <!-- P1_0 SQI_CLK -->
+			0x0010,                                       <!-- P1_1 SQI_MOSI -->
+			0x0010,                                       <!-- P1_2 SQI_MISO -->
+			0x0010,                                       <!-- P1_3 SQI_SIO2 -->
+			0x0010,                                       <!-- P1_4 SQI_SIO3 -->
+			0x0011,                                       <!-- P1_5 SQI_CS0N -->
+			0xFFFF,                                       <!-- P1_6 is not available -->
+			0xFFFF,                                       <!-- P1_7 is not available -->
+			0xFFFF,                                       <!-- P1_8 is not available -->
+			0xFFFF,                                       <!-- P1_9 is not available -->
+			0xFFFF,                                       <!-- P1_10 is not available -->
+			0xFFFF,                                       <!-- P1_11 is not available -->
+			0xFFFF,                                       <!-- P1_12 is not available -->
+			0xFFFF,                                       <!-- P1_13 is not available -->
+			0xFFFF,                                       <!-- P1_14 is not available -->
+			0xFFFF,                                       <!-- P1_15 is not available -->
+			<!-- P02 DFLT 0x0001 -->
+			<!-- RAP I2C0 -->
+			<!-- Default funktion is I2C interface
+             pull up resitors
+             4mA driver used               -->
+			0x0001,                                       <!-- P2_0 I2C_SCL -->
+			0x0001,                                       <!-- P2_1 I2C_SDA -->
+			0xFFFF,                                       <!-- P2_2 is not available -->
+			0xFFFF,                                       <!-- P2_3 is not available -->
+			0xFFFF,                                       <!-- P2_4 is not available -->
+			0xFFFF,                                       <!-- P2_5 is not available -->
+			0xFFFF,                                       <!-- P2_6 is not available -->
+			0xFFFF,                                       <!-- P2_7 is not available -->
+			0xFFFF,                                       <!-- P2_8 is not available -->
+			0xFFFF,                                       <!-- P2_9 is not available -->
+			0xFFFF,                                       <!-- P2_10 is not available -->
+			0xFFFF,                                       <!-- P2_11 is not available -->
+			0xFFFF,                                       <!-- P2_12 is not available -->
+			0xFFFF,                                       <!-- P2_13 is not available -->
+			0xFFFF,                                       <!-- P2_14 is not available -->
+			0xFFFF,                                       <!-- P2_15 is not available -->
+			
+			<!-- P03 DFLT 0x0003 -->
+			0xFFFF,                                       <!-- P3_0 is not available -->
+			0x0010,                                       <!-- P3_1  MMIO1 USED FOR SPEAKER-->
+			0x0003,							              <!-- P3_2  MMIO2 -->
+			0x0003,            							  <!-- P3_3  MMIO3 -->
+			0x0003,            							  <!-- P3_4  MMIO4 -->
+			0x0003,            							  <!-- P3_5  MMIO5 -->
+			0x0003,            							  <!-- P3_6  MMIO6 -->
+			0x0003,            							  <!-- P3_7  MMIO7 -->
+			0x0003,            							  <!-- P3_8  MMIO8 -->
+			0x0003,            							  <!-- P3_9  MMIO9 -->
+			0x1003,                                       <!-- P3_10 MMIO10 RAP_GPIO -->
+			0x1003,                                       <!-- P3_11 MMIO11 RAP_GPIO -->
+			0x1003,                                       <!-- P3_12 MMIO12 RAP_GPIO -->
+			0x1003,                                       <!-- P3_13 MMIO13 RAP_GPIO -->
+			0x1003,                                       <!-- P3_14 MMIO14 RAP_GPIO -->
+			0x0003,                                       <!-- P3_15 MMIO15 not connected -->
+			
+			<!-- P04 DFLT 0x0003 -->
+			0x1003,							              <!-- P4_0  MMIO16 RAP_GPIO -->
+			0x1003,							              <!-- P4_1  MMIO17 RAP_GPIO -->
+			0x1003,							              <!-- P4_2  MMIO18 RAP_GPIO -->
+			0x1003,							              <!-- P4_3  MMIO19 RAP_GPIO -->
+			0x1003,							              <!-- P4_4  MMIO20 RAP_GPIO -->
+			0x1003,							              <!-- P4_5  MMIO21 RAP_GPIO -->
+			0x1003,							              <!-- P4_6  MMIO22 RAP_GPIO -->
+			0x1003,							              <!-- P4_7  MMIO23 RAP_GPIO -->
+			0x2003,                                       <!-- P4_8  MMIO24 RAP_I2C -->
+			0x2003,                                       <!-- P4_9  MMIO25 RAP_I2C -->
+			0x0003,                                       <!-- P4_10 MMIO26 RAP_UART0 RXD -->
+			0x0003,                                       <!-- P4_11 MMIO27 RAP_UART0 TXD -->
+			0x0003,                                       <!-- P4_12 MMIO28 RAP_UART0 CTS -->
+			0x0003,                                       <!-- P4_13 MMIO29 RAP_UART0 RTS -->
+ 			0x2003,                                       <!-- P4_14 MMIO30 RAP_UART1 -->
+			0x2003,                                       <!-- P4_15 MMIO31 RAP_UART1 -->
+
+			<!-- P05 DFLT 0x0003 -->
+			0x2003,                                       <!-- P5_0  MMIO32 RAP_UART1 -->
+			0x2003,                                       <!-- P5_1  MMIO33 RAP_UART1 -->
+			0x0003,                                       <!-- P5_2  MMIO34 not connected -->
+			0x0003,                                       <!-- P5_3  MMIO35 not connected -->
+			0x3001,                                       <!-- P5_4  MMIO36 USB20_OCI2 pull down -->
+			0x3003,                                       <!-- P5_5  MMIO37 USB20_PPON2 pull up -->
+			0x1003,                                       <!-- P5_6  MMIO38 RAP_GPIO -->
+			0x1003,                                       <!-- P5_7  MMIO39 RAP_GPIO -->  
+			0x1003,                                       <!-- P5_8  MMIO40 RAP_GPIO -->
+			0x1003,                                       <!-- P5_9  MMIO41 RAP_GPIO -->
+			0x1003,                                       <!-- P5_10 MMIO42 RAP_GPIO -->
+			0x2001,                                       <!-- P5_11 MMIO43 RAP_CAN -->
+			0x2001,                                       <!-- P5_12 MMIO44 RAP_CAN -->
+			0x0003,							              <!-- P5_13 MMIO45 -->
+			0x0003,							              <!-- P5_14 MMIO46 -->        
+			0x2003,                                       <!-- P5_15 MMIO47 RGB -->
+	
+			<!-- P06 DFLT 0x0003-->
+			0x2001,                                       <!-- P6_0  MMIO48 RAP_I2C -->
+			0x2001,                                       <!-- P6_1  MMIO49 RAP_I2C -->
+			0x1003,                                       <!-- P6_2  MMIO50 RAP_GPIO (PCIE_PERST#) -->
+			0x0003,						                  <!-- P6_3  MMIO51 -->
+			0x0003,							              <!-- P6_4  MMIO52 -->                  
+			0x0003,							              <!-- P6_5  MMIO53 -->
+			0x0003,							              <!-- P6_6  MMIO54 -->
+			0x0003,							              <!-- P6_7  MMIO55 -->
+			0x0003,								          <!-- P6_8  MMIO56 -->         
+			0x0003,								          <!-- P6_9  MMIO57 -->
+			0x0003,								          <!-- P6_10 MMIO58 -->
+			0x0003,								          <!-- P6_11 MMIO59 -->
+			0x0003,								          <!-- P6_12 MMIO60 -->
+			0x0003,								          <!-- P6_13 MMIO61 -->
+			0x1003,								          <!-- P6_14 MMIO62 RAP_GPIO (PCIE_WAKE#) -->
+			0x1003								          <!-- P6_15 MMIO63 RAP_GPIO (PCIE_CLKREQ#)-->		
+		</U16>
+	</Option>
+					
+			
+	<Option id="RAW" offset="0x14e8">		
+		<U16>
+			<!-- P07 DFLT 0x0001 -->
+			0x0010,                                       <!-- P7_0  HIF_A17 6 mA no pull -->
+			0x0010,                                       <!-- P7_1  HIF_D0  6 mA no pull -->
+			0x0010,                                       <!-- P7_2  HIF_D1  6 mA no pull -->
+			0x0010,                                       <!-- P7_3  HIF_D2  6 mA no pull -->
+			0x0010,                                       <!-- P7_4  HIF_D3  6 mA no pull -->
+			0x0010,                                       <!-- P7_5  HIF_D4  6 mA no pull -->
+			0x0010,                                       <!-- P7_6  HIF_D5  6 mA no pull -->
+			0x0010,                                       <!-- P7_7  HIF_D6  6 mA no pull -->
+			0x0010,                                       <!-- P7_8  HIF_D7  6 mA no pull -->
+			0x0010,                                       <!-- P7_9  HIF_D8  6 mA no pull -->
+			0x0010,                                       <!-- P7_10 HIF_D9  6 mA no pull -->
+			0x0010,                                       <!-- P7_11 HIF_D10 6 mA no pull -->
+			0x0010,                                       <!-- P7_12 HIF_D11 6 mA no pull -->
+			0x0010,                                       <!-- P7_13 HIF_D12 6 mA no pull -->
+			0x0010,                                       <!-- P7_14 HIF_D13 6 mA no pull -->
+			0x0010,                                       <!-- P7_15 HIF_D14 6 mA no pull -->
+			
+			<!-- P08 DFLT 0x0001 -->
+			0x0010,                                       <!-- P8_0  HIF_D15 6 mA no pull -->
+			0x0010,                                       <!-- P8_1  HIF_D16 6 mA no pull -->
+			0x0010,                                       <!-- P8_2  HIF_D17 6 mA no pull -->
+			0x0010,                                       <!-- P8_3  HIF_D18 6 mA no pull -->
+			0x0010,                                       <!-- P8_4  HIF_D19 6 mA no pull -->
+			0x0010,                                       <!-- P8_5  HIF_D20 6 mA no pull -->
+			0x0010,                                       <!-- P8_6  HIF_D21 6 mA no pull -->
+			0x0010,                                       <!-- P8_7  HIF_D22 6 mA no pull -->
+			0x0010,                                       <!-- P8_8  HIF_D23 6 mA no pull -->
+			0x0010,                                       <!-- P8_9  HIF_D24 6 mA no pull -->
+			0x0010,                                       <!-- P8_10 HIF_D25 6 mA no pull -->
+			0x0010,                                       <!-- P8_11 HIF_D26 6 mA no pull -->
+			0x0010,                                       <!-- P8_12 HIF_D27 6 mA no pull -->
+			0x0010,                                       <!-- P8_13 HIF_D28 6 mA no pull -->
+			0x0010,                                       <!-- P8_14 HIF_D29 6 mA no pull -->
+			0x0010,                                       <!-- P8_15 HIF_D30 6 mA no pull -->
+
+			<!-- P09 DFLT 0x0003 (P9_0) / 0x0001 (P9_1-15) -->
+			0x0003,							              <!-- P9_0  MMIO106 -->
+			0x0010,                                       <!-- P9_1  HIF_A0  6 mA no pull -->
+			0x0010,                                       <!-- P9_2  HIF_A1  6 mA no pull -->
+			0x0010,                                       <!-- P9_3  HIF_A2  6 mA no pull -->
+			0x0010,                                       <!-- P9_4  HIF_A3  6 mA no pull -->
+			0x0010,                                       <!-- P9_5  HIF_A4  6 mA no pull -->
+			0x0010,                                       <!-- P9_6  HIF_A5  6 mA no pull -->
+			0x0010,                                       <!-- P9_7  HIF_A6  6 mA no pull -->
+			0x0010,                                       <!-- P9_8  HIF_A7  6 mA no pull -->
+			0x0010,                                       <!-- P9_9  HIF_A8  6 mA no pull -->
+			0x0010,                                       <!-- P9_10 HIF_A9  6 mA no pull -->
+			0x0010,                                       <!-- P9_11 HIF_A10 6 mA no pull -->
+			0x0010,                                       <!-- P9_12 HIF_A11 6 mA no pull -->
+			0x0010,                                       <!-- P9_13 HIF_A12 6 mA no pull -->
+			0x0010,                                       <!-- P9_14 HIF_A13 6 mA no pull -->
+			0x0010,                                        <!-- P9_15 HIF_A14 6 mA no pull -->
+
+			<!-- P10 DFLT 0x0001 (P10_0-9) / 0x0003 (P10_10) -->
+			0x0010,                                       <!-- P10_0  HIF_A15 6 mA no pull -->
+			0x0010,                                       <!-- P10_1  HIF_A16 6 mA no pull -->
+			0x0010,                                       <!-- P10_2  HIF_D31 6 mA no pull -->
+			0x0010,                                       <!-- P10_3  HIF_BHE1 6 mA no pull -->
+			0x0010,                                       <!-- P10_4  HIF_BHE3 6 mA no pull -->
+			0x0001,			 			                  <!-- P10_5  HIF_CSN  not used -->
+			0x0010,                                       <!-- P10_6  HIF_RDN 6 mA no pull -->
+			0x0010,                                       <!-- P10_7  HIF_WRN 6 mA no pull -->
+			0x0011,                                       <!-- P10_8  HIF_RDY 6 mA pull up-->
+			0x0013,                                       <!-- P10_9  HIF_DIRQ 6 mA pull down -->
+			0x0013,                                        <!-- P10_10 HIF_SDCLK 6mA pull down-->
+			0xFFFF,                                       <!-- P10_11 is not available -->
+			0xFFFF,                                       <!-- P10_12 is not available -->
+			0xFFFF,                                       <!-- P10_13 is not available -->
+			0xFFFF,                                       <!-- P10_14 is not available -->
+			0xFFFF,                                       <!-- P10_15 is not available -->
+			
+			<!-- P11 DFLT 0x0003 (P11_0) / 0x0001 (P11_1-7) -->
+			0x0023,                                       <!-- P11_0 SDIO -->
+			0x0021,                                       <!-- P11_1 SDIO -->
+			0x0021,                                       <!-- P11_2 SDIO -->
+			0x0021,                                       <!-- P11_3 SDIO -->
+			0x0021,                                       <!-- P11_4 SDIO -->
+			0x0021,                                       <!-- P11_5 SDIO -->
+			0x0001,                                       <!-- P11_6 SDIO -->
+			0x0001,                                       <!-- P11_7 SDIO -->
+			0x0001,                                       <!-- P11_8 is not available -->
+			0x0001,                                       <!-- P11_9 is not available -->
+			0x0001,                                       <!-- P11_10 is not available -->
+			0x0001,                                       <!-- P11_11 is not available -->
+			0x0001,                                       <!-- P11_12 is not available -->
+			0x0001,                                       <!-- P11_13 is not available -->
+			0x0001,                                       <!-- P11_14 is not available -->
+			0x0001,                                       <!-- P11_15 is not available -->
+					
+			<!-- P12 DFLT 0x0003-->
+			0x2010,                                       <!-- P12_0  VO_R0 -->
+			0x2010,                                       <!-- P12_1  VO_R1 -->
+			0x2010,                                       <!-- P12_2  VO_R2 -->
+			0x2010,                                       <!-- P12_3  VO_R3 -->
+			0x2010,                                       <!-- P12_4  VO_R4 -->
+			0x2010,                                       <!-- P12_5  VO_R5 -->
+			0x2010,                                       <!-- P12_6  VO_R6 -->
+			0x2010,                                       <!-- P12_7  VO_R7 -->
+			0x2010,                                       <!-- P12_8  VO_G0 -->
+			0x2010,                                       <!-- P12_9  VO_G1 -->
+			0x2010,                                       <!-- P12_10 VO_G2 -->
+			0x2010,                                       <!-- P12_11 VO_G3 -->
+			0x2010,                                       <!-- P12_12 VO_G4 -->
+			0x2010,                                       <!-- P12_13 VO_G5 -->
+			0x2010,                                       <!-- P12_14 VO_G6 -->
+			0x2010,                                       <!-- P12_15 VO_G7 -->
+
+			<!-- P13 DFLT 0x0003 -->
+			0x2010,                                       <!-- P13_0  VO_B0 -->
+			0x2010,                                       <!-- P13_1  VO_B1 -->
+			0x2010,                                       <!-- P13_2  VO_B2 -->
+			0x2010,                                       <!-- P13_3  VO_B3 -->
+			0x2010,                                       <!-- P13_4  VO_B4 -->
+			0x2010,                                       <!-- P13_5  VO_B5 -->
+			0x2010,                                       <!-- P13_6  VO_B6 -->
+			0x2010,                                       <!-- P13_7  VO_B7 -->
+			0x2030,                                       <!-- P13_8  VO_CLK -->
+			0x2000,                                       <!-- P13_9  VO_BLANK -->
+			0x2000,                                       <!-- P13_10 VO_HSYNC -->
+			0x2000,                                       <!-- P13_11 VO_VSYNC -->
+			0xFFFF,                                       <!-- P13_12 is not available -->
+			0xFFFF,                                       <!-- P13_13 is not available -->
+			0xFFFF,                                       <!-- P13_14 is not available -->
+			0xFFFF                                        <!-- P13_15 is not available -->
+
+   		</U16>
+	</Option>
+	<Option id="RAW" offset="0x15c8">		
+		<U16>
+			<!-- P14 DFLT 0x0001 (P14_0) / 0x0003 (P14_1) -->
+			0x0001,							              <!-- P14_0 USB20_OCI -->
+			0x0003,						                  <!-- P14_1 USB20_PPON -->
+			0xFFFF,                                       <!-- P14_2 is not available -->
+			0xFFFF,                                       <!-- P14_3 is not available -->
+			0xFFFF,                                       <!-- P14_4 is not available -->
+			0xFFFF,                                       <!-- P14_5 is not available -->
+			0xFFFF,                                       <!-- P14_6 is not available -->
+			0xFFFF,                                       <!-- P14_7 is not available -->
+			0xFFFF,                                       <!-- P14_8 is not available -->
+			0xFFFF,                                       <!-- P14_9 is not available -->
+			0xFFFF,                                       <!-- P14_10 is not available -->
+			0xFFFF,                                       <!-- P14_11 is not available -->
+			0xFFFF,                                       <!-- P14_12 is not available -->
+			0xFFFF,                                       <!-- P14_13 is not available -->
+			0xFFFF,                                       <!-- P14_14 is not available -->
+			0xFFFF,                                       <!-- P14_15 is not available -->		
+			
+			<!-- P15 DFLT 0x0803-->
+			<!-- default is used / RGMII needs to be done ....... -->
+			0x3803, 						              <!-- P15_0  RGMII0 -->
+			0x3803, 						              <!-- P15_1  RGMII0 -->
+			0x3803, 						              <!-- P15_2  RGMII0 -->
+			0x3803, 						              <!-- P15_3  RGMII0 -->
+			0x3803, 						              <!-- P15_4  RGMII0 -->
+			0x3803, 						              <!-- P15_5  RGMII0 -->
+			0x3803, 						              <!-- P15_6  RGMII0 -->
+			0x3803, 						              <!-- P15_7  RGMII0 -->
+			0x3803, 						              <!-- P15_8  RGMII0 -->
+			0x3803, 						              <!-- P15_9  RGMII0 -->
+			0x3803, 						              <!-- P15_10 RGMII0 -->
+			0x3803, 						              <!-- P15_11 RGMII0 -->
+			0x3803, 						              <!-- P15_12 RGMII0 -->
+			0x3803,				    		              <!-- P15_13 RGMII0 -->
+			0xFFFF,                                       <!-- P15_14 is not available -->
+			0xFFFF,                                       <!-- P15_15 is not available --> 
+			
+			<!-- P16 DFLT 0x0803 (P16_0..3 u. 11) / 0x0801 (P16_4..10) -->
+			0x3803,          						      <!-- P16_0  RGMII1 -->
+			0x3803,          						      <!-- P16_1  RGMII1 -->
+			0x3803,          						      <!-- P16_2  RGMII1 -->
+			0x3803,          						      <!-- P16_3  RGMII1 -->
+			0x3801,          						      <!-- P16_4  RGMII1 -->
+			0x3801,          						      <!-- P16_5  RGMII1 -->
+			0x3801,          						      <!-- P16_6  RGMII1 -->
+			0x3801,          						      <!-- P16_7  RGMII1 -->
+			0x3801,          						      <!-- P16_8  RGMII1 -->
+			0x3801,          						      <!-- P16_9  RGMII1 -->
+			0x3801,          						      <!-- P16_10 RGMII1 -->
+			0x3803,          						      <!-- P16_11 RGMII1 -->
+			0xFFFF,                                       <!-- P16_12 is not available -->
+			0xFFFF,                                       <!-- P16_13 is not available -->
+			0xFFFF,                                       <!-- P16_14 is not available -->
+			0xFFFF,                                       <!-- P16_15 is not available -->
+			
+			<!-- P17 DFLT 0x0000-->
+			0x0000,  
+			0xFFFF,                                       <!-- P17_1 is not available -->			<!-- P17_0 LVDS TXT0 -->
+			0x0000,       								  <!-- P17_2 LVDS TXT1 -->
+			0xFFFF,                                       <!-- P17_3 is not available -->
+			0xFFFF,                                       <!-- P17_4 is not available -->
+			0xFFFF,                                       <!-- P17_5 is not available -->
+			0xFFFF,                                       <!-- P17_6 is not available -->
+			0xFFFF,                                       <!-- P17_7 is not available -->
+			0xFFFF,                                       <!-- P17_8 is not available -->
+			0xFFFF,                                       <!-- P17_9 is not available -->
+			0xFFFF,                                       <!-- P17_10 is not available -->
+			0xFFFF,                                       <!-- P17_11 is not available -->
+			0xFFFF,                                       <!-- P17_12 is not available -->
+			0xFFFF,                                       <!-- P17_13 is not available -->
+			0xFFFF,                                       <!-- P17_14 is not available -->
+			0xFFFF,                                       <!-- P17_15 is not available -->			<!-- P18 DFLT 0x0000 -->
+			0x0000,							              <!-- P18_0 LVDS RXT0 -->
+ 			0xFFFF,                                       <!-- P18_1 is not available -->
+			0x0000						                  <!-- P18_2 LVDS RXT1 -->
+		</U16>
+	</Option>
+	
+	<!-- Set mmio select -->
+	<Option id="RAW" offset="0x1328">
+			<!-- DFLT 0xFF PIO MODE -->
+		<U08>
+			0xff,  										  <!-- MMIO 0: default not used -->
+			0x00, 										  <!-- MMIO 1: SPKR -->
+			0xff, 										  <!-- MMIO 2: #USER_LED0 -->
+			0xff, 										  <!-- MMIO 3: #USER_LED1 -->
+			0xff, 										  <!-- MMIO 4: #USER_LED2 -->
+			0xff, 										  <!-- MMIO 5: #USER_LED3 -->
+			0xff, 										  <!-- MMIO 6: USER_SW0 -->
+			0xff, 										  <!-- MMIO 7: USER_SW1 -->
+			0xff, 										  <!-- MMIO 8: USER_SW2 -->
+			0xff, 										  <!-- MMIO 9: USER_SW3 -->
+			0xff, 										  <!-- MMIO 10: default not used -->
+			0xff, 										  <!-- MMIO 11: default not used -->
+			0xff, 										  <!-- MMIO 12: default not used -->
+			0xff, 										  <!-- MMIO 13: default not used  -->
+			0xff, 										  <!-- MMIO 14: default not used -->
+			0xff, 										  <!-- MMIO 15: not connected -->
+			0xff, 										  <!-- MMIO 16: default not used -->
+			0xff, 										  <!-- MMIO 17: default not used -->
+			0xff, 										  <!-- MMIO 18: default not used -->
+			0xff, 										  <!-- MMIO 19: default not used -->
+			0xff, 										  <!-- MMIO 20: default not used -->
+			0xff, 										  <!-- MMIO 21: default not used -->
+			0xff, 										  <!-- MMIO 22: default not used -->
+			0xff, 										  <!-- MMIO 23: default not used -->
+			0xff, 										  <!-- MMIO 24: default not used -->
+			0xff, 										  <!-- MMIO 25: default not used -->
+			0x4e, 										  <!-- MMIO 26: default not used RXD -->
+			0x4f, 										  <!-- MMIO 27: default not used TXD -->
+			0xff, 										  <!-- MMIO 28: default not used -->
+			0xff, 										  <!-- MMIO 29: default not used -->
+			0xff, 										  <!-- MMIO 30: default not used -->
+			0xff, 										  <!-- MMIO 31: default not used -->
+			0xff, 										  <!-- MMIO 32: default not used -->
+			0xff, 										  <!-- MMIO 33: default not used -->
+			0xff, 										  <!-- MMIO 34: not connected -->
+			0xff, 										  <!-- MMIO 35: not connected -->
+			0xff, 										  <!-- MMIO 36: default not used -->
+			0xff, 										  <!-- MMIO 37: default not used -->
+			0xff, 										  <!-- MMIO 38: default not used -->
+			0xff, 										  <!-- MMIO 39: default not used -->
+			0x72,  						 			      <!-- MMIO 40: default not used -->
+			0x74,					     			      <!-- MMIO 41: default not used -->
+			0x7f,				            	 	      <!-- MMIO 42: default not used -->
+			0xff,   									  <!-- MMIO 43: default not used -->
+			0xff,   									  <!-- MMIO 44: default not used -->
+			0x78,  										  <!-- MMIO 45: PHY_#CH0_ACT -->
+			0x77,  										  <!-- MMIO 46: PHY_#CH0_LINK -->
+			0xff,   								      <!-- MMIO 47: default not used -->
+			0xff,								          <!-- MMIO 48: default not used -->
+			0xff,								          <!-- MMIO 49: default not used -->
+			0xff,   								      <!-- MMIO 50: default not used -->
+			0x7c,   								      <!-- MMIO 51: PHY_#CH1_ACT -->
+			0x7b,   								      <!-- MMIO 52: PHY_#CH1_LINK -->
+			0xff,   								      <!-- MMIO 53: PHY_#COM0_GREEN -->
+			0xff,   						              <!-- MMIO 54: PHY_#COM0_RED -->
+			0xff,   								      <!-- MMIO 55: PHY_#COM1_GREEN -->
+			0xff,			   							  <!-- MMIO 56: PHY_#COM1_RED -->
+			0xff,			   							  <!-- MMIO 57: PIO -->
+			0xff,   			 					      <!-- MMIO 58: PIO -->
+			0xff,   			 					      <!-- MMIO 59: PIO -->
+			0xff,   							    	  <!-- MMIO 60: PIO -->
+			0xff,   							    	  <!-- MMIO 61: PIO -->
+			0xff,   							    	  <!-- MMIO 62: default not used -->
+			0xff,   							    	  <!-- MMIO 63: default not used -->
+			0xff,   									  <!-- MMIO 64: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 65: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 66: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 67: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 68: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 69: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 70: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 71: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 72: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 73: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 74: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 75: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 76: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 77: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 78: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 79: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 80: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 81: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 82: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 83: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 84: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 85: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 86: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 87: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 88: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 89: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 90: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 91: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 92: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 93: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 94: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 95: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 96: HIF_SDRAM -->
+			0xff,   									  <!-- MMIO 97: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 98: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 99: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 100: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 101: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 102: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 103: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 104: HIF_SDRAM -->
+			0xff,   								      <!-- MMIO 105: HIF_SDRAM -->
+			0xff    								      <!-- MMIO 106: HIF_SDRAM -->
+		</U08>
+	</Option>
+	
+	<!-- Set the MMIO inversion flags -->
+	<!-- LEDs interted set to 1 means on -->
+	<Option id="RAW" offset="0x1393">
+		<U08>
+			0x00,   									  <!-- MMIO 0 -->
+			0x03,   									  <!-- MMIO 1 -->
+			0x03,   									  <!-- MMIO 2 -->
+			0x03,   									  <!-- MMIO 3 -->
+			0x03,   									  <!-- MMIO 4 -->
+			0x00,   									  <!-- MMIO 5 -->
+			0x00,   									  <!-- MMIO 6 -->
+			0x00,   									  <!-- MMIO 7 -->
+			0x00,   									  <!-- MMIO 8 -->
+			0x00,   									  <!-- MMIO 9 -->
+			0x00,   									  <!-- MMIO 10 -->
+			0x00,   									  <!-- MMIO 11 -->
+			0x00,   									  <!-- MMIO 12 -->
+			0x00,   									  <!-- MMIO 13 -->
+			0x00,   									  <!-- MMIO 14 -->
+			0x00,   									  <!-- MMIO 15 -->
+			0x00,   									  <!-- MMIO 16 -->
+			0x00,   									  <!-- MMIO 17 -->
+			0x00,   									  <!-- MMIO 18 -->
+			0x00,   									  <!-- MMIO 19 -->
+			0x00,   									  <!-- MMIO 20 -->
+			0x00,   									  <!-- MMIO 21 -->
+			0x00,   									  <!-- MMIO 22 -->
+			0x00,   									  <!-- MMIO 23 -->
+			0x00,   									  <!-- MMIO 24 -->
+			0x00,   									  <!-- MMIO 25 -->
+			0x00,   									  <!-- MMIO 26 -->
+			0x00,   									  <!-- MMIO 27 -->
+			0x00,   									  <!-- MMIO 28 -->
+			0x00,   									  <!-- MMIO 29 -->
+			0x00,   									  <!-- MMIO 30 -->
+			0x00,   									  <!-- MMIO 31 -->
+			0x00,   									  <!-- MMIO 32 -->
+			0x00,   									  <!-- MMIO 33 -->
+			0x00,   									  <!-- MMIO 34 -->
+			0x00,   									  <!-- MMIO 35 -->
+			0x00,   									  <!-- MMIO 36 -->
+			0x00,   									  <!-- MMIO 37 -->
+			0x00,   									  <!-- MMIO 38 -->
+			0x00,   									  <!-- MMIO 39 -->
+			0x00,   									  <!-- MMIO 40 -->
+			0x00,   									  <!-- MMIO 41 -->
+			0x00,   									  <!-- MMIO 42 -->
+			0x00,   									  <!-- MMIO 43 -->
+			0x00,   									  <!-- MMIO 44 -->
+			0x03,   									  <!-- MMIO 45 -->
+			0x03,   									  <!-- MMIO 46 -->
+			0x00,   									  <!-- MMIO 47 -->
+			0x00,   									  <!-- MMIO 48 -->
+			0x00,   									  <!-- MMIO 49 -->
+			0x00,   									  <!-- MMIO 50 -->
+			0x03,   									  <!-- MMIO 51 -->
+			0x03,   									  <!-- MMIO 52 -->
+			0x00,   									  <!-- MMIO 53 -->
+			0x00,   									  <!-- MMIO 54 -->
+			0x00,   									  <!-- MMIO 55 -->
+			0x00,   									  <!-- MMIO 56 -->
+			0x00,   									  <!-- MMIO 57 -->
+			0x00,   									  <!-- MMIO 58 -->
+			0x00,   									  <!-- MMIO 59 -->
+			0x00,   									  <!-- MMIO 60 -->
+			0x00,   									  <!-- MMIO 61 -->
+			0x00,   									  <!-- MMIO 62 -->
+			0x00,   									  <!-- MMIO 63 -->
+			0x00,   									  <!-- MMIO 64 -->
+			0x00,   									  <!-- MMIO 65 -->
+			0x00,   									  <!-- MMIO 66 -->
+			0x00,   									  <!-- MMIO 67 -->
+			0x00,   									  <!-- MMIO 68 -->
+			0x00,   									  <!-- MMIO 69 -->
+			0x00,   									  <!-- MMIO 70 -->
+			0x00,   									  <!-- MMIO 71 -->
+			0x00,   									  <!-- MMIO 72 -->
+			0x00,   									  <!-- MMIO 73 -->
+			0x00,   									  <!-- MMIO 74 -->
+			0x00,   									  <!-- MMIO 75 -->
+			0x00,   									  <!-- MMIO 76 -->
+			0x00,   									  <!-- MMIO 77 -->
+			0x00,   									  <!-- MMIO 78 -->
+			0x00,   									  <!-- MMIO 79 -->
+			0x00,   									  <!-- MMIO 80 -->
+			0x00,   									  <!-- MMIO 81 -->
+			0x00,   									  <!-- MMIO 82 -->
+			0x00,   									  <!-- MMIO 83 -->
+			0x00,   									  <!-- MMIO 84 -->
+			0x00,   									  <!-- MMIO 85 -->
+			0x00,   									  <!-- MMIO 86 -->
+			0x00,   									  <!-- MMIO 87 -->
+			0x00,   									  <!-- MMIO 88 -->
+			0x00,   									  <!-- MMIO 89 -->
+			0x00,   									  <!-- MMIO 90 -->
+			0x00,   									  <!-- MMIO 91 -->
+			0x00,   									  <!-- MMIO 92 -->
+			0x00,   									  <!-- MMIO 93 -->
+			0x00,   									  <!-- MMIO 94 -->
+			0x00,   									  <!-- MMIO 95 -->
+			0x00,   									  <!-- MMIO 96 -->
+			0x00,   									  <!-- MMIO 97 -->
+			0x00,   									  <!-- MMIO 98 -->
+			0x00,   									  <!-- MMIO 99 -->
+			0x00,   									  <!-- MMIO 100 -->
+			0x00,   									  <!-- MMIO 101 -->
+			0x00,   									  <!-- MMIO 102 -->
+			0x00,   									  <!-- MMIO 103 -->
+			0x00,   									  <!-- MMIO 104 -->
+			0x00,   									  <!-- MMIO 105 -->
+			0x00    									  <!-- MMIO 106 -->
+		</U08>
+	</Option>	
+</Options>	
+
+<!-- Apply the portcontrol values. -->	
+<Execute>						 
+	<Address>0x04116cf1</Address> <!-- for full -->
+<!--<Address>0x041165f5</Address> for relaxed -->
+</Execute>       
+
+<!-- Apply the MMIO values. FULl or RLXD detected automatically -->
+<Snip group="org.muhkuh.hboot.sniplib" artifact="apply_mmio_netx4000" version="1.0.4"/>	
+
+<Options>
+  	<!-- Configure the SDRAM. IS42S32800J-7BLI 32MByte/32bit-->
+	<Option id="hif_hif_io">
+    <!-- bit 7: HIFMEM SDRAM is enabled -->
+    <!-- EXTMEM SDRAM is disabled -->
+    <!-- HIF SDRAM 32bit databus width -->
+		<U32>0x000001c0</U32>
+	</Option>	
+	
+	<Option id="netx_hif_sdram">
+		<U32>0x000D0111</U32>    <!-- SDRAM general_ctrl register -->
+		<U32>0x02A32251</U32>    <!-- SDRAM timing_ctrl register -->
+		<U32>0x00000020</U32>    <!-- SDRAM mr register -->
+		<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
+	</Option>
+</Options>	
+
+<!-- Activate the SDRAM. -->
+<MemoryDeviceUp device="MEMDEV_SDRAM_H" />
+
+
+<!-- Set the ASIC_CTRL Registers IO_CONFIG, IO_CONFIG2 and CLOCK_ENABLE (write Values to LLRAM) -->
+<Data>																	
+	<Concat address="0x04000000">   <!-- LLRAM START -->             
+	<UInt32>                                                            
+		0x00000000					<!-- IO CONFIG  0xf4080100 -->      
+		0x00000000					<!-- IO CONFIG2 0xf4080108 -->      
+		0x00400000					<!-- CLOCK_ENABLE 0xf4080138 -->	
+	</UInt32>	                                                        
+	</Concat>	                                                        
+</Data>                                                                 
+<!-- Apply the ASIC_CTRL Registers -->                                  
+<Data>                                                                  
+	<File name="ramtest\src\apply_asic_ctrl_netx4000.elf" />                    
+</Data>                                                                 
+                                                                        
+<Execute>                                                               
+	<File name="ramtest\src\apply_asic_ctrl_netx4000.elf" />                    
+	<R0>0x04000000</R0>	                                                
+</Execute>                                                              
+
+<!-- open firewall -->
+<Data>
+	<File name="@tElfCR7OpenFirewalls" />
+</Data>
+
+<Execute>
+	<File name="@tElfCR7OpenFirewalls" />
+</Execute>

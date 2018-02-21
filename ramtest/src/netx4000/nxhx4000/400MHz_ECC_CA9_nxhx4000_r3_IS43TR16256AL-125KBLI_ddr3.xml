@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Include name="board_config_NXHX4000-JTAG_r3_noDDR_0.0.0.2.xml" />	
+		
+		<Snip artifact="DDR3_IS43TR16256AL-125KBLI_netX4000_NXHX4000_R1_400MHz_ECC" group="com.hilscher.comp.ddr3" version="1.0.1" />
+		
+		<MemoryDeviceUp device="MEMDEV_DDR" />
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto_netx4000" group="org.muhkuh.hboot.sniplib" version="1.0.2" />
+		
+		<!-- Fill the complete DDRLO area with 0. -->
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.1">
+			<Parameter name="START">0x40000000</Parameter>                                  
+			<Parameter name="END">0xC0000000</Parameter>                                    
+			<Parameter name="FILL">0x00000000</Parameter>                                   
+		</Snip> 																			
+		
+		<!-- R7: Open the firewalls -->
+		<Data>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Data>
+		<Execute>
+			<File name="@tElfCR7OpenFirewalls" />
+		</Execute>
+		
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ff80">
+				00 00 00 40 <!-- 0x40000000 Start address of DDR RAM -->
+				00 00 00 20 <!-- 0x20000000 Size in bytes -->
+				ff 03 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 35 36 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				01 00 00 00 <!-- Enable UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<Hex address="0x0503ff80">
+				00 00 00 60 <!-- 0x60000000 Start address of DDR RAM -->
+				00 00 00 20 <!-- 0x20000000 Size in bytes -->
+				ff 03 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 37 38 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<!-- Clear core 0/core 1 sync flags -->
+		<Data>
+			<Hex address="0x0501ffe0">
+				00 00 00 00
+				00 00 00 00
+				00 00 00 00
+			</Hex>
+		</Data>
+		
+		<!-- R7: load ram test for A9 -->
+		<Data>
+			<File name="@tElfCA9core0_l2c_ecc" />
+		</Data>
+		<Data>
+			<File name="@tElfCA9core1_l1c_ecc" />
+		</Data>
+		
+		<!-- A9: run ram test -->
+		<ExecuteCA9>
+			<Core0>
+				<File name="@tElfCA9core0_l2c_ecc" start="start_core0" />
+				<R0>0x0501ff80</R0> <!-- address of parameter block -->
+			</Core0>
+			<Core1>
+				<File name="@tElfCA9core1_l1c_ecc" start="start_core1" />
+				<R0>0x0503ff80</R0> <!-- address of parameter block -->
+			</Core1>
+		</ExecuteCA9>
+		
+		<!-- On CR7 jump to the WFE loop in ROM. -->
+		<Execute>
+			<Address>WFE_Loop</Address>
+		</Execute>
+		
+	</Chunks>
+</HBootImage>
