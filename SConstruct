@@ -42,7 +42,8 @@ env_arm9.CreateCompilerEnv('NETX10', ['arch=armv5te'])
 
 # Create a build environment for the Cortex-R7 and Cortex-A9 based netX chips.
 env_cortexR7 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.9', 'asciidoc'])
-env_cortexR7.CreateCompilerEnv('NETX4000_RELAXED', ['arch=armv7', 'thumb'], ['arch=armv7-r', 'thumb'])
+env_cortexR7.CreateCompilerEnv('NETX4000', ['arch=armv7', 'thumb'], ['arch=armv7-r', 'thumb'])
+
 
 # Create a build environment for the Cortex-M4 based netX chips.
 env_cortexM4 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.9', 'asciidoc'])
@@ -64,20 +65,21 @@ atEnv.DEFAULT.Version('#targets/version/version.h', 'templates/version.h')
 # Build all sub-projects.
 #
 SConscript('ramtest/SConscript')
-Import('ramtest_netx4000_relaxed', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
-Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
+
+#Import('ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+#Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
 #Import('ramtest_standalone_cifx4000_sdram')
 #Import('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
-Import('tRamtestLua')
+#Import('tRamtestLua')
 
 SConscript('setup_hif_io/SConscript')
-Import('setup_netx56', 'setup_netx90_mpw')
+#Import('setup_netx56', 'setup_netx90_mpw')
 
 SConscript('apply_options/SConscript')
-Import('apply_options_netx4000_relaxed')
+Import('apply_options_netx4000')
 
 SConscript('mdup/SConscript')
-Import('mdup_netx4000_relaxed')
+Import('mdup_netx4000')
 
 
 #----------------------------------------------------------------------------
@@ -127,32 +129,32 @@ strArtifact0 = 'lua5.1-ramtest'
 
 tArcList0 = atEnv.DEFAULT.ArchiveList('zip')
 tArcList0.AddFiles('netx/',
-	ramtest_netx10,
-	ramtest_netx50,
-	ramtest_netx56,
-	ramtest_netx90_mpw,
-	ramtest_netx500,
-	ramtest_netx4000_relaxed,
-	setup_netx56,
-	setup_netx90_mpw,
-	apply_options_netx4000_relaxed,
-	mdup_netx4000_relaxed)
+#	ramtest_netx10,
+#	ramtest_netx50,
+#	ramtest_netx56,
+#	ramtest_netx90_mpw,
+#	ramtest_netx500,
+#	ramtest_netx4000,
+#	setup_netx56,
+#	setup_netx90_mpw,
+	apply_options_netx4000,
+	mdup_netx4000)
 tArcList0.AddFiles('standalone/',
 #	ramtest_standalone_netx4000,
-	ramtest_standalone_netx500,
-	ramtest_standalone_netx56,
-	ramtest_standalone_netx50,
-	ramtest_standalone_netx10,
+#	ramtest_standalone_netx500,
+#	ramtest_standalone_netx56,
+#	ramtest_standalone_netx50,
+#	ramtest_standalone_netx10,
 	#ramtest_standalone_cifx4000_sdram,
 	#ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
 	)
-tArcList0.AddFiles('lua/',
-	tRamtestLua)
-tArcList0.AddFiles('templates/',
-	'lua/attributes_template.lua',
-	'lua/ramtest_template.lua',
-	'lua/test.lua',
-	'lua/timing_phase_test_template.lua')
+#tArcList0.AddFiles('lua/',
+#	tRamtestLua)
+#tArcList0.AddFiles('templates/',
+#	'lua/attributes_template.lua',
+#	'lua/ramtest_template.lua',
+#	'lua/test.lua',
+#	'lua/timing_phase_test_template.lua')
 tArcList0.AddFiles('doc/',
 	tDoc)
 tArcList0.AddFiles('',
@@ -171,24 +173,24 @@ tArtifact0Pom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strModulePath, '%s-%s
 # Make a local demo installation.
 #
 # Copy all binary binaries.
-atCopy = {
-    'targets/testbench/netx/ramtest_netx10.bin':                  ramtest_netx10,
-    'targets/testbench/netx/ramtest_netx50.bin':                  ramtest_netx50,
-    'targets/testbench/netx/ramtest_netx56.bin':                  ramtest_netx56,
-    'targets/testbench/netx/ramtest_netx90_mpw.bin':              ramtest_netx90_mpw,
-    'targets/testbench/netx/ramtest_netx500.bin':                 ramtest_netx500,
-    'targets/testbench/netx/ramtest_netx4000_relaxed.bin':        ramtest_netx4000_relaxed,
-
-    'targets/testbench/netx/setup_netx56.bin':                    setup_netx56,
-    'targets/testbench/netx/setup_netx90_mpw.bin':                setup_netx90_mpw,
-    'targets/testbench/netx/apply_options_netx4000_relaxed.bin':  apply_options_netx4000_relaxed,
-    'targets/testbench/netx/mdup_netx4000_relaxed.bin':           mdup_netx4000_relaxed,
-
-    # Copy all LUA scripts.
-    'targets/testbench/lua/ramtest.lua':                          tRamtestLua
-}
-for strPathDst, strPathSrc in atCopy.iteritems():
-    Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))
+#atCopy = {
+#    'targets/testbench/netx/ramtest_netx10.bin':                  ramtest_netx10,
+#    'targets/testbench/netx/ramtest_netx50.bin':                  ramtest_netx50,
+#    'targets/testbench/netx/ramtest_netx56.bin':                  ramtest_netx56,
+#    'targets/testbench/netx/ramtest_netx90_mpw.bin':              ramtest_netx90_mpw,
+#    'targets/testbench/netx/ramtest_netx500.bin':                 ramtest_netx500,
+#    'targets/testbench/netx/ramtest_netx4000.bin':        		  ramtest_netx4000,
+#
+#    'targets/testbench/netx/setup_netx56.bin':                    setup_netx56,
+#    'targets/testbench/netx/setup_netx90_mpw.bin':                setup_netx90_mpw,
+#    'targets/testbench/netx/apply_options_netx4000.bin':          apply_options_netx4000,
+#    'targets/testbench/netx/mdup_netx4000.bin':                   mdup_netx4000,
+#
+#    # Copy all LUA scripts.
+#    'targets/testbench/lua/ramtest.lua':                          tRamtestLua
+#}
+#for strPathDst, strPathSrc in atCopy.iteritems():
+#    Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))
 
 
 #----------------------------------------------------------------------------
