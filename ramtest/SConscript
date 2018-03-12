@@ -505,6 +505,9 @@ imgpars.HBOOTIMAGE_KNOWN_FILES=dict({
 	'tElfCA9core0_l2c_ecc'	  :	elf_netx4000_s_ca9_intram_rap0_l2c_ecc,
 	'tElfCA9core1_l1c_ecc'	  :	elf_netx4000_s_ca9_intram_rap1_l1c_ecc,
 	'tElfCR7_l1c_ecc_trigger' :	elf_netx4000_s_llram_cr7_l1c_ecc_trigger,
+	'tElfCR7'          		  : elf_netx4000_s_cr7,
+	'tElfCA9core0'     		  : elf_netx4000_s_ca9_core0,
+	'tElfCA9core1'     		  : elf_netx4000_s_ca9_core1,
  	})
 	
 	
@@ -544,7 +547,8 @@ aDDRTests = (
     ('ECCTEST_ecc_check_on_in_snippet_off',  		'ECCTEST_ecc_check_on_in_snippet_off.xml'),	
 	('600MHz_ECC_trigger_CR7_AS4C512M16D3L-12',		'600MHz_ECC_trigger_CR7_nxhx4000_r3_AS4C512M16D3L-12_ddr3.xml'),
 	('halfDP_only_sequence_count',	 	  			'halfDP_only_sequence_count.xml'),	
-	('600MHz_noECC_CA9_nxhx4000_r3_AS4C512M16D3L-12_ddr3_1GB_no_tags',	 	  			'600MHz_noECC_CA9_nxhx4000_r3_AS4C512M16D3L-12_ddr3_1GB_no_tags.xml'),	
+	('600MHz_noECC_CA9_C0_nxhx4000_r3_AS4C512M16D3L-12_ddr3_upper_1GB_only_no_tags',	 	  			'600MHz_noECC_CA9_C0_nxhx4000_r3_AS4C512M16D3L-12_ddr3_upper_1GB_only_no_tags.xml'),	
+	
  ) 
 
  
@@ -555,7 +559,26 @@ for tEntry in aDDRTests:
  	print imgpars.xml_template, " ==> ", imgpars.target_name
  	make_bootimage(imgpars)
 	
+aSDRAMTests = (
+('cifx4000_hif_sdram_cr7_ca9',            'cifx4000/CR7_CA9_cifX4000_1430100R3_hif_sdram.xml'),
+('cifx4000_hif_sdram_cr7',            	'cifx4000/CR7_cifX4000_1430100R3_hif_sdram.xml'),
+('cifx4000_hif_sdram_ca9',                'cifx4000/CA9_cifX4000_1430100R3_hif_sdram.xml'),
 
+('nxhx4000_switch_mem_sdram_cr7_ca9',     'nxhx4000_switch/CR7_CA9_nxhx4000_switch_7813200R1_mem_sdram.xml'),
+('nxhx4000_switch_mem_sdram_cr7',         'nxhx4000_switch/CR7_nxhx4000_switch_7813200R1_mem_sdram.xml'),
+('nxhx4000_switch_mem_sdram_ca9',         'nxhx4000_switch/CA9_nxhx4000_switch_7813200R1_mem_sdram.xml'),
+
+)
+
+
+
+
+
+for tEntry in aSDRAMTests:
+	imgpars.target_name ='test_sdram/ramtest_standalone_%s.bin' % tEntry[0]
+	imgpars.xml_template = 'src/netx4000/%s' % tEntry[1]
+	print imgpars.xml_template, " ==> ", imgpars.target_name
+	make_bootimage(imgpars)
 
 	
 

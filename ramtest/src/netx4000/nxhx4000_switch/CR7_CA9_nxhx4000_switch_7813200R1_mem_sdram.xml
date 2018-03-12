@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<Include name="board_config_7813200R1_nxhx4000switch.xml" />	
+		<!-- Configure the SDRAM. IS42S32800J-7BLI 32MByte/32bit-->
+		<Options>
+			<Option id="hif_hif_io">
+			<!-- bit 7: HIFMEM SDRAM is enabled -->
+			<!-- HIF SDRAM is disabled 0x000001c0 -->
+			<!-- MEM SDRAM 32bit databus width -->
+				<U32>0x0f060060</U32>
+			</Option>
+		
+			<Option id="netx_mem_sdram">
+				<U32>0x000D0111</U32>    <!-- SDRAM general_ctrl register -->
+				<U32>0x01A32251</U32>    <!-- SDRAM timing_ctrl register -->
+				<U32>0x00000020</U32>    <!-- SDRAM mr register -->
+				<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
+			</Option>
+		</Options>
+
+		<!-- Activate the SDRAM. -->
+		<MemoryDeviceUp device="MEMDEV_SDRAM_E" />
+		
+		<!-- Display the HW/memory configuration -->
+		<Snip artifact="show_hwconfig_auto_netx4000" group="org.muhkuh.hboot.sniplib" version="1.0.2" />
+
+		<!-- Fill the complete DDRLO area with 0. -->
+		<Snip artifact="initialize_memory" group="org.muhkuh.hboot.sniplib" version="1.0.1">
+			<Parameter name="START">0x30000000</Parameter>                                  
+			<Parameter name="END">0x32000000</Parameter>                                    
+			<Parameter name="FILL">0x00000000</Parameter>                                   
+		</Snip> 																			
+
+		<!-- CR7 parameters -->
+		<Data>
+			<Hex address="0x0003ff80">
+				00 00 00 30 <!-- 0x30000000 Start address of HIF SDRAM -->
+				00 00 A0 00 <!-- 0x00A00000 Size in bytes -->
+				ff 03 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 00 00 <!-- Status LED MMIO numbers -->
+				01 00 00 00 <!-- Enable UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 11 <!-- tag value -->
+			</Hex>
+		</Data>
+		<!-- CA9 core 0 parameters -->
+		<Data>
+			<Hex address="0x0501ff80">
+				00 00 A0 30 <!-- 0x30A00000 Start address of HIF SDRAM -->
+				00 00 B0 00 <!-- 0x00B00000 Size in bytes -->
+				ff 03 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 38 37 <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 22 <!-- tag value -->
+			</Hex>
+		</Data>
+		<Data>
+			<!-- CA9 core 1 parameters -->
+			<Hex address="0x0503ff80">
+				00 00 50 31 <!-- 0x31500000 Start address of HIF SDRAM -->
+				00 00 B0 00 <!-- 0x00B00000 Size in bytes -->
+				ff 03 00 00 <!-- Test Cases -->
+				00 00 00 00 <!-- Loops -->
+				00 00 00 00 <!-- PerfTestCases -->
+				00 00 3A 39 <!-- Status LED MMIO numbers  0 0 green yellow (bit 16-23) yellow (bit 24-31) -->
+				00 00 00 00 <!-- Do not use UART -->
+				00 00 00 ff <!-- tag mask -->
+				00 00 00 44 <!-- tag value -->
+			</Hex>
+		</Data>
+		
+		<!-- Clear core 0/core 1 sync flags -->
+		<Data>
+			<Hex address="0x0501ffe0">
+				00 00 00 00
+				00 00 00 00
+				00 00 00 00
+			</Hex>
+		</Data>
+		
+		<!-- R7: load ram test for A9 -->
+		<Data>
+			<File name="@tElfCA9core0" />
+		</Data>
+		
+		<Data>
+			<File name="@tElfCA9core1" />
+		</Data>
+		
+		<!-- R7: load ram test for R7 -->
+		<Data>
+			<File name="@tElfCR7" />
+		</Data>
+		
+		
+		<!-- A9: run ram test -->
+		<ExecuteCA9>
+			<Core0>
+				<File name="@tElfCA9core0" start="start_core0" />
+				<R0>0x0501ff80</R0> <!-- address of parameter block -->
+			</Core0>
+			<Core1>
+				<File name="@tElfCA9core1" start="start_core1" />
+				<R0>0x0503ff80</R0>
+			</Core1>
+		</ExecuteCA9>
+		
+		<!-- R7: run ram test -->
+		<Execute>
+			<File name="@tElfCR7" />
+			<R0>0x0003ff80</R0> <!-- address of parameter block -->
+		</Execute>
+
+	</Chunks>
+</HBootImage>

@@ -14,7 +14,7 @@
 	.global start
 
    @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#if ASIC_TYP==ASIC_TYP_NETX4000
    @ define entry point for CA9_core0
 	.global start_core0
    @ define entry point for CA9_core1
@@ -26,7 +26,7 @@
   .func start_init_s
 
    @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#if ASIC_TYP==ASIC_TYP_NETX4000
    @ define entry point for CA9_core0
 start_core0:
    @ define entry point for CA9_core1
