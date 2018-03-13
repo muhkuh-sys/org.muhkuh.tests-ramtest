@@ -41,7 +41,7 @@
 				00 00 00 00 <!-- Loops -->
 				00 00 00 00 <!-- PerfTestCases -->
 				00 00 3C 3D <!-- Status LED MMIO numbers  0 0 green (bit 16-23) yellow (bit 24-31) -->
-				00 00 00 00 <!-- Do not use UART -->
+				01 00 00 00 <!-- Do not use UART -->
 				00 00 00 ff <!-- tag mask -->
 				00 00 00 22 <!-- tag value -->
 			</Hex>
