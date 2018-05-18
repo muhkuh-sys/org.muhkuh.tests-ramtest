@@ -568,6 +568,8 @@ aSDRAMTests = (
 ('nxhx4000_switch_mem_sdram_cr7',         'nxhx4000_switch/CR7_nxhx4000_switch_7813200R1_mem_sdram.xml'),
 ('nxhx4000_switch_mem_sdram_ca9',         'nxhx4000_switch/CA9_nxhx4000_switch_7813200R1_mem_sdram.xml'),
 
+('nxhx4100_mem_sdram_cr7',         		  'nxhx4100/CR7_nxhx4100_7823100R1_mem_sdram.xml'),
+
 )
 
 
