@@ -13,7 +13,7 @@
 		
 			<Option id="netx_mem_sdram">
 				<U32>0x030C0221</U32>    <!-- SDRAM general_ctrl register -->
-				<U32>0x02A32151</U32>    <!-- SDRAM timing_ctrl register -->
+				<U32>0x02A22151</U32>    <!-- SDRAM timing_ctrl register -->
 				<U32>0x00000023</U32>    <!-- SDRAM mr register -->
 				<U16>100</U16>           <!-- SDRAM powerup timeout in milliseconds -->
 			</Option>
