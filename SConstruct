@@ -147,7 +147,8 @@ tArcList0.AddFiles('standalone/',
 	#ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
 	)
 tArcList0.AddFiles('lua/',
-	tRamtestLua)
+	tRamtestLua,
+	'lua/test_class_ram.lua')
 tArcList0.AddFiles('templates/',
 	'lua/attributes_template.lua',
 	'lua/ramtest_template.lua',
