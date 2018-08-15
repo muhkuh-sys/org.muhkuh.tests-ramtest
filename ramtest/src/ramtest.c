@@ -136,13 +136,13 @@ typedef struct RAMTEST_PAIR_STRUCT
 
 } RAMTEST_PAIR_T;
 
-static const RAMTEST_PAIR_T testPairs[6] =
+static const RAMTEST_PAIR_T testPairs[3] =
 {
 	{  414505433   }, /* 64 bit: 9004440025, truncated to 32 bit: 414505433*/
 	{  4101696611  }, /* 300454440035 -> 4101696611*/
-	{  314159265   },
-	{  1215752195  }, /* 100000000003 -> 1215752195*/
-	{  99989       },
+//	{  314159265   },
+//	{  1215752195  }, /* 100000000003 -> 1215752195*/
+//	{  99989       },
 	{  7271477     }
 };
 
