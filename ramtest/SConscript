@@ -570,6 +570,8 @@ aSDRAMTests = (
 
 ('nxhx4100_mem_sdram_cr7',         		  'nxhx4100/CR7_nxhx4100_7823100R1_mem_sdram.xml'),
 
+('nxhx4000_hif_sdram_cr7_ca9',            'nxhx4000/CR7_CA9_nxhx4000_r3_hif_sdram.xml'),
+
 )
 
 
