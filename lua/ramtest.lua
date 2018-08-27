@@ -147,14 +147,16 @@ local function setup_sdram_netx4000(tPlugin, atSdramAttributes)
 		+ 2^5  * hif_mi_cfg          
 
 	printf("HIF_IO_CFG: 0x%08x", ulVal_HIF_IO_CFG)
-	
-	local Addr_ASIC_CTRL_ACCESS_KEY = 0xf408017c
-	local ulValue = tPlugin:read_data32(Addr_ASIC_CTRL_ACCESS_KEY)
-	tPlugin:write_data32(Addr_ASIC_CTRL_ACCESS_KEY, ulValue)
 
+	local Addr_clock_enable = 0xf4080138
+	local Addr_ASIC_CTRL_ACCESS_KEY = 0xf408017c
 	local Addr_HIF_IO_CFG = 0xf4080200
+	tPlugin:write_data32(Addr_ASIC_CTRL_ACCESS_KEY, tPlugin:read_data32(Addr_ASIC_CTRL_ACCESS_KEY))
 	tPlugin:write_data32(Addr_HIF_IO_CFG, ulVal_HIF_IO_CFG)
-	
+	local ulValue = bit.bor(tPlugin:read_data32(Addr_clock_enable), 0x00400000)
+	tPlugin:write_data32(Addr_ASIC_CTRL_ACCESS_KEY, tPlugin:read_data32(Addr_ASIC_CTRL_ACCESS_KEY))
+	tPlugin:write_data32(Addr_clock_enable, ulValue)
+
 	--set_hif_portcontrol_romcode(tPlugin)
 end
 
@@ -389,6 +391,46 @@ end
 
 
 local atPlatformAttributes = {
+	[romloader.ROMLOADER_CHIPTYP_NETX4000_FULL] = {
+		strAsic = 'netx4000',
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0xf40c0140,
+				ulArea_Start = 0x30000000,
+				setup = setup_sdram_netx4000
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0xf40c0240,
+				ulArea_Start = 0x20000000,
+				setup = setup_sdram_netx4000
+			}
+		},
+		ddr = {
+		  ulArea_Start = 0x40000000,
+		  setup = setup_ddr_netx4000
+		}
+	},
+
+	[romloader.ROMLOADER_CHIPTYP_NETX4100_SMALL] = {
+		strAsic = 'netx4100',
+		sdram = {
+			[INTERFACE_SDRAM_MEM] = {
+				ulController = 0xf40c0140,
+				ulArea_Start = 0x30000000,
+				setup = setup_sdram_netx4000
+			},
+			[INTERFACE_SDRAM_HIF] = {
+				ulController = 0xf40c0240,
+				ulArea_Start = 0x20000000,
+				setup = setup_sdram_netx4000
+			}
+		},
+		ddr = {
+		  ulArea_Start = 0x40000000,
+		  setup = setup_ddr_netx4000
+		}
+	},
+
 	[romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED] = {
 		strAsic = 'netx4000_relaxed',
 		sdram = {
@@ -607,8 +649,14 @@ end
 
 local function compare_netx_version(tPlugin, atRamAttributes)
 	local atChipTypes = {
+		['NETX4000'] = {
+			romloader.ROMLOADER_CHIPTYP_NETX4000_FULL
+		},
+		['NETX4100'] = {
+			romloader.ROMLOADER_CHIPTYP_NETX4100_SMALL
+		},
 		['NETX4000_RELAXED'] = {
-			romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED,
+			romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED
 		},
 		['NETX500'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX500,
@@ -805,7 +853,7 @@ function decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
 	if tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX100 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX500
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX50
 	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56 or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX56B
-	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED
+	or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000_FULL or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4100_SMALL
 	then
 		ulBusWidth = ulBusWidth * 2
 	elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 

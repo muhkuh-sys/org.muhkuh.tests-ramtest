@@ -40,7 +40,7 @@ function TestClassRam:_init(strTestName)
       help="This specifies the chip type for the parameter set.",
       mandatory=false,
       validate=parameters.test_choice_single,
-      constrains="NETX4000_RELAXED,NETX500,NETX90_MPW,NETX56,NETX50,NETX10"
+      constrains="NETX4000,NETX4100,NETX4000_RELAXED,NETX500,NETX90_MPW,NETX56,NETX50,NETX10"
     },
     {
       name="sdram_general_ctrl",
