@@ -35,7 +35,7 @@ unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 	ulColumns >>= HOSTSRT(sdram_general_ctrl_columns);
 	ulColumns   = 256U << ulColumns;
 
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX500 || ASIC_TYP==ASIC_TYP_NETX50 || ASIC_TYP==ASIC_TYP_NETX56
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000 || ASIC_TYP==ASIC_TYP_NETX500 || ASIC_TYP==ASIC_TYP_NETX50 || ASIC_TYP==ASIC_TYP_NETX56
 	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus32))!=0 )
 	{
 		/* 32 bit bus. */
@@ -287,7 +287,7 @@ static int setup_sdram_hif_netx90_mpw(unsigned long ulSdramGeneralCtrl)
 
 	return iResult;
 }
-#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
 static int setup_sdram_hif_netx4000_relaxed(unsigned long ulSdramGeneralCtrl)
 {
 	(void) ulSdramGeneralCtrl;
@@ -305,7 +305,7 @@ SDRAM_CTRL_T *get_sdram_controller(unsigned long ulTestAreaStart)
 	/* Get the SDRAM controller address from the test area address. */
 	ptSdram = NULL;
 
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
 	/* Is the test area inside the MEM SDRAM? */
 	if( ulTestAreaStart>=HOSTADDR(mem_sdram) && ulTestAreaStart<=HOSTADR(mem_sdram_sdram_end) )
 	{
@@ -379,7 +379,7 @@ int sdram_setup(unsigned long ulSdramStart, unsigned long ulSdramGeneralCtrl, un
 	if( ptSdram!=NULL )
 	{
 		/* Run the device specific initialization. */
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
 		/* Is the test area inside the HIF SDRAM? */
 		if( ulSdramStart>=HOSTADDR(hif_sdram) && ulSdramStart<=HOSTADR(hif_sdram_sdram_end) )
 		{

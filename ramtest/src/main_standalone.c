@@ -45,7 +45,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	 */
 	memset(&tTestParams, 0, sizeof(tTestParams));
 
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
+#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
 	/* On netx 4000, set hardcoded parameters for the moment. */
 	/* Set the start of the test area. */
 	tTestParams.ulStart = 0x40000000;
