@@ -17,8 +17,8 @@
 
 #if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED
 #       define options_parse 0x0411638d
-@ #elif ASIC_TYP==ASIC_TYP_NETX4000_FULL_SMALL
-@ #       define options_parse 0x04116a75
+#elif ASIC_TYP==ASIC_TYP_NETX4000
+#       define options_parse 0x04116a75
 #endif
 
 
