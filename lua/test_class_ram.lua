@@ -1,132 +1,75 @@
 local class = require 'pl.class'
-local TestClassRam = class()
+local TestClass = require 'test_class'
+local TestClassRam = class(TestClass)
 
 
-function TestClassRam:_init(strTestName)
-  self.parameters = require 'parameters'
-  self.pl = require'pl.import_into'()
+function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
+  self:super(strTestName, uiTestCase, tLogWriter, strLogLevel)
+
   self.ramtest = require 'ramtest'
 
-  self.CFG_strTestName = strTestName
+  local P = self.P
+  self:__parameter {
+    P:SC('interface', 'This is the interface where the RAM is connected.'):
+      required(true):
+      constraint('RAM,SDRAM_HIF,SDRAM_MEM,SRAM_HIF,SRAM_MEM'),
 
-  self.CFG_aParameterDefinitions = {
-    {
-      name="interface",
-      default=nil,
-      help="This is the interface where the RAM is connected.",
-      mandatory=true,
-      validate=parameters.test_choice_single,
-      constrains="RAM,SDRAM_HIF,SDRAM_MEM,SRAM_HIF,SRAM_MEM"
-    },
-    {
-      name="ram_start",
-      default=nil,
-      help="Only if interface is RAM: the start of the RAM area.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="ram_size",
-      default=nil,
-      help="Only if interface is RAM: The size of the RAM area in bytes.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sdram_netx",
-      default=nil,
-      help="This specifies the chip type for the parameter set.",
-      mandatory=false,
-      validate=parameters.test_choice_single,
-      constrains="NETX4000,NETX4100,NETX4000_RELAXED,NETX500,NETX90_MPW,NETX56,NETX50,NETX10"
-    },
-    {
-      name="sdram_general_ctrl",
-      default=nil,
-      help="Only if interface is SDRAM: The complete value for the netX general_ctrl register.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sdram_timing_ctrl",
-      default=nil,
-      help="Only if interface is SDRAM: The complete value for the netX timing_ctrl register.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sdram_mr",
-      default=nil,
-      help="Only if interface is SDRAM: The complete value for the netX mr register.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sdram_size_exponent",
-      default=23,
-      help="Only if interface is SDRAM: The size exponent.",
-      mandatory=true,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sram_chip_select",
-      default=nil,
-      help="Only if interface is SRAM: The chip select of the SRAM device.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sram_ctrl",
-      default=nil,
-      help="Only if interface is SRAM: The complete value for the netX extsramX_ctrl register.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="sram_size",
-      default=nil,
-      help="Only if interface is SRAM: The size of the SRAM area in bytes.",
-      mandatory=false,
-      validate=parameters.test_uint32,
-      constrains=nil
-    },
-    {
-      name="checks",
-      default="DATABUS,MARCHC,CHECKERBOARD,32BIT,BURST",
-      help="This determines which checks to run. Select one or more values from this list and separate them with commata: 08BIT, 16BIT, 32BIT and BURST.",
-      mandatory=true,
-      validate=parameters.test_choice_multiple,
-      constrains="DATABUS,08BIT,16BIT,32BIT,MARCHC,CHECKERBOARD,BURST"
-    },
-    {
-      name="loops",
-      default="1",
-      help="The number of loops to run.",
-      mandatory=true,
-      validate=parameters.test_uint32,
-      constrains=nil
-    }
+    P:U32('ram_start', 'Only if interface is RAM: the start of the RAM area.'):
+      required(false),
+
+    P:U32('ram_size', 'Only if interface is RAM: The size of the RAM area in bytes.'):
+      required(false),
+
+    P:SC('sdram_netx', 'This specifies the chip type for the parameter set.'):
+      required(false):
+      constraint('NETX4000,NETX4100,NETX4000_RELAXED,NETX500,NETX90_MPW,NETX56,NETX50,NETX10'),
+
+    P:U32('sdram_general_ctrl', 'Only if interface is SDRAM: The complete value for the netX general_ctrl register.'):
+      required(false),
+
+    P:U32('sdram_timing_ctrl', 'Only if interface is SDRAM: The complete value for the netX timing_ctrl register.'):
+      required(false),
+
+    P:U32('sdram_mr', 'Only if interface is SDRAM: The complete value for the netX mr register.'):
+      required(false),
+
+    P:U32('sdram_size_exponent', 'Only if interface is SDRAM: The size exponent.'):
+      default(23):
+      required(true),
+
+    P:U32('sram_chip_select', 'Only if interface is SRAM: The chip select of the SRAM device.'):
+      required(false),
+
+    P:U32('sram_ctrl', 'Only if interface is SRAM: The complete value for the netX extsramX_ctrl register.'):
+      required(false),
+
+    P:U32('sram_size', 'Only if interface is SRAM: The size of the SRAM area in bytes.'):
+      required(false),
+
+    P:MC('checks', 'This determines which checks to run. Select one or more values from this list and separate them with commata: 08BIT, 16BIT, 32BIT and BURST.'):
+      default('DATABUS,MARCHC,CHECKERBOARD,32BIT,BURST'):
+      required(true):
+      constraint('DATABUS,08BIT,16BIT,32BIT,MARCHC,CHECKERBOARD,BURST'),
+
+    P:U32('loops', 'The number of loops to run.'):
+      default(1):
+      required(true)
   }
 end
 
 
 
-function TestClassRam:run(aParameters, tLog)
+function TestClassRam:run()
+  local atParameter = self.atParameter
+  local tLog = self.tLog
+
   ----------------------------------------------------------------------
   --
   -- Parse the parameters and collect all options.
   --
 
   -- Parse the interface option.
-  local strValue = aParameters["interface"]
+  local strValue = atParameter["interface"]:get()
   local atInterfaces = {
     ["RAM"]       = ramtest.INTERFACE_RAM,
     ["SDRAM_HIF"] = ramtest.INTERFACE_SDRAM_HIF,
@@ -140,7 +83,7 @@ function TestClassRam:run(aParameters, tLog)
   end
 
   -- Parse the test list.
-  local astrElements = parameters.split_string(aParameters["checks"])
+  local astrElements = atParameter["checks"]:get()
   local ulChecks = 0
   local atTests = {
     ["DATABUS"]      = ramtest.CHECK_DATABUS,
@@ -159,7 +102,7 @@ function TestClassRam:run(aParameters, tLog)
     ulChecks = ulChecks + ulValue
   end
 
-  local ulLoops = tonumber(aParameters["loops"])
+  local ulLoops = atParameter["loops"]:get()
 
 
   local atRamAttributes = {
@@ -168,33 +111,33 @@ function TestClassRam:run(aParameters, tLog)
   -- Check if the required parameters are present. This depends on the interface.
   -- The RAM interface needs ram_start and ram_size.
   if ulInterface==ramtest.INTERFACE_RAM then
-    if aParameters["ram_start"]==nil or aParameters["ram_size"] then
+    if atParameter["ram_start"]:get()==nil or atParameter["ram_size"]:get() then
       error("The RAM interface needs the ram_start and ram_size parameter set.")
     end
 
-    atRamAttributes["ram_start"]  = tonumber(aParameters["ram_start"])
-    atRamAttributes["ram_size"]   = tonumber(aParameters["ram_size"])
+    atRamAttributes["ram_start"]  = atParameter["ram_start"]:get()
+    atRamAttributes["ram_size"]   = atParameter["ram_size"]:get()
   -- The SDRAM interfaces need sdram_general_ctrl, sdram_timing_ctrl, sdram_mr.
   -- NOTE: The sdram_size_exponent is optional. It can be derived from the sdram_general_ctrl.
   elseif ulInterface==ramtest.INTERFACE_SDRAM_HIF or ulInterface==ramtest.INTERFACE_SDRAM_MEM then
-    if aParameters["sdram_netx"]==nil or aParameters["sdram_general_ctrl"]==nil or aParameters["sdram_timing_ctrl"]==nil or aParameters["sdram_mr"]==nil then
+    if atParameter["sdram_netx"]:get()==nil or atParameter["sdram_general_ctrl"]:get()==nil or atParameter["sdram_timing_ctrl"]:get()==nil or atParameter["sdram_mr"]:get()==nil then
       error("The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
     end
 
-    atRamAttributes["netX"]          = aParameters["sdram_netx"]
-    atRamAttributes["general_ctrl"]  = tonumber(aParameters["sdram_general_ctrl"])
-    atRamAttributes["timing_ctrl"]   = tonumber(aParameters["sdram_timing_ctrl"])
-    atRamAttributes["mr"]            = tonumber(aParameters["sdram_mr"])
-    atRamAttributes["size_exponent"] = tonumber(aParameters["sdram_size_exponent"])
+    atRamAttributes["netX"]          = atParameter["sdram_netx"]:get()
+    atRamAttributes["general_ctrl"]  = atParameter["sdram_general_ctrl"]:get()
+    atRamAttributes["timing_ctrl"]   = atParameter["sdram_timing_ctrl"]:get()
+    atRamAttributes["mr"]            = atParameter["sdram_mr"]:get()
+    atRamAttributes["size_exponent"] = atParameter["sdram_size_exponent"]:get()
   -- The SRAM interface needs sram_chip_select, sram_ctrl and sram_size.
   elseif ulInterface==ramtest.INTERFACE_SRAM_HIF or ulInterface==ramtest.INTERFACE_SRAM_MEM then
-    if aParameters["sram_chip_select"]==nil or aParameters["sram_ctrl"]==nil or aParameters["sram_size"]==nil then
+    if atParameter["sram_chip_select"]:get()==nil or atParameter["sram_ctrl"]:get()==nil or atParameter["sram_size"]:get()==nil then
       error("The SRAM interface needs the sram_chip_select, sram_ctrl and sram_size parameter set.")
     end
 
-    atRamAttributes["sram_chip_select"]  = tonumber(aParameters["sram_chip_select"])
-    atRamAttributes["sram_ctrl"]         = tonumber(aParameters["sram_ctrl"])
-    atRamAttributes["sram_size"]         = tonumber(aParameters["sram_size"])
+    atRamAttributes["sram_chip_select"]  = atParameter["sram_chip_select"]:get()
+    atRamAttributes["sram_ctrl"]         = atParameter["sram_ctrl"]:get()
+    atRamAttributes["sram_size"]         = atParameter["sram_size"]:get()
   else
     error("Unknown interface ID:"..ulInterface)
   end
