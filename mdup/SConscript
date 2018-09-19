@@ -44,11 +44,19 @@ sources = """
 aCppPath = ['src', '#platform/src', '#platform/src/lib']
 
 tEnv4000R = atEnv.NETX4000_RELAXED.Clone()
-tEnv4000R.Replace(LDFILE = 'src/netx4000/netx4000.ld')
+tEnv4000R.Replace(LDFILE = 'src/netx4000/netx4000_relaxed.ld')
 tEnv4000R.Append(CPPPATH = aCppPath)
-tSrc4000R = tEnv4000R.SetBuildPath('targets/netx4000', 'src', sources)
-tElf4000R = tEnv4000R.Elf('targets/netx4000/mdup.elf', tSrc4000R + tEnv4000R['PLATFORM_LIBRARY'])
-tTxt4000R = tEnv4000R.ObjDump('targets/netx4000/mdup.txt', tElf4000R, OBJDUMP_FLAGS=['--disassemble-all', '--disassemble', '--source', '--all-headers', '--wide'])
-mdup_netx4000_relaxed = tEnv4000R.ObjCopy('targets/netx4000/mdup_netx4000_relaxed.bin', tElf4000R)
+tSrc4000R = tEnv4000R.SetBuildPath('targets/netx4000_relaxed', 'src', sources)
+tElf4000R = tEnv4000R.Elf('targets/netx4000_relaxed/mdup.elf', tSrc4000R + tEnv4000R['PLATFORM_LIBRARY'])
+tTxt4000R = tEnv4000R.ObjDump('targets/netx4000_relaxed/mdup.txt', tElf4000R, OBJDUMP_FLAGS=['--disassemble-all', '--disassemble', '--source', '--all-headers', '--wide'])
+mdup_netx4000_relaxed = tEnv4000R.ObjCopy('targets/netx4000_relaxed/mdup_netx4000_relaxed.bin', tElf4000R)
 
-Export('mdup_netx4000_relaxed')
+tEnv4000 = atEnv.NETX4000.Clone()
+tEnv4000.Replace(LDFILE = 'src/netx4000/netx4000.ld')
+tEnv4000.Append(CPPPATH = aCppPath)
+tSrc4000 = tEnv4000.SetBuildPath('targets/netx4000', 'src', sources)
+tElf4000 = tEnv4000.Elf('targets/netx4000/mdup.elf', tSrc4000 + tEnv4000['PLATFORM_LIBRARY'])
+tTxt4000 = tEnv4000.ObjDump('targets/netx4000/mdup.txt', tElf4000, OBJDUMP_FLAGS=['--disassemble-all', '--disassemble', '--source', '--all-headers', '--wide'])
+mdup_netx4000 = tEnv4000.ObjCopy('targets/netx4000/mdup_netx4000.bin', tElf4000)
+
+Export('mdup_netx4000_relaxed', 'mdup_netx4000')

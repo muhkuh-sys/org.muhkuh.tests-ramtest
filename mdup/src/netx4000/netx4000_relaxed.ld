@@ -48,11 +48,11 @@ SECTIONS
 	/* NOTE: Do not place this into a section.
 	 *       Otherwise the origin of the section is added to the symbol.
 	 */
-	tNetxHifSram = 0x23CB0;
-	tNetxMemSram = 0x23CC8;
-	memory_setup_sdram = 0x041162e1;
-	memory_setup_sram = 0x041163d5;
-	memory_setup_ddr = 0x041164f1;
+	tNetxHifSram = 0x23C88;
+	tNetxMemSram = 0x23CA0;
+	memory_setup_sdram = 0x04115bb9;
+	memory_setup_sram = 0x04115cb1;
+	memory_setup_ddr = 0x04115dd5;
 
 	.code :
 	{
