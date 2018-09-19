@@ -48,6 +48,7 @@ env_cortexR7.CreateCompilerEnv('NETX4000', ['arch=armv7', 'thumb'], ['arch=armv7
 # Create a build environment for the Cortex-M4 based netX chips.
 env_cortexM4 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.9', 'asciidoc'])
 env_cortexM4.CreateCompilerEnv('NETX90_MPW', ['arch=armv7', 'thumb'], ['arch=armv7e-m', 'thumb'])
+env_cortexM4.CreateCompilerEnv('NETX90', ['arch=armv7', 'thumb'], ['arch=armv7e-m', 'thumb'])
 
 # Build the platform libraries.
 SConscript('platform/SConscript')
@@ -75,10 +76,10 @@ SConscript('setup_hif_io/SConscript')
 Import('setup_netx56', 'setup_netx90_mpw')
 
 SConscript('apply_options/SConscript')
-Import('apply_options_netx4000_relaxed')
+Import('apply_options_netx4000_relaxed', 'apply_options_netx4000')
 
 SConscript('mdup/SConscript')
-Import('mdup_netx4000_relaxed')
+Import('mdup_netx4000_relaxed', 'mdup_netx4000')
 
 
 #----------------------------------------------------------------------------
@@ -138,7 +139,9 @@ tArcList0.AddFiles('netx/',
 	setup_netx56,
 	setup_netx90_mpw,
 	apply_options_netx4000_relaxed,
-	mdup_netx4000_relaxed)
+	apply_options_netx4000,
+	mdup_netx4000_relaxed,
+	mdup_netx4000)
 tArcList0.AddFiles('standalone/',
 #	ramtest_standalone_netx4000,
 	ramtest_standalone_netx500,
@@ -150,6 +153,7 @@ tArcList0.AddFiles('standalone/',
 	)
 tArcList0.AddFiles('lua/',
 	tRamtestLua,
+	'lua/apply_options.lua',
 	'lua/test_class_ram.lua')
 tArcList0.AddFiles('templates/',
 	'lua/attributes_template.lua',
@@ -186,9 +190,12 @@ atCopy = {
     'targets/testbench/netx/setup_netx56.bin':                    setup_netx56,
     'targets/testbench/netx/setup_netx90_mpw.bin':                setup_netx90_mpw,
     'targets/testbench/netx/apply_options_netx4000_relaxed.bin':  apply_options_netx4000_relaxed,
+    'targets/testbench/netx/apply_options_netx4000.bin':          apply_options_netx4000,
     'targets/testbench/netx/mdup_netx4000_relaxed.bin':           mdup_netx4000_relaxed,
+    'targets/testbench/netx/mdup_netx4000.bin':                   mdup_netx4000,
 
     # Copy all LUA scripts.
+    'targets/testbench/lua/apply_options.lua':                    'lua/apply_options.lua',
     'targets/testbench/lua/ramtest.lua':                          tRamtestLua
 }
 for strPathDst, strPathSrc in atCopy.iteritems():

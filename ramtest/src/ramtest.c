@@ -956,7 +956,7 @@ static RAMTEST_RESULT_T ram_test_32bit(RAMTEST_PARAMETER_T *ptRamTestParameter, 
 
 static RAMTEST_RESULT_T ram_test_burst(RAMTEST_PARAMETER_T *ptRamTestParameter, const RAMTEST_PAIR_T *ptTestPair)
 {
-#if ASIC_TYP==ASIC_TYP_NETX90_MPW
+#if ASIC_TYP==ASIC_TYP_NETX90_MPW || ASIC_TYP==ASIC_TYP_NETX90
 	(void) ptRamTestParameter;
 	(void) ptTestPair;
 	return RAMTEST_RESULT_OK;
@@ -1295,7 +1295,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		uprintf("     L1C/SMP blocks/preload\n");
 	}
 	
-#if ASIC_TYP!=ASIC_TYP_NETX90_MPW
+#if ASIC_TYP!=ASIC_TYP_NETX90_MPW && ASIC_TYP!=ASIC_TYP_NETX90
 	ramtest_print_performance_tests(ptParameter);
 #endif
 
@@ -1358,7 +1358,7 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 		}
 
 
-#if ASIC_TYP!=ASIC_TYP_NETX90_MPW
+#if ASIC_TYP!=ASIC_TYP_NETX90_MPW && ASIC_TYP!=ASIC_TYP_NETX90
 		/* TODO: does it make sense to run the performance tests multiple times in a loop? */
 		if (ptParameter->ulPerfTestCases != 0)
 		{

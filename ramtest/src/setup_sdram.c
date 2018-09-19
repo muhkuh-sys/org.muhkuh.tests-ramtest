@@ -69,6 +69,17 @@ unsigned long sdram_get_size(unsigned long ulSdramGeneralCtrl)
 		/* 8 bit bus. */
 		ulBus = 1;
 	}
+#elif ASIC_TYP==ASIC_TYP_NETX90
+	if( (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus16))!=0 )
+	{
+		/* 16 bit bus. */
+		ulBus = 2;
+	}
+	else
+	{
+		/* 8 bit bus. */
+		ulBus = 1;
+	}
 #endif
 
 	ulSize  = ulBanks * ulRows * ulColumns * ulBus;
@@ -195,7 +206,7 @@ static int setup_sdram_hif_netx56(unsigned long ulSdramGeneralCtrl)
 
 	return iResult;
 }
-#elif ASIC_TYP==ASIC_TYP_NETX90_MPW
+#elif ASIC_TYP==ASIC_TYP_NETX90_MPW || ASIC_TYP==ASIC_TYP_NETX90
 typedef struct HIF_SIZE_TO_ADRCFG_STRUCT
 {
 	unsigned long ulSDRAMSize;
@@ -265,8 +276,12 @@ static int setup_sdram_hif_netx90_mpw(unsigned long ulSdramGeneralCtrl)
 	else
 	{
 		/* Get the configuration value for the data bus size. */
+#if ASIC_TYP==ASIC_TYP_NETX90_MPW
 		/* NOTE: The netX90 regdef has a typo in the SDRAM controller. The signal sdram_general_ctrl_dbus16 is named sdram_general_ctrl_dbus32. */
 		if( (ulSdramGeneralCtrl&HOSTMSK(sdram_general_ctrl_dbus32))==0 )
+#elif ASIC_TYP==ASIC_TYP_NETX90
+		if( (ulSdramGeneralCtrl&HOSTMSK(sdram_general_ctrl_dbus16))==0 )
+#endif
 		{
 			/* The data bus has a size of 8 bits. */
 			ulDataCfg  = 0U << HOSTSRT(hif_io_cfg_hif_mi_cfg);
@@ -324,7 +339,7 @@ SDRAM_CTRL_T *get_sdram_controller(unsigned long ulTestAreaStart)
 		ptSdram = (NX500_EXT_SDRAM_CTRL_AREA_T*)HOSTADDR(ext_sdram_ctrl);
 	}
 
-#elif ASIC_TYP==ASIC_TYP_NETX90_MPW
+#elif ASIC_TYP==ASIC_TYP_NETX90_MPW || ASIC_TYP==ASIC_TYP_NETX90
 	/* Is the test area inside the SDRAM? */
 	if( ulTestAreaStart>=HOSTADDR(sdram) && ulTestAreaStart<=HOSTADR(sdram_end) )
 	{
@@ -386,7 +401,7 @@ int sdram_setup(unsigned long ulSdramStart, unsigned long ulSdramGeneralCtrl, un
 			/* HIF SDRAM needs special preparation. */
 			iResult = setup_sdram_hif_netx4000_relaxed(ulSdramGeneralCtrl);
 		}
-#elif ASIC_TYP==ASIC_TYP_NETX90_MPW
+#elif ASIC_TYP==ASIC_TYP_NETX90_MPW || ASIC_TYP==ASIC_TYP_NETX90
 		/* Is the test area inside the SDRAM? */
 		if( ulSdramStart>=HOSTADDR(sdram) && ulSdramStart<=HOSTADR(sdram_end) )
 		{

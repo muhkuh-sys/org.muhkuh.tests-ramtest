@@ -22,7 +22,7 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
 
     P:SC('sdram_netx', 'This specifies the chip type for the parameter set.'):
       required(false):
-      constraint('NETX4000,NETX4100,NETX4000_RELAXED,NETX500,NETX90_MPW,NETX56,NETX50,NETX10'),
+      constraint('NETX4000,NETX4100,NETX4000_RELAXED,NETX500,NETX90_MPW,NETX90,NETX56,NETX50,NETX10'),
 
     P:U32('sdram_general_ctrl', 'Only if interface is SDRAM: The complete value for the netX general_ctrl register.'):
       required(false),

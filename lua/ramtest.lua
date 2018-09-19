@@ -535,6 +535,20 @@ local atPlatformAttributes = {
     ddr = nil
   },
 
+  [romloader.ROMLOADER_CHIPTYP_NETX90] = {
+    strAsic = 'netx90',
+    sdram = {
+      [INTERFACE_SDRAM_MEM] = {
+      },
+      [INTERFACE_SDRAM_HIF] = {
+        ulController = 0xff401540,
+        ulArea_Start = 0x10000000,
+        setup = setup_sdram_hif_netx90_mpw
+      }
+    },
+    ddr = nil
+  },
+
 	[romloader.ROMLOADER_CHIPTYP_NETX56] = {
 		strAsic = 'netx56',
 		sdram = {
@@ -678,6 +692,9 @@ local function compare_netx_version(tPlugin, atRamAttributes)
 		},
 		['NETX90_MPW'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX90_MPW,
+		},
+		['NETX90'] = {
+			romloader.ROMLOADER_CHIPTYP_NETX90,
 		},
 		['NETX56'] = {
 			romloader.ROMLOADER_CHIPTYP_NETX56,

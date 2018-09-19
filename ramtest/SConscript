@@ -211,6 +211,13 @@ src_netx90_mpw_t = env_netx90_mpw_t.SetBuildPath('targets/netx90_mpw/muhkuh_test
 elf_netx90_mpw_t = env_netx90_mpw_t.Elf('targets/netx90_mpw/muhkuh_test/ramtest.elf', src_netx90_mpw_t + env_netx90_mpw_t['PLATFORM_LIBRARY'])
 ramtest_netx90_mpw = env_netx90_mpw_t.ObjCopy('targets/netx90_mpw/muhkuh_test/ramtest_netx90_mpw.bin', elf_netx90_mpw_t)
 
+env_netx90_t = atEnv.NETX90.Clone()
+env_netx90_t.Replace(LDFILE = 'src/netx90/netx90.ld')
+env_netx90_t.Append(CPPPATH = aCppPath)
+src_netx90_t = env_netx90_t.SetBuildPath('targets/netx90/muhkuh_test', 'src', sources_common+sources_test)
+elf_netx90_t = env_netx90_t.Elf('targets/netx90/muhkuh_test/ramtest.elf', src_netx90_t + env_netx90_t['PLATFORM_LIBRARY'])
+ramtest_netx90 = env_netx90_t.ObjCopy('targets/netx90/muhkuh_test/ramtest_netx90.bin', elf_netx90_t)
+
 env_netx56_t = atEnv.NETX56.Clone()
 env_netx56_t.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_t.Append(CPPPATH = aCppPath)
@@ -232,7 +239,7 @@ src_netx10_t = env_netx10_t.SetBuildPath('targets/netx10/muhkuh_test', 'src', so
 elf_netx10_t = env_netx10_t.Elf('targets/netx10/muhkuh_test/ramtest.elf', src_netx10_t + env_netx10_t['PLATFORM_LIBRARY'])
 ramtest_netx10 = env_netx10_t.ObjCopy('targets/netx10/muhkuh_test/ramtest_netx10.bin', elf_netx10_t)
 
-Export('ramtest_netx4000_relaxed', 'ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Export('ramtest_netx4000_relaxed', 'ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx90', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 
 
 
