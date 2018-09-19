@@ -358,31 +358,45 @@ end
 local function setup_ddr_netx4000(tPlugin, atDdrAttributes)
   -- Is the RAP system running with 400 or 600MHz?
   local ulSpeed = 400
-  local tConfiguration = atDdrAttributes['ddr_parameter_400']
+  local strConfigurationFile = atDdrAttributes['ddr_parameter_400']
   -- Read the RAP_SYSCTRL_BOOTMODE register.
   local ulValue = tPlugin:read_data32(0xf8000000)
   -- Get the SET_PLL_1200 bit.
   ulValue = bit.band(ulValue, 0x00000100)
   if ulValue~=0 then
     ulSpeed = 600
-    local tConfiguration = atDdrAttributes['ddr_parameter_600']
+    strConfigurationFile = atDdrAttributes['ddr_parameter_600']
   end
   print(string.format('The RAP system is running with %dMHz.', ulSpeed))
-  if tConfiguration==nil then
+  if strConfigurationFile==nil then
     error(string.format('No DDR parameter provided for %dMHz.', ulSpeed))
   end
 
+  local applyOptions = require 'apply_options'()
+  local strOpts = applyOptions:parse(strConfigurationFile)
+
+  tester.hexdump(strOpts)
+
   -- Apply the parameters.
   -- Basically this is a programatic version of the "LCFG" console command.
-  local sizConfiguration = string.len(tConfiguration)
-  local strSize = string.char( bit.band(sizConfiguration,0xff), bit.band(bit.rshift(sizConfiguration,8),0xff), bit.band(bit.rshift(sizConfiguration,16),0xff), bit.band(bit.rshift(sizConfiguration,24),0xff) )
-  local ulOptionsResult = tester.mbin_simple_run(nil, tPlugin, 'netx/apply_options_netx4000_relaxed.bin', strSize .. tConfiguration)
+  local sizOpts = string.len(strOpts)
+  local strSize = string.char( bit.band(sizOpts,0xff), bit.band(bit.rshift(sizOpts,8),0xff), bit.band(bit.rshift(sizOpts,16),0xff), bit.band(bit.rshift(sizOpts,24),0xff) )
+  local strChipType
+  local tChipType = tPlugin:GetChiptyp()
+  if tChipType==romloader.ROMLOADER_CHIPTYP_NETX4000_FULL or tChipType==romloader.ROMLOADER_CHIPTYP_NETX4100_SMALL then
+    strChipType = '4000'
+  elseif tChipType==romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED then
+    strChipType = '4000_relaxed'
+  else
+    error('Unknown chip type for DDR.')
+  end
+  local ulOptionsResult = tester.mbin_simple_run(nil, tPlugin, string.format('netx/apply_options_netx%s.bin', strChipType), strSize .. strOpts)
   if ulOptionsResult~=0 then
     error(string.format('Falied to apply the option file for %dMHz: 0x%08x', ulSpeed, ulOptionsResult))
   end
 
   -- Setup the DDR controller.
-  local ulMdupResult = tester.mbin_simple_run(nil, tPlugin, 'netx/mdup_netx4000_relaxed.bin', 10)
+  local ulMdupResult = tester.mbin_simple_run(nil, tPlugin, string.format('netx/mdup_netx%s.bin', strChipType), 10)
   if ulMdupResult~=0 then
     error(string.format('Falied to setup the DDR controller: 0x%08x', ulMdupResult))
   end
@@ -822,6 +836,9 @@ function disable_ram(tPlugin, atRamAttributes)
 
 		-- Disable the RAM controller.
 		tPlugin:write_data32(ulController, 0x03000000)
+	elseif tInterface==INTERFACE_DDR then
+--		error('Continue here')
+-- TODO: Add a shutdown routine here.
 	else
 		error("Unknown interface ID:"..tInterface)
 	end
