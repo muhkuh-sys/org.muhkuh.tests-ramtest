@@ -66,7 +66,7 @@ atEnv.DEFAULT.Version('#targets/version/version.h', 'templates/version.h')
 # Build all sub-projects.
 #
 SConscript('ramtest/SConscript')
-Import('ramtest_netx4000_relaxed', 'ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
+Import('ramtest_netx4000_relaxed', 'ramtest_netx4000', 'ramtest_netx500', 'ramtest_netx90_mpw', 'ramtest_netx90', 'ramtest_netx56', 'ramtest_netx50', 'ramtest_netx10')
 Import('ramtest_standalone_netx500', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
 #Import('ramtest_standalone_cifx4000_sdram')
 #Import('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
@@ -133,6 +133,7 @@ tArcList0.AddFiles('netx/',
 	ramtest_netx50,
 	ramtest_netx56,
 	ramtest_netx90_mpw,
+	ramtest_netx90,
 	ramtest_netx500,
 	ramtest_netx4000_relaxed,
 	ramtest_netx4000,
@@ -183,6 +184,7 @@ atCopy = {
     'targets/testbench/netx/ramtest_netx50.bin':                  ramtest_netx50,
     'targets/testbench/netx/ramtest_netx56.bin':                  ramtest_netx56,
     'targets/testbench/netx/ramtest_netx90_mpw.bin':              ramtest_netx90_mpw,
+    'targets/testbench/netx/ramtest_netx90.bin':                  ramtest_netx90,
     'targets/testbench/netx/ramtest_netx500.bin':                 ramtest_netx500,
     'targets/testbench/netx/ramtest_netx4000_relaxed.bin':        ramtest_netx4000_relaxed,
     'targets/testbench/netx/ramtest_netx4000.bin':                ramtest_netx4000,
