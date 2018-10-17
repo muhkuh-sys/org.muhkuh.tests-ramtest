@@ -12,7 +12,7 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
   self:__parameter {
     P:SC('interface', 'This is the interface where the RAM is connected.'):
       required(true):
-      constraint('RAM,SDRAM_HIF,SDRAM_MEM,SRAM_HIF,SRAM_MEM'),
+      constraint('RAM,SDRAM_HIF,SDRAM_MEM,SRAM_HIF,SRAM_MEM,DDR'),
 
     P:U32('ram_start', 'Only if interface is RAM: the start of the RAM area.'):
       required(false),
@@ -46,6 +46,15 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
     P:U32('sram_size', 'Only if interface is SRAM: The size of the SRAM area in bytes.'):
       required(false),
 
+    P:P('ddr_parameter_400', 'Only if interface is DDR: the DDR parameter file for 400MHz.'):
+      required(false),
+
+    P:P('ddr_parameter_600', 'Only if interface is DDR: the DDR parameter file for 600MHz.'):
+      required(false),
+
+    P:U32('ddr_size_exponent', 'Only if interface is DDR: The size exponent.'):
+      required(false),
+
     P:MC('checks', 'This determines which checks to run. Select one or more values from this list and separate them with commata: 08BIT, 16BIT, 32BIT and BURST.'):
       default('DATABUS,MARCHC,CHECKERBOARD,32BIT,BURST'):
       required(true):
@@ -75,7 +84,8 @@ function TestClassRam:run()
     ["SDRAM_HIF"] = ramtest.INTERFACE_SDRAM_HIF,
     ["SDRAM_MEM"] = ramtest.INTERFACE_SDRAM_MEM,
     ["SRAM_HIF"]  = ramtest.INTERFACE_SRAM_HIF,
-    ["SRAM_MEM"]  = ramtest.INTERFACE_SRAM_MEM
+    ["SRAM_MEM"]  = ramtest.INTERFACE_SRAM_MEM,
+    ["DDR"]       = ramtest.INTERFACE_DDR
   }
   local ulInterface = atInterfaces[strValue]
   if ulInterface==nil then
@@ -138,6 +148,17 @@ function TestClassRam:run()
     atRamAttributes["sram_chip_select"]  = atParameter["sram_chip_select"]:get()
     atRamAttributes["sram_ctrl"]         = atParameter["sram_ctrl"]:get()
     atRamAttributes["sram_size"]         = atParameter["sram_size"]:get()
+
+  -- The DDR interface needs the parameter files for 400 and 600MHz and the size exponent.
+  elseif ulInterface==ramtest.INTERFACE_DDR then
+    if atParameter['ddr_parameter_400']:get()==nil or atParameter['ddr_parameter_600']:get()==nil or atParameter['ddr_size_exponent']:get()==nil then
+      error('The DDR interface needs the ddr_parameter_400, ddr_parameter_600 and ddr_size_exponent parameter set.')
+    end
+
+    atRamAttributes['ddr_parameter_400'] = atParameter['ddr_parameter_400']:get()
+    atRamAttributes['ddr_parameter_600'] = atParameter['ddr_parameter_600']:get()
+    atRamAttributes['size_exponent']     = atParameter['ddr_size_exponent']:get()
+
   else
     error("Unknown interface ID:"..ulInterface)
   end
