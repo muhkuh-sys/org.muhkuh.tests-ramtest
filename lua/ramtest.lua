@@ -17,6 +17,7 @@
 --               added portcontrol routines, call manually if required
 -- 22.10.18 SL * function to print phaseshift test results externally visible
 --             * add functions to set up pad control on netx 90 
+--             * add CHECK_SEQUENCE + CHECK_MEMCPY to phaseshift test
 
 module("ramtest", package.seeall)
 
@@ -1154,7 +1155,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0x000fffff)
 	local ulSDRAMStart     = get_ram_start(tPlugin, atSdramAttributes)
 	local ulSDRAMSize      = get_ram_size(tPlugin, atSdramAttributes)
-	local ulChecks         = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC
+	local ulChecks         = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC + CHECK_SEQUENCE + CHECK_MEMCPY
 	
 	-- init the result matrix, define print function
 	local aiTestResults = {}
