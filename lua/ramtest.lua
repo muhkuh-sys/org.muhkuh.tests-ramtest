@@ -15,6 +15,7 @@
 -- 23.02.17 SL * fixed chip types netx 4000 relaxed/90 mpw in decode_sdram_geometry
 --               fixed setup_sdram_netx4000 
 --               added portcontrol routines, call manually if required
+-- 22.10.18 SL * function to print phaseshift test results externally visible
 
 module("ramtest", package.seeall)
 
@@ -1066,32 +1067,6 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 		aiTestResults[iClockPhase] = {}
 	end
 
-	local function printf(...) print(string.format(...)) end
-
-	local function printResults()
-		print(" ")
-		print("---------------+------------------")
-		print("  Sample phase:|  0  1  2  3  4  5")
-		print("---------------+------------------")
-		for iClockPhase = 0, 5 do
-			local strLine = string.format("Clock phase: %d |", iClockPhase)
-			for iSamplePhase = 0, 5 do
-				local ulResult = aiTestResults[iClockPhase][iSamplePhase]
-				local strResult
-				if ulResult then
-					strResult = string.format("%3d", ulResult)
-				else
-					strResult = "  -"
-				end
-				strLine = strLine .. strResult
-			end
-			print(strLine)
-		end
-		print("---------------+------------------")
-		print("0 = Ok   1 = failed   - = not tested")
-		print(" ")
-	end
-	
 	-- run the test
 	local ulLoops          = 1
 
@@ -1120,6 +1095,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 					printf(" ")
 					printf("======================================================================================")
 					printf("Clock phase: %d   Sample phase: %d   timing_ctrl: 0x%08x", iClockPhase, iSamplePhase, atSdramAttributes.timing_ctrl)
+					printf("Ram test loops %d times", ulLoops)
 					printf("======================================================================================")
 					printf(" ")
 
@@ -1129,7 +1105,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 					disable_ram(tPlugin, atSdramAttributes)
 
 					printf("Clock phase: %d   Sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
-					printResults()
+					printPhaseTestResults(aiTestResults)
 				end
 			end
 		end
@@ -1137,6 +1113,31 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 	end
 
 	return aiTestResults
+end
+
+
+function printPhaseTestResults(aiTestResults)
+	print(" ")
+	print("---------------+------------------")
+	print("  Sample phase:|  0  1  2  3  4  5")
+	print("---------------+------------------")
+	for iClockPhase = 0, 5 do
+		local strLine = string.format("Clock phase: %d |", iClockPhase)
+		for iSamplePhase = 0, 5 do
+			local ulResult = aiTestResults[iClockPhase][iSamplePhase]
+			local strResult
+			if ulResult then
+				strResult = string.format("%3d", ulResult)
+			else
+				strResult = "  -"
+			end
+			strLine = strLine .. strResult
+		end
+		print(strLine)
+	end
+	print("---------------+------------------")
+	print("0 = Ok   1 = failed   - = not tested")
+	print(" ")
 end
 
 
