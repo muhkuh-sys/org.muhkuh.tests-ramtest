@@ -16,6 +16,7 @@
 --               fixed setup_sdram_netx4000 
 --               added portcontrol routines, call manually if required
 -- 22.10.18 SL * function to print phaseshift test results externally visible
+--             * add functions to set up pad control on netx 90 
 
 module("ramtest", package.seeall)
 
@@ -225,6 +226,101 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 
 
+-- A0..A12
+atNetx90PadCtrl_addr={
+{pin="hif_a0",  address=0xff401118},
+{pin="hif_a1",  address=0xff40111c},
+{pin="hif_a2",  address=0xff401120},
+{pin="hif_a3",  address=0xff401124},
+{pin="hif_a4",  address=0xff401128},
+{pin="hif_a5",  address=0xff40112c},
+{pin="hif_a6",  address=0xff401130},
+{pin="hif_a7",  address=0xff401134},
+{pin="hif_a8",  address=0xff401138},
+{pin="hif_a9",  address=0xff40113c},
+{pin="hif_a10", address=0xff401140},
+{pin="hif_a11", address=0xff401144},
+{pin="hif_a12", address=0xff401148},
+}
+
+atNetx90PadCtrl_data={
+-- D0..D7
+{pin="mii0_txen",        address=0xff401060},
+{pin="mii0_col",         address=0xff401064},
+{pin="mii0_crs",         address=0xff401068},
+{pin="phy0_led_link_in", address=0xff40106c},
+{pin="mii1_rxer",        address=0xff401088},
+{pin="mii1_col",         address=0xff4010a4},
+{pin="mii1_crs",         address=0xff4010a8},
+{pin="phy1_led_link_in", address=0xff4010ac},
+
+-- D8..D15
+{pin="hif_d0",           address=0xff401160},
+{pin="hif_d1",           address=0xff401164},
+{pin="hif_d2",           address=0xff401168},
+{pin="hif_d3",           address=0xff40116c},
+{pin="hif_d4",           address=0xff401170},
+{pin="hif_d5",           address=0xff401174},
+{pin="hif_d6",           address=0xff401178},
+{pin="hif_d7",           address=0xff40117c},
+}
+
+atNetx90PadCtrl_ctrl={
+{pin="hif_a13",    address=0xff40114c},
+{pin="hif_a14",    address=0xff401150},
+{pin="hif_a15",    address=0xff401154},
+{pin="hif_a16",    address=0xff401158},
+{pin="hif_a17",    address=0xff40115c},
+{pin="hif_bhen",   address=0xff4011a0},
+{pin="hif_csn",    address=0xff4011a4},
+{pin="hif_wrn",    address=0xff4011ac},
+{pin="hif_rdy",    address=0xff4011b0},
+{pin="hif_sdclk",  address=0xff4011b8},
+
+}
+
+ADDR_ASIC_CTRL_ACCESS_KEY_NETX90 = 0xff4012c0
+
+NX90_PADCTRL_DRIVE_STRENGTH_LOW  = 0
+NX90_PADCTRL_DRIVE_STRENGTH_HIGH = 0x01
+NX90_PADCTRL_PULL_DISABLE        = 0
+NX90_PADCTRL_PULL_ENABLE         = 0x10
+NX90_PADCTRL_INPUT_DISABLE       = 0
+NX90_PADCTRL_INPUT_ENABLE        = 0x40
+
+function netx90_setup_padctrl(tPlugin, atRegs, ulVal)
+	for iReg, tReg in ipairs(atRegs) do
+		printf("Setting up pin %s to value 0x%08x", tReg.pin, ulVal)
+		local ulAccessKey = tPlugin:read_data32(ADDR_ASIC_CTRL_ACCESS_KEY_NETX90)
+		tPlugin:write_data32(ADDR_ASIC_CTRL_ACCESS_KEY_NETX90, ulAccessKey)
+		tPlugin:write_data32(tReg.address, ulVal)
+		local ulValTest = tPlugin:read_data32(tReg.address)
+		assert(ulValTest == ulVal, "Failed to write Pad control!")
+	end
+end
+
+
+-- Default settings:
+-- drive strength low, pull resistor enabled 0x50
+--    <Bitfield id="ds" start="0" width="1" default="0" />
+--    <Bitfield id="pe" start="4" width="1" default="1" />
+--    <Bitfield id="ie" start="6" width="1" default="1" />
+function netx90_setup_padctrl_default(tPlugin)
+	netx90_setup_padctrl(tPlugin, atNetx90PadCtrl_addr, 0x50)
+	netx90_setup_padctrl(tPlugin, atNetx90PadCtrl_data, 0x50)
+	netx90_setup_padctrl(tPlugin, atNetx90PadCtrl_ctrl, 0x50)
+end
+
+-- A0..A12: drive strength high, pull disabled 0x41
+-- D0..D15: drive strength high,  pull enabled 0x51
+-- BA0, BA1, RASn, CASn, DQM0, DQM1, CSn, CKE, CLK, WEn: drive strength high, pull disabled 0x41
+function netx90_setup_padctrl_hwconfig(tPlugin)
+	netx90_setup_padctrl(tPlugin, atNetx90PadCtrl_addr, 0x41)
+	netx90_setup_padctrl(tPlugin, atNetx90PadCtrl_data, 0x51)
+	netx90_setup_padctrl(tPlugin, atNetx90PadCtrl_ctrl, 0x41)
+end
+
+-- ------------------------------------------------------------------------------------------------------------
 
 local function setup_sdram_hif_netx90_mpw(tPlugin, atSdramAttributes)
   local atAddressLines = {
