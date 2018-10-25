@@ -1174,7 +1174,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 				if ulPreviousResult ~= nil and ulPreviousResult ~= 0 then
 					printf(" ")
 					printf("======================================================================================")
-					printf("Clock phase: %d   Sample phase: %d   Previous result: 0x%08x -- Skipping", iClockPhase, iSamplePhase, ulPreviousResult)
+					printf("Clock phase: %d   Data sample phase: %d   Previous result: 0x%08x -- Skipping", iClockPhase, iSamplePhase, ulPreviousResult)
 					printf("======================================================================================")
 					printf(" ")
 
@@ -1191,7 +1191,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 					
 					printf(" ")
 					printf("======================================================================================")
-					printf("Clock phase: %d   Sample phase: %d   timing_ctrl: 0x%08x", iClockPhase, iSamplePhase, atSdramAttributes.timing_ctrl)
+					printf("Clock phase: %d   Data sample phase: %d   timing_ctrl: 0x%08x", iClockPhase, iSamplePhase, atSdramAttributes.timing_ctrl)
 					printf("Ram test loops %d times", ulLoops)
 					printf("======================================================================================")
 					printf(" ")
@@ -1201,7 +1201,7 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 					aiTestResults[iClockPhase][iSamplePhase] = ulResult
 					disable_ram(tPlugin, atSdramAttributes)
 
-					printf("Clock phase: %d   Sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
+					printf("Clock phase: %d   Data sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
 					printPhaseTestResults(aiTestResults)
 				end
 			end
@@ -1215,11 +1215,11 @@ end
 
 function printPhaseTestResults(aiTestResults)
 	print(" ")
-	print("---------------+------------------")
-	print("  Sample phase:|  0  1  2  3  4  5")
-	print("---------------+------------------")
+	print("--------------------+------------------")
+	print("  Data sample phase:|  0  1  2  3  4  5")
+	print("--------------------+------------------")
 	for iClockPhase = 0, 5 do
-		local strLine = string.format("Clock phase: %d |", iClockPhase)
+		local strLine = string.format("Clock phase: %d      |", iClockPhase)
 		for iSamplePhase = 0, 5 do
 			local ulResult = aiTestResults[iClockPhase][iSamplePhase]
 			local strResult
@@ -1232,7 +1232,7 @@ function printPhaseTestResults(aiTestResults)
 		end
 		print(strLine)
 	end
-	print("---------------+------------------")
+	print("--------------------+------------------")
 	print("0 = Ok   1 = failed   - = not tested")
 	print(" ")
 end
