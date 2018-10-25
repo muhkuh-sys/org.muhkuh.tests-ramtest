@@ -18,6 +18,8 @@
 -- 22.10.18 SL * function to print phaseshift test results externally visible
 --             * add functions to set up pad control on netx 90 
 --             * add CHECK_SEQUENCE + CHECK_MEMCPY to phaseshift test
+-- 25.10.18 SL * test_phase_parameters: keep all bits of timing_control value except
+--               data_sample_phase (bits 26..24) and mem_sdclk_phase (bits 22..20)
 
 module("ramtest", package.seeall)
 
@@ -1152,7 +1154,9 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 	compare_netx_version(tPlugin, atSdramAttributes)
 	
 	-- define test parameters
-	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0x000fffff)
+	-- clear bit 26-24 data_sample_phase
+	-- clear bit 22-20 mem_sdclk_phase
+	local timing_ctrl_base = bit.band(atSdramAttributes.timing_ctrl, 0xf88fffff)
 	local ulSDRAMStart     = get_ram_start(tPlugin, atSdramAttributes)
 	local ulSDRAMSize      = get_ram_size(tPlugin, atSdramAttributes)
 	local ulChecks         = CHECK_08BIT + CHECK_16BIT + CHECK_32BIT + CHECK_BURST + CHECK_DATABUS + CHECK_CHECKERBOARD + CHECK_MARCHC + CHECK_SEQUENCE + CHECK_MEMCPY
@@ -1181,11 +1185,9 @@ function test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
 				else
 					-- Timing Control:
 					-- 22:20 MEM_SDCLK_PHASE 0-5
-					-- 23    MEM_SDCLK_SSNEG 1
 					-- 26:24 DATA_SAMPLE_PHASE 0-5
 					local ulTiming =
 						iClockPhase *     0x100000
-						+                 0x800000
 						+ iSamplePhase * 0x1000000
 					atSdramAttributes.timing_ctrl = timing_ctrl_base + ulTiming
 					
