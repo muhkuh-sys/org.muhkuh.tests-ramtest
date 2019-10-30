@@ -372,7 +372,7 @@ local function setup_sdram_hif_netx90_mpw(tPlugin, atSdramAttributes)
   -- Install the binary.
   local strBinaryName = "netx/setup_netx90_mpw.bin"
   local ulParameter = bit.bor(ulAddressCfg, ulDataCfg)
-  local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, ulParameter)
+  local ulResult = tester:mbin_simple_run(tPlugin, strBinaryName, ulParameter)
   if ulResult~=0 then
     error(string.format("The setup returned an error code: 0x%08x", ulResult))
   end
@@ -426,7 +426,7 @@ local function setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
 	-- Install the binary.
 	strBinaryName = "netx/setup_netx56.bin"
 	ulParameter = bit.bor(ulAddressCfg, ulDataCfg)
-	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, ulParameter)
+	local ulResult = tester:mbin_simple_run(tPlugin, strBinaryName, ulParameter)
 	if ulResult~=0 then
 		error(string.format("The setup returned an error code: 0x%08x", ulResult))
 	end
@@ -490,13 +490,13 @@ local function setup_ddr_netx4000(tPlugin, atDdrAttributes)
   else
     error('Unknown chip type for DDR.')
   end
-  local ulOptionsResult = tester.mbin_simple_run(nil, tPlugin, string.format('netx/apply_options_netx%s.bin', strChipType), strSize .. strOpts)
+  local ulOptionsResult = tester:mbin_simple_run(tPlugin, string.format('netx/apply_options_netx%s.bin', strChipType), strSize .. strOpts)
   if ulOptionsResult~=0 then
     error(string.format('Falied to apply the option file for %dMHz: 0x%08x', ulSpeed, ulOptionsResult))
   end
 
   -- Setup the DDR controller.
-  local ulMdupResult = tester.mbin_simple_run(nil, tPlugin, string.format('netx/mdup_netx%s.bin', strChipType), 10)
+  local ulMdupResult = tester:mbin_simple_run(tPlugin, string.format('netx/mdup_netx%s.bin', strChipType), 10)
   if ulMdupResult~=0 then
     error(string.format('Falied to setup the DDR controller: 0x%08x', ulMdupResult))
   end
@@ -1139,7 +1139,7 @@ function test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
 	}
 
 	-- Install the binary.
-	local ulResult = tester.mbin_simple_run(nil, tPlugin, strBinaryName, aulParameter)
+	local ulResult = tester:mbin_simple_run(tPlugin, strBinaryName, aulParameter)
 	return ulResult
 end
 

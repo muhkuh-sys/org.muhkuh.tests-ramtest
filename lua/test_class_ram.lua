@@ -10,6 +10,9 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
 
   local P = self.P
   self:__parameter {
+    P:P('plugin', 'A pattern for the plugin to use.'):
+      required(false),
+
     P:SC('interface', 'This is the interface where the RAM is connected.'):
       required(true):
       constraint('RAM,SDRAM_HIF,SDRAM_MEM,SRAM_HIF,SRAM_MEM,DDR'),
@@ -76,6 +79,7 @@ function TestClassRam:run()
   --
   -- Parse the parameters and collect all options.
   --
+  local strPluginPattern = atParameter['plugin']:get()
 
   -- Parse the interface option.
   local strValue = atParameter["interface"]:get()
@@ -169,7 +173,7 @@ function TestClassRam:run()
   -- Open the connection to the netX.
   -- (or re-use an existing connection.)
   --
-  local tPlugin = tester.getCommonPlugin()
+  local tPlugin = tester:getCommonPlugin(strPluginPattern)
   if tPlugin==nil then
     error("No plug-in selected, nothing to do!")
   end
