@@ -6,7 +6,8 @@ local TestClassRam = class(TestClass)
 function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
   self:super(strTestName, uiTestCase, tLogWriter, strLogLevel)
 
-  self.ramtest = require 'ramtest'
+  local cRamTest = require 'ramtest'
+  self.ramtest = cRamTest(self.tLog)
 
   local P = self.P
   self:__parameter {
@@ -74,6 +75,7 @@ end
 function TestClassRam:run()
   local atParameter = self.atParameter
   local tLog = self.tLog
+  local ramtest = self.ramtest
 
   ----------------------------------------------------------------------
   --
@@ -179,12 +181,12 @@ function TestClassRam:run()
   end
 
 
-  local ulRAMStart = ramtest.get_ram_start(tPlugin, atRamAttributes)
-  local ulRAMSize  = ramtest.get_ram_size(tPlugin, atRamAttributes)
+  local ulRAMStart = ramtest:get_ram_start(tPlugin, atRamAttributes)
+  local ulRAMSize  = ramtest:get_ram_size(tPlugin, atRamAttributes)
 
-  ramtest.setup_ram(tPlugin, atRamAttributes)
-  ramtest.test_ram(tPlugin, ulRAMStart, ulRAMSize, ulChecks, ulLoops)
-  ramtest.disable_ram(tPlugin, atRamAttributes)
+  ramtest:setup_ram(tPlugin, atRamAttributes)
+  ramtest:test_ram(tPlugin, ulRAMStart, ulRAMSize, ulChecks, ulLoops)
+  ramtest:disable_ram(tPlugin, atRamAttributes)
 
 
   print("")
