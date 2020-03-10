@@ -1,7 +1,8 @@
 import groovy.json.JsonSlurperClassic
 
 node {
-    def ARTIFACTS_PATH = 'targets'
+    def ARTIFACTS_PATH1 = 'targets'
+    def ARTIFACTS_PATH2 = 'targets/jonchki/repository/org/muhkuh/tests/ramtest/*'
     def strBuilds = env.JENKINS_SELECT_BUILDS
     def atBuilds = new JsonSlurperClassic().parseText(strBuilds)
 
@@ -37,7 +38,7 @@ node {
         }
 
         /* Archive all artifacts. */
-        archiveArtifacts artifacts: "${ARTIFACTS_PATH}/*.tar.gz,${ARTIFACTS_PATH}/*.zip"
+        archiveArtifacts artifacts: "${ARTIFACTS_PATH1}/*.tar.gz,${ARTIFACTS_PATH1}/*.zip,${ARTIFACTS_PATH2}/*.xml,${ARTIFACTS_PATH2}/*.xml.hash,${ARTIFACTS_PATH2}/*.zip,${ARTIFACTS_PATH2}/*.zip.hash"
 
         /* Clean up after the build. */
         sh 'rm -rf .[^.] .??* *'
