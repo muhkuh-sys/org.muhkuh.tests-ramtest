@@ -17,8 +17,25 @@
 
 /*-------------------------------------------------------------------------*/
 
+#if ASIC_TYP==ASIC_TYP_NETX90
+typedef struct RAMTEST_PARAMETER_BLOCK_STRUCT
+{
+	unsigned long ulSDRAMGeneralCtrl;
+	unsigned long ulSDRAMTimingCtrl;
+	unsigned long ulSDRAMModeRegister;
+	unsigned long ulSizeExponent;
+	unsigned long ulStartAddress;
+} RAMTEST_PARAMETER_BLOCK_T;
+#endif
+
+
+#if ASIC_TYP==ASIC_TYP_NETX90
+void ramtest_main(const RAMTEST_PARAMETER_BLOCK_T *ptRamtestParameterBlock) __attribute__ ((noreturn));
+void ramtest_main(const RAMTEST_PARAMETER_BLOCK_T *ptRamtestParameterBlock)
+#else
 void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock) __attribute__ ((noreturn));
 void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
+#endif
 {
 	unsigned long ulSdramGeneralCtrl;
 	unsigned long ulSdramTimingCtrl;
@@ -54,6 +71,14 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	ulSdramGeneralCtrl = 0xffffffff;
 	tTestParams.ulSize = 0x00010000;
 
+#elif ASIC_TYP==ASIC_TYP_NETX90
+	tTestParams.ulStart = ptRamtestParameterBlock->ulStartAddress;
+	tTestParams.ulSize = 1U << ptRamtestParameterBlock->ulSizeExponent;
+
+	ulSdramGeneralCtrl = ptRamtestParameterBlock->ulSDRAMGeneralCtrl;
+	ulSdramTimingCtrl = ptRamtestParameterBlock->ulSDRAMTimingCtrl;
+	ulSdramMr = ptRamtestParameterBlock->ulSDRAMModeRegister;
+
 #else
 	/* Set the start of the test area. */
 	tTestParams.ulStart = ptBootBlock->s.ulUserData;
@@ -65,7 +90,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 
 	tTestParams.ulSize = sdram_get_size(ulSdramGeneralCtrl);
 #endif
-	/* Run all test cases. */
+	/* TODO: Get this from the bootblock or parameter block. */
 	tTestParams.ulCases  = RAMTESTCASE_08BIT;
 	tTestParams.ulCases |= RAMTESTCASE_16BIT;
 	tTestParams.ulCases |= RAMTESTCASE_32BIT;

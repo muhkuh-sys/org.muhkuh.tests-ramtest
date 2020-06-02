@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<!-- Write a parameter chunk to. -->
+		<Data>
+			<!-- Parameter block:             -->
+			<!--   SDRAM general control      -->
+			<!--   SDRAM timing control       -->
+			<!--   SDRAM mode register        -->
+			<!--   SDRAM size exponent        -->
+			<!--   Start address              -->
+			<UInt32 address="0x00023f00">
+				0x000D0011,
+				0x02303251,
+				0x00000023,
+				23,
+				0x10000000
+			</UInt32>
+		</Data>
+
+		<!-- Load Programm for the COM CPU and start afterwards -->
+		<Data>
+			<File name="@tElfCOM" />
+		</Data>
+		<Execute>
+			<File name="@tElfCOM" />
+			<R0>0x00023f00</R0>
+		</Execute>
+	</Chunks>
+</HBootImage>
+

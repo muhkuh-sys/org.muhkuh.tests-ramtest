@@ -1,7 +1,16 @@
+#include "asic_types.h"
 #include "netx_io_areas.S"
 
 	.section .init_code, "ax"
-	.arm
+
+@ The Cortex-M4 in the netX90 is a THUMB-only CPU.
+@ All others start in 32 bit mode.
+#if ASIC_TYP==ASIC_TYP_NETX90_MPW || ASIC_TYP==ASIC_TYP_NETX90
+        .syntax unified
+        .thumb
+#else
+        .arm
+#endif
 
 	.extern ramtest_main
 	.extern stack_top
@@ -18,17 +27,18 @@
 
 @--------------------------------------
 
-  .func start_init_s
-
-   @ optional can be used by python script to define individual entry points for cortex CA9 core0/1
+	@ optional can be used by python script to define individual entry points for cortex CA9 core0/1
 #if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
-   @ define entry point for CA9_core0
+	@ define entry point for CA9_core0
 start_core0:
-   @ define entry point for CA9_core1
+	@ define entry point for CA9_core1
 start_core1:
 #endif 
+
+    .func start, start
+    .type start, STT_FUNC
 start:
-	stmfd   sp!, {r0, r1, r2, r3, r4, lr}
+	push    {r0, r1, r2, r3, r4, lr}
 
 #if ASIC_TYP==ASIC_TYP_NETX50
 	@ SDRAM fix
@@ -54,18 +64,18 @@ start:
 	str     r4,     [r3, #0x30]    /* Disable DMA controller */
 #endif
 
-	@ set own stack position
+	@ Set own stack position
 	ldr     r2, =stack_top
 	mov     sp, r2
 
-	@ clear .bss section (zero init)
+	@ Clear the .bss section.
 	mov     r2, #0
 	ldr     r3, =__bss_start__
 	ldr     r4, =__bss_end__
 clear_bss:
+	str     r2, [r3], #4
 	cmp     r3, r4
-	strlo   r2, [r3], #4
-	blo     clear_bss
+	bmi     clear_bss
 
 	bl      ramtest_main
 

@@ -203,6 +203,15 @@ elf_netx500_s = env_netx500_s.Elf('targets/netx500/standalone/ramtest_netx500.el
 ramtest_standalone_netx500 = env_netx500_s.BootBlock('targets/netx500/standalone/ramtest_standalone_netx500.bin', elf_netx500_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
 
+# Build a netX90 standalone RAM test.
+env_netx90_s = atEnv.NETX90.Clone()
+env_netx90_s.Replace(LDFILE = 'src/netx90/netx90.ld')
+env_netx90_s.Append(CPPPATH = aCppPath)
+src_netx90_s = env_netx90_s.SetBuildPath('targets/netx90/standalone', 'src', sources_common+sources_standalone)
+elf_netx90_s = env_netx90_s.Elf('targets/netx90/standalone/ramtest.elf', src_netx90_s + env_netx90_s['PLATFORM_LIBRARY'])
+ramtest_standalone_netx90 = env_netx90_s.HBootImage('targets/netx90/standalone/ramtest_netx90_IS45S16400J_7BA2.img', 'src/netx90/COM_to_INTRAM_SDRAM.xml', HBOOTIMAGE_KNOWN_FILES=dict({'tElfCOM': elf_netx90_s}))
+
+
 env_netx56_s = atEnv.NETX56.Clone()
 env_netx56_s.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_s.Append(CPPPATH = aCppPath)
