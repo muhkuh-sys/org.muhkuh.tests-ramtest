@@ -58,8 +58,6 @@ sources_standalone_netx4000_cr7 = """
 	src/netx4000/init_standalone_cr7.S
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
-	src/ramtest_ecc.c
-	src/ecc_ddr.c
 """
 
 
