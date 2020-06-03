@@ -4,6 +4,7 @@
 #include "netx_io_areas.h"
 
 #include "bootblock_oldstyle.h"
+#include "standalone_parameter.h"
 #include "progress.h"
 #include "ramtest.h"
 #include "rdy_run.h"
@@ -17,32 +18,15 @@
 
 /*-------------------------------------------------------------------------*/
 
-#if ASIC_TYP==ASIC_TYP_NETX90
-typedef struct RAMTEST_PARAMETER_BLOCK_STRUCT
-{
-	unsigned long ulSDRAMGeneralCtrl;
-	unsigned long ulSDRAMTimingCtrl;
-	unsigned long ulSDRAMModeRegister;
-	unsigned long ulSizeExponent;
-	unsigned long ulStartAddress;
-} RAMTEST_PARAMETER_BLOCK_T;
-#endif
-
-
-#if ASIC_TYP==ASIC_TYP_NETX90
-void ramtest_main(const RAMTEST_PARAMETER_BLOCK_T *ptRamtestParameterBlock) __attribute__ ((noreturn));
-void ramtest_main(const RAMTEST_PARAMETER_BLOCK_T *ptRamtestParameterBlock)
-#else
-void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock) __attribute__ ((noreturn));
-void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
-#endif
+void ramtest_main(void) __attribute__ ((noreturn));
+void ramtest_main(void)
 {
 	unsigned long ulSdramGeneralCtrl;
 	unsigned long ulSdramTimingCtrl;
 	unsigned long ulSdramMr;
 	RAMTEST_PARAMETER_T tTestParams;
 	int iResult;
-#if ASIC_TYP==ASIC_TYP_NETX56
+#if 0 /* ASIC_TYP==ASIC_TYP_NETX56 */
 	HOSTDEF(ptAsicCtrlArea);
 	HOSTDEF(ptMmioCtrlArea);
 	unsigned int uiMmioGreen;
@@ -62,34 +46,13 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	 */
 	memset(&tTestParams, 0, sizeof(tTestParams));
 
-#if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
-	/* On netx 4000, set hardcoded parameters for the moment. */
-	/* Set the start of the test area. */
-	tTestParams.ulStart = 0x40000000;
+	tTestParams.ulStart = s_tRamtestParameterBlock.ulStartAddress;
+	tTestParams.ulSize = s_tRamtestParameterBlock.ulSize;
 
-	/* Set the size of the SDRAM from the geometry. */
-	ulSdramGeneralCtrl = 0xffffffff;
-	tTestParams.ulSize = 0x00010000;
+	ulSdramGeneralCtrl = s_tRamtestParameterBlock.ulSDRAMGeneralCtrl;
+	ulSdramTimingCtrl = s_tRamtestParameterBlock.ulSDRAMTimingCtrl;
+	ulSdramMr = s_tRamtestParameterBlock.ulSDRAMModeRegister;
 
-#elif ASIC_TYP==ASIC_TYP_NETX90
-	tTestParams.ulStart = ptRamtestParameterBlock->ulStartAddress;
-	tTestParams.ulSize = 1U << ptRamtestParameterBlock->ulSizeExponent;
-
-	ulSdramGeneralCtrl = ptRamtestParameterBlock->ulSDRAMGeneralCtrl;
-	ulSdramTimingCtrl = ptRamtestParameterBlock->ulSDRAMTimingCtrl;
-	ulSdramMr = ptRamtestParameterBlock->ulSDRAMModeRegister;
-
-#else
-	/* Set the start of the test area. */
-	tTestParams.ulStart = ptBootBlock->s.ulUserData;
-
-	/* Set the size of the SDRAM from the geometry. */
-	ulSdramGeneralCtrl = ptBootBlock->s.uMemoryCtrl.sSDRam.ulGeneralCtrl;
-	ulSdramTimingCtrl = ptBootBlock->s.uMemoryCtrl.sSDRam.ulTimingCtrl;
-	ulSdramMr = ptBootBlock->s.uMemoryCtrl.sSDRam.ulModeRegister;
-
-	tTestParams.ulSize = sdram_get_size(ulSdramGeneralCtrl);
-#endif
 	/* TODO: Get this from the bootblock or parameter block. */
 	tTestParams.ulCases  = RAMTESTCASE_08BIT;
 	tTestParams.ulCases |= RAMTESTCASE_16BIT;
@@ -106,7 +69,7 @@ void ramtest_main(const BOOTBLOCK_OLDSTYLE_U_T *ptBootBlock)
 	tTestParams.ulPerfTestCases = 0;
 
 	/* Set the progress callback. */
-#if ASIC_TYP==ASIC_TYP_NETX56
+#if 0 /* ASIC_TYP==ASIC_TYP_NETX56 */
 	ulValue = ptBootBlock->s.uMemoryCtrl.sSDRam.aulReserved[0];
 	if( ulValue!=0 )
 	{

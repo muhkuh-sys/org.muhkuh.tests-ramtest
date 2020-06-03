@@ -50,7 +50,7 @@ SECTIONS
 		load_address = . ;
 		__LOAD_ADDRESS__ = . ;
 		KEEP(*(.header))
-		KEEP( *(.version_info) )
+		*(.standalone_parameter)
 		*(.init_code)
 		*(.text* .rodata*)
 	} >CODE

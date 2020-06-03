@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<HBootImage type="REGULAR">
+	<Chunks>
+		<!-- Load Programm for the COM CPU and start afterwards -->
+		<Data>
+			<File name="@tElfCOM" />
+		</Data>
+		<Execute>
+			<File name="@tElfCOM" />
+		</Execute>
+	</Chunks>
+</HBootImage>
+

@@ -49,6 +49,7 @@ SECTIONS
 		load_address = . ;
 
 		KEEP(*(.header))
+		*(.standalone_parameter)
 		*(.init_code)
 		*(.text* .rodata*)
 	} >INTRAM
