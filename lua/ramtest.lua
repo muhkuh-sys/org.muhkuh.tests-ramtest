@@ -944,16 +944,18 @@ end
 
 
 function RamTest:print_sdram_geometry(tGeom)
-  print()
-  print("Geometry:")
-  printf("Banks    : %d",           tGeom.ulBanks    )
-  printf("Rows     : %d",           tGeom.ulRows     )
-  printf("Columns  : %d",           tGeom.ulColumns  )
-  printf("BusWidth : %d bytes",     tGeom.ulBusWidth )
-  printf("RowSize  : 0x%08x bytes", tGeom.ulRowSize  )
-  printf("Bank Size: 0x%08x bytes", tGeom.ulBankSize )
-  printf("Size     : 0x%08x bytes", tGeom.ulSize     )
-  print()
+  local tLog = self.tLog
+
+  tLog.info('')
+  tLog.info("Geometry:")
+  tLog.info("Banks    : %d",           tGeom.ulBanks    )
+  tLog.info("Rows     : %d",           tGeom.ulRows     )
+  tLog.info("Columns  : %d",           tGeom.ulColumns  )
+  tLog.info("BusWidth : %d bytes",     tGeom.ulBusWidth )
+  tLog.info("RowSize  : 0x%08x bytes", tGeom.ulRowSize  )
+  tLog.info("Bank Size: 0x%08x bytes", tGeom.ulBankSize )
+  tLog.info("Size     : 0x%08x bytes", tGeom.ulSize     )
+  tLog.info('')
 end
 
 
@@ -1080,6 +1082,7 @@ end
 -- it exceeds ulMaxLoops.
 
 function RamTest:test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
+  local tLog = self.tLog
   local bit = self.bit
 
   -- Compare the chip type.
@@ -1108,11 +1111,11 @@ function RamTest:test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
       for iSamplePhase = 0, 5 do
         local ulPreviousResult = aiTestResults[iClockPhase][iSamplePhase]
         if ulPreviousResult ~= nil and ulPreviousResult ~= 0 then
-          printf(" ")
-          printf("======================================================================================")
-          printf("Clock phase: %d   Data sample phase: %d   Previous result: 0x%08x -- Skipping", iClockPhase, iSamplePhase, ulPreviousResult)
-          printf("======================================================================================")
-          printf(" ")
+          tLog.info(" ")
+          tLog.info("======================================================================================")
+          tLog.info("Clock phase: %d   Data sample phase: %d   Previous result: 0x%08x -- Skipping", iClockPhase, iSamplePhase, ulPreviousResult)
+          tLog.info("======================================================================================")
+          tLog.info(" ")
 
         else
           -- Timing Control:
@@ -1123,19 +1126,19 @@ function RamTest:test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
             + iSamplePhase * 0x1000000
           atSdramAttributes.timing_ctrl = timing_ctrl_base + ulTiming
 
-          printf(" ")
-          printf("======================================================================================")
-          printf("Clock phase: %d   Data sample phase: %d   timing_ctrl: 0x%08x", iClockPhase, iSamplePhase, atSdramAttributes.timing_ctrl)
-          printf("Ram test loops %d times", ulLoops)
-          printf("======================================================================================")
-          printf(" ")
+          tLog.info(" ")
+          tLog.info("======================================================================================")
+          tLog.info("Clock phase: %d   Data sample phase: %d   timing_ctrl: 0x%08x", iClockPhase, iSamplePhase, atSdramAttributes.timing_ctrl)
+          tLog.info("Ram test loops %d times", ulLoops)
+          tLog.info("======================================================================================")
+          tLog.info(" ")
 
           self:setup_ram(tPlugin, atSdramAttributes)
           ulResult = self:test_ram_noerror(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
           aiTestResults[iClockPhase][iSamplePhase] = ulResult
           self:disable_ram(tPlugin, atSdramAttributes)
 
-          printf("Clock phase: %d   Data sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
+          tLog.info("Clock phase: %d   Data sample phase: %d   Result: 0x%08x", iClockPhase, iSamplePhase, ulResult)
           self:printPhaseTestResults(aiTestResults)
         end
       end
@@ -1197,7 +1200,7 @@ function RamTest:performance_test_run_ramtest(par)
   local ulRowSize         = par.ulRowSize          or 0
   local ulRefreshTime_clk = par.ulRefreshTime_clk  or 0
 
-  tLog.info()
+  tLog.info('')
   tLog.info("Call parameters:")
   tLog.info("ulAreaStart        0x%08x", ulAreaStart)
   tLog.info("ulAreaSize         0x%08x", ulAreaSize)
@@ -1206,7 +1209,7 @@ function RamTest:performance_test_run_ramtest(par)
   tLog.info("ulLoops            0x%08x", ulLoops)
   tLog.info("ulRowSize          0x%08x", ulRowSize)
   tLog.info("ulRefreshTime_clk  0x%08x", ulRefreshTime_clk)
-  tLog.info()
+  tLog.info('')
 
   local aulParameter = {
     ulAreaStart ,
@@ -1303,65 +1306,68 @@ end
 
 -- print time array
 function RamTest:performance_test_print_times(aulTimes)
+  local tLog = self.tLog
   local t = aulTimes
-  print("Times in microseconds:")
-  printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
-  printf("sequential read       %10.3f %10.3f %10.3f %10.3f ", t[ 0],   t[ 1],   t[ 2],    t[ 3])
-  printf("sequential write      %10.3f %10.3f %10.3f %10.3f ", t[ 4],   t[ 5],   t[ 6],    t[ 7])
-  printf("sequential read/write %10.3f %10.3f %10.3f %10.3f ", t[ 8],   t[ 9],   t[10],    t[11])
-  printf("row read              %10.3f %10.3f %10.3f %10.3f ", t[13],   t[14],   t[15],    t[16])
-  printf("row write             %10.3f %10.3f %10.3f %10.3f ", t[17],   t[18],   t[19],    t[20])
-  printf("row read/write        %10.3f %10.3f %10.3f %10.3f ", t[21],   t[22],   t[23],    t[24])
-  printf("sequential NOP Thumb  %10.3f", t[12])
-  printf("row-to-row jump Thumb %10.3f", t[25])
+  tLog.info("Times in microseconds:")
+  tLog.info("                           8 Bit     16 Bit     32 Bit    256 Bit")
+  tLog.info("sequential read       %10.3f %10.3f %10.3f %10.3f ", t[ 0],   t[ 1],   t[ 2],    t[ 3])
+  tLog.info("sequential write      %10.3f %10.3f %10.3f %10.3f ", t[ 4],   t[ 5],   t[ 6],    t[ 7])
+  tLog.info("sequential read/write %10.3f %10.3f %10.3f %10.3f ", t[ 8],   t[ 9],   t[10],    t[11])
+  tLog.info("row read              %10.3f %10.3f %10.3f %10.3f ", t[13],   t[14],   t[15],    t[16])
+  tLog.info("row write             %10.3f %10.3f %10.3f %10.3f ", t[17],   t[18],   t[19],    t[20])
+  tLog.info("row read/write        %10.3f %10.3f %10.3f %10.3f ", t[21],   t[22],   t[23],    t[24])
+  tLog.info("sequential NOP Thumb  %10.3f", t[12])
+  tLog.info("row-to-row jump Thumb %10.3f", t[25])
 end
 
 function RamTest:performance_test_print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
-  print("Times in microseconds:")
-  printf("                           8 Bit     16 Bit     32 Bit    256 Bit")
-  printf("sequential read       %10.3f %10.3f %10.3f %10.3f Min", tmin[ 0],   tmin[ 1],   tmin[ 2],    tmin[ 3])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 0],   tavg[ 1],   tavg[ 2],    tavg[ 3])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 0],   tmax[ 1],   tmax[ 2],    tmax[ 3])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 0],   tdif[ 1],   tdif[ 2],    tdif[ 3])
-  print()
-  printf("sequential write      %10.3f %10.3f %10.3f %10.3f Min", tmin[ 4],   tmin[ 5],   tmin[ 6],    tmin[ 7])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 4],   tavg[ 5],   tavg[ 6],    tavg[ 7])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 4],   tmax[ 5],   tmax[ 6],    tmax[ 7])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 4],   tdif[ 5],   tdif[ 6],    tdif[ 7])
-  print()
-  printf("sequential read/write %10.3f %10.3f %10.3f %10.3f Min", tmin[ 8],   tmin[ 9],   tmin[10],    tmin[11])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 8],   tavg[ 9],   tavg[10],    tavg[11])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 8],   tmax[ 9],   tmax[10],    tmax[11])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 8],   tdif[ 9],   tdif[10],    tdif[11])
-  print()
-  printf("row read              %10.3f %10.3f %10.3f %10.3f Min", tmin[13],   tmin[14],   tmin[15],    tmin[16])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[13],   tavg[14],   tavg[15],    tavg[16])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[13],   tmax[14],   tmax[15],    tmax[16])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[13],   tdif[14],   tdif[15],    tdif[16])
-  print()
-  printf("row write             %10.3f %10.3f %10.3f %10.3f Min", tmin[17],   tmin[18],   tmin[19],    tmin[20])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[17],   tavg[18],   tavg[19],    tavg[20])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[17],   tmax[18],   tmax[19],    tmax[20])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[17],   tdif[18],   tdif[19],    tdif[20])
-  print()
-  printf("row read/write        %10.3f %10.3f %10.3f %10.3f Min", tmin[21],   tmin[22],   tmin[23],    tmin[24])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[21],   tavg[22],   tavg[23],    tavg[24])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[21],   tmax[22],   tmax[23],    tmax[24])
-  printf("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[21],   tdif[22],   tdif[23],    tdif[24])
-  print()
-  printf("sequential NOP Thumb  %10.3f Min", tmin[12])
-  printf("                      %10.3f Avg", tavg[12])
-  printf("                      %10.3f Max", tmax[12])
-  printf("                      %10.3f Dif", tdif[12])
-  print()
-  printf("row-to-row jump Thumb %10.3f Min", tmin[25])
-  printf("                      %10.3f Avg", tavg[25])
-  printf("                      %10.3f Max", tmax[25])
-  printf("                      %10.3f Dif", tdif[25])
+  local tLog = self.tLog
+  tLog.info("Times in microseconds:")
+  tLog.info("                           8 Bit     16 Bit     32 Bit    256 Bit")
+  tLog.info("sequential read       %10.3f %10.3f %10.3f %10.3f Min", tmin[ 0],   tmin[ 1],   tmin[ 2],    tmin[ 3])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 0],   tavg[ 1],   tavg[ 2],    tavg[ 3])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 0],   tmax[ 1],   tmax[ 2],    tmax[ 3])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 0],   tdif[ 1],   tdif[ 2],    tdif[ 3])
+  tLog.info('')
+  tLog.info("sequential write      %10.3f %10.3f %10.3f %10.3f Min", tmin[ 4],   tmin[ 5],   tmin[ 6],    tmin[ 7])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 4],   tavg[ 5],   tavg[ 6],    tavg[ 7])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 4],   tmax[ 5],   tmax[ 6],    tmax[ 7])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 4],   tdif[ 5],   tdif[ 6],    tdif[ 7])
+  tLog.info('')
+  tLog.info("sequential read/write %10.3f %10.3f %10.3f %10.3f Min", tmin[ 8],   tmin[ 9],   tmin[10],    tmin[11])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[ 8],   tavg[ 9],   tavg[10],    tavg[11])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[ 8],   tmax[ 9],   tmax[10],    tmax[11])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[ 8],   tdif[ 9],   tdif[10],    tdif[11])
+  tLog.info('')
+  tLog.info("row read              %10.3f %10.3f %10.3f %10.3f Min", tmin[13],   tmin[14],   tmin[15],    tmin[16])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[13],   tavg[14],   tavg[15],    tavg[16])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[13],   tmax[14],   tmax[15],    tmax[16])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[13],   tdif[14],   tdif[15],    tdif[16])
+  tLog.info('')
+  tLog.info("row write             %10.3f %10.3f %10.3f %10.3f Min", tmin[17],   tmin[18],   tmin[19],    tmin[20])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[17],   tavg[18],   tavg[19],    tavg[20])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[17],   tmax[18],   tmax[19],    tmax[20])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[17],   tdif[18],   tdif[19],    tdif[20])
+  tLog.info('')
+  tLog.info("row read/write        %10.3f %10.3f %10.3f %10.3f Min", tmin[21],   tmin[22],   tmin[23],    tmin[24])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Avg", tavg[21],   tavg[22],   tavg[23],    tavg[24])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Max", tmax[21],   tmax[22],   tmax[23],    tmax[24])
+  tLog.info("                      %10.3f %10.3f %10.3f %10.3f Dif", tdif[21],   tdif[22],   tdif[23],    tdif[24])
+  tLog.info('')
+  tLog.info("sequential NOP Thumb  %10.3f Min", tmin[12])
+  tLog.info("                      %10.3f Avg", tavg[12])
+  tLog.info("                      %10.3f Max", tmax[12])
+  tLog.info("                      %10.3f Dif", tdif[12])
+  tLog.info('')
+  tLog.info("row-to-row jump Thumb %10.3f Min", tmin[25])
+  tLog.info("                      %10.3f Avg", tavg[25])
+  tLog.info("                      %10.3f Max", tmax[25])
+  tLog.info("                      %10.3f Dif", tdif[25])
 end
 
 -- Run the performance test
 function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulPerfTests)
+  local tLog = self.tLog
 
   -- Get the row size
   local tGeometry = get_sdram_geometry(tPlugin, atSdramAttributes)
@@ -1372,10 +1378,10 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
   local ult_REFI    = 3.9 * bit.lshift(1, bit.rshift(bit.band(ulTimingCtrl, 0x00030000), 16))
   local ulArrayRefreshTime_us = ult_REFI * tGeometry.ulRows * tGeometry.ulBanks
   local ulRefreshTime_clk = ulArrayRefreshTime_us * 100
-  print()
-  printf("t_REFI: %3.2f microseconds", ult_REFI)
-  printf("Array refresh time: %5.2f ms, %d * 10ns clocks", ulArrayRefreshTime_us/1000, ulRefreshTime_clk)
-  print()
+  tLog.info('')
+  tLog.info("t_REFI: %3.2f microseconds", ult_REFI)
+  tLog.info("Array refresh time: %5.2f ms, %d * 10ns clocks", ulArrayRefreshTime_us/1000, ulRefreshTime_clk)
+  tLog.info('')
   
   -- Do a calibration run using intram
   local ulCalibrationAreaStart = 0x10000
@@ -1404,31 +1410,31 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
 
   -- Print the results
   if iLoops == 1 then
-    printf("Start address: 0x%08x", ulAreaStart)
-    printf("Area size:     0x%08x", ulAreaSize)
-    print()
+    tLog.info("Start address: 0x%08x", ulAreaStart)
+    tLog.info("Area size:     0x%08x", ulAreaSize)
+    tLog.info('')
     aulTimes = aaulTimes[1]
     self:performance_test_printf_ul("-", "Times using SDRAM:")
     self:performance_test_print_times(aulTimes)
-    print()
+    tLog.info('')
     self:performance_test_printf_ul("-", "Times using Intram:")
     self:performance_test_print_times(aulCalibrationTimes)
-    print()
+    tLog.info('')
     self:performance_test_printf_ul("-", "Times SDRAM - Intram:")
     aulTimes = vector_subtract(aulTimes, aulCalibrationTimes)
     self:performance_test_print_times(aulTimes)
   else
-    printf("Start address: 0x%08x", ulAreaStart)
-    printf("Area size:     0x%08x", ulAreaSize)
-    print()
+    tLog.info("Start address: 0x%08x", ulAreaStart)
+    tLog.info("Area size:     0x%08x", ulAreaSize)
+    tLog.info('')
     self:performance_test_printf_ul("-", "Times using SDRAM:")
     local tmin, tmax, tavg = vector_min_avg_max(aaulTimes)
     local tdif = vector_subtract(tmax, tmin)
     self:performance_test_print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
-    print()
+    tLog.info('')
     self:performance_test_printf_ul("-", "Times using Intram:")
     self:performance_test_print_times(aulCalibrationTimes)
-    print()
+    tLog.info('')
     self:performance_test_printf_ul("-", "Times SDRAM - Intram:")
     tmin = vector_subtract(tmin, aulCalibrationTimes)
     tavg = vector_subtract(tavg, aulCalibrationTimes)
