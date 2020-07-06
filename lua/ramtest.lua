@@ -598,8 +598,6 @@ function RamTest:setup_ddr_netx4000(tPlugin, atDdrAttributes)
   local applyOptions = require 'apply_options'()
   local strOpts = applyOptions:parse(strConfigurationFile)
 
-  tester.hexdump(strOpts)
-
   -- Apply the parameters.
   -- Basically this is a programatic version of the "LCFG" console command.
   local sizOpts = string.len(strOpts)
