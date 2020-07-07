@@ -31,7 +31,7 @@ def __ramtesttemplate_action(target, source, env):
     if atAttributes is None:
         raise Exception('No attributes specified!')
     atReplacements = {}
-    for tKey, tVal in atAttributes.iteritems():
+    for tKey, tVal in atAttributes.items():
         strKey = str(tKey)
         # Is the value a SCons file object?
         if isinstance(tVal, SCons.Node.FS.File):
@@ -50,7 +50,7 @@ def __ramtesttemplate_action(target, source, env):
             atReplacements[strKey] = strVal
 
     # Read the template.
-    strSource = source[0].get_contents()
+    strSource = source[0].get_text_contents()
 
     # Replace all symbols in the template.
     strResult = string.Template(strSource).safe_substitute(atReplacements)

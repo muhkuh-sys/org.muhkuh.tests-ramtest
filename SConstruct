@@ -201,7 +201,7 @@ atCopy = {
     'targets/testbench/lua/apply_options.lua':                    'lua/apply_options.lua',
     'targets/testbench/lua/ramtest.lua':                          tRamtestLua
 }
-for strPathDst, strPathSrc in atCopy.iteritems():
+for strPathDst, strPathSrc in atCopy.items():
     Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))
 
 
