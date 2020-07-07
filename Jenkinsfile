@@ -27,7 +27,7 @@ node {
 
         /* Build the netx code. */
         stage("netX"){
-            sh "python2.7 mbs/mbs"
+            sh "python3 mbs/mbs"
         }
 
         atBuilds.each { atEntry ->
