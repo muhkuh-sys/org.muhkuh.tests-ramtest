@@ -7,13 +7,6 @@ def get(strRepositoryPath):
     strProjectVersionVcs = 'unknown'
     strProjectVersionVcsLong = 'unknown'
 
-    print('***0 ')
-    strGitId = porcelain.describe(
-        strRepositoryPath,
-        abbrev=12,
-        long=True,
-        dirty='+'
-    )
     try:
         strGitId = porcelain.describe(
             strRepositoryPath,
@@ -21,8 +14,7 @@ def get(strRepositoryPath):
             long=True,
             dirty='+'
         )
-        print('***1 ', strGitId)
-        tMatch = re.match('[0-9a-f]{12}\+?$', strGitId)
+        tMatch = re.match(r'[0-9a-f]{12}\+?$', strGitId)
         if tMatch is not None:
             # This is a repository with no tags.
             # Use the raw SHA sum.
@@ -30,7 +22,7 @@ def get(strRepositoryPath):
             strProjectVersionVcsLong = strGitId
         else:
             tMatch = re.match(
-                'v(\d+(\.\d+)*)-(\d+)-g([0-9a-f]{12})$',
+                r'v(\d+(\.\d+)*)-(\d+)-g([0-9a-f]{12})$',
                 strGitId
             )
             if tMatch is not None:
@@ -50,7 +42,7 @@ def get(strRepositoryPath):
                     strProjectVersionVcsLong = tMatch.group(4)
             else:
                 tMatch = re.match(
-                    'v(\d+(\.\d+)*)-(\d+)-g([0-9a-f]{12})\+?$',
+                    r'v(\d+(\.\d+)*)-(\d+)-g([0-9a-f]{12})\+?$',
                     strGitId
                 )
                 if tMatch is not None:
@@ -75,7 +67,7 @@ def get(strRepositoryPath):
 
         strProjectVersionVcs = 'GIT%s' % strProjectVersionVcs
         strProjectVersionVcsLong = 'GIT%s' % strProjectVersionVcsLong
-    except Exception as e:
+    except Exception:
         pass
 
     return strProjectVersionVcs, strProjectVersionVcsLong
