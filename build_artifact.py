@@ -6,9 +6,9 @@ from jonchki import jonchkihere
 from jonchki import vcs_id
 
 import os
-import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree
 
 
 tPlatform = cli_args.parse()
@@ -93,7 +93,6 @@ strJonchki = jonchkihere.install(
 )
 
 # Get the project version from the setup.xml .
-import xml.etree.ElementTree
 tSetupXml = xml.etree.ElementTree.parse('setup.xml')
 strProjectVersion = tSetupXml.getroot().findtext('project_version')
 
