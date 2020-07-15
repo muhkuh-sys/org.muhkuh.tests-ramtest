@@ -656,7 +656,7 @@ end
 
 
 
-function RamTest:get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+function RamTest:get_sram_interface_attributes(tPlugin, tInterface)
   -- Get the platform attributes for the chip type.
   local tChipType = tPlugin:GetChiptyp()
   local atPlatform = self.atPlatformAttributes[tChipType]
@@ -678,7 +678,7 @@ end
 
 
 
-function RamTest:get_ddr_interface_attributes(tPlugin, tInterface)
+function RamTest:get_ddr_interface_attributes(tPlugin)
   -- Get the platform attributes for the chip type.
   local tChipType = tPlugin:GetChiptyp()
   local atPlatform = self.atPlatformAttributes[tChipType]
@@ -833,7 +833,7 @@ function RamTest:setup_ram(tPlugin, atRamAttributes)
     tPlugin:write_data32(ulSDRamController+0, ulGeneralCtrl)
   elseif tInterface==self.INTERFACE_SRAM_HIF or tInterface==self.INTERFACE_SRAM_MEM then
     local ulChipSelect = atRamAttributes.sram_chip_select
-    local atInterface = get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+    local atInterface = get_sram_interface_attributes(tPlugin, tInterface)
     local ulController = atInterface.ulController + 4*ulChipSelect
 
     -- Setup the RAM controller.
@@ -841,7 +841,7 @@ function RamTest:setup_ram(tPlugin, atRamAttributes)
 
   elseif tInterface==self.INTERFACE_DDR then
     -- Get the interface attributes.
-    local atInterface = self:get_ddr_interface_attributes(tPlugin, atRamAttributes.interface)
+    local atInterface = self:get_ddr_interface_attributes(tPlugin)
 
     -- Call the setup function for the platform and interface.
     local pfnSetup = atInterface.setup
@@ -874,7 +874,7 @@ function RamTest:disable_ram(tPlugin, atRamAttributes)
     tPlugin:write_data32(ulController+8, 0)
   elseif tInterface==self.INTERFACE_SRAM_HIF or tInterface==self.INTERFACE_SRAM_MEM then
     local ulChipSelect = atRamAttributes.sram_chip_select
-    local atInterface = self:get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+    local atInterface = self:get_sram_interface_attributes(tPlugin, tInterface)
     local ulController = atInterface.ulController + 4*ulChipSelect
 
     -- Disable the RAM controller.
@@ -1002,12 +1002,12 @@ function RamTest:get_ram_area(tPlugin, atRamAttributes)
 
   elseif tInterface==self.INTERFACE_SRAM_HIF or tInterface==self.INTERFACE_SRAM_MEM then
     local ulChipSelect = atRamAttributes.sram_chip_select
-    local atInterface = self:get_sram_interface_attributes(tPlugin, tInterface, ulChipSelect)
+    local atInterface = self:get_sram_interface_attributes(tPlugin, tInterface)
     ulRamStart = atInterface.aulArea_Start[ulChipSelect]
     ulRamSize = atRamAttributes.sram_size
 
   elseif tInterface==self.INTERFACE_DDR then
-    local atInterface = self:get_ddr_interface_attributes(tPlugin, tInterface)
+    local atInterface = self:get_ddr_interface_attributes(tPlugin)
     ulRamStart = atInterface.ulArea_Start
 
     -- Get the size from the exponent parameter.
@@ -1023,14 +1023,14 @@ end
 
 
 function RamTest:get_ram_start(tPlugin, atRamAttributes)
-  local ulRamStart, ulRamSize = self:get_ram_area(tPlugin, atRamAttributes)
+  local ulRamStart, _ = self:get_ram_area(tPlugin, atRamAttributes)
   return ulRamStart
 end
 
 
 
 function RamTest:get_ram_size(tPlugin, atRamAttributes)
-  local ulRamStart, ulRamSize = self:get_ram_area(tPlugin, atRamAttributes)
+  local _, ulRamSize = self:get_ram_area(tPlugin, atRamAttributes)
   return ulRamSize
 end
 
@@ -1235,7 +1235,7 @@ function RamTest:performance_test_run_ramtest(par)
     0           , -- ulProgress
   }
   local iParLen = #aulParameter -- offset of time array -1
-  for i=1, 32 do
+  for _=1, 32 do
     table.insert(aulParameter, "OUTPUT")
   end
 
@@ -1299,7 +1299,7 @@ function RamTest:vector_min_avg_max(aVectors)
   local aAvg = {}
   local aAvgCnt = {}
 
-  for i, v in pairs(aVectors) do
+  for _, v in pairs(aVectors) do
     for j, comp in pairs(v) do
       aMin[j] = math.min(aMin[j] or comp, comp)
       aMax[j] = math.max(aMax[j] or 0, comp)
@@ -1308,7 +1308,7 @@ function RamTest:vector_min_avg_max(aVectors)
     end
   end
 
-  for i, v in pairs(aAvg) do
+  for i in pairs(aAvg) do
     aAvg[i] = aAvg[i] / aAvgCnt[i]
   end
 
