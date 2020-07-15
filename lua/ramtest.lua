@@ -833,7 +833,7 @@ function RamTest:setup_ram(tPlugin, atRamAttributes)
     tPlugin:write_data32(ulSDRamController+0, ulGeneralCtrl)
   elseif tInterface==self.INTERFACE_SRAM_HIF or tInterface==self.INTERFACE_SRAM_MEM then
     local ulChipSelect = atRamAttributes.sram_chip_select
-    local atInterface = get_sram_interface_attributes(tPlugin, tInterface)
+    local atInterface = self:get_sram_interface_attributes(tPlugin, tInterface)
     local ulController = atInterface.ulController + 4*ulChipSelect
 
     -- Setup the RAM controller.
@@ -1276,7 +1276,7 @@ end
 
 
 function RamTest:vector_subtract(v1, v2)
-  return vector_add(v1, vector_scale(v2, -1))
+  return self:vector_add(v1, self:vector_scale(v2, -1))
 end
 
 
@@ -1383,7 +1383,7 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
   local tLog = self.tLog
 
   -- Get the row size
-  local tGeometry = get_sdram_geometry(tPlugin, atSdramAttributes)
+  local tGeometry = self:get_sdram_geometry(tPlugin, atSdramAttributes)
   local ulRowSize = tGeometry.ulRowSize
   
   -- Get the array refresh time
@@ -1400,10 +1400,10 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
   local ulCalibrationAreaStart = 0x10000
   local ulResult, aulCalibrationTimes
   if ulCalibrationAreaStart then
-    ulResult, aulCalibrationTimes = performance_test_run_ramtest{tPlugin=tPlugin, ulAreaStart=ulCalibrationAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
+    ulResult, aulCalibrationTimes = self:performance_test_run_ramtest{tPlugin=tPlugin, ulAreaStart=ulCalibrationAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
     ulRowSize = ulRowSize, ulRefreshTime_clk=ulRefreshTime_clk}
-    aulCalibrationTimes = vector_shift0(aulCalibrationTimes)
-    aulCalibrationTimes = vector_scale(aulCalibrationTimes, 0.01)
+    aulCalibrationTimes = self:vector_shift0(aulCalibrationTimes)
+    aulCalibrationTimes = self:vector_scale(aulCalibrationTimes, 0.01)
     
   end
 
@@ -1411,11 +1411,11 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
   local iLoops = 10
   local aaulTimes = {}
   for iLoop = 1, iLoops do
-    local ulResult, aulTimes = performance_test_run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
+    local ulResult, aulTimes = self:performance_test_run_ramtest{tPlugin=tPlugin, ulAreaStart=ulAreaStart, ulAreaSize=ulAreaSize, ulPerfTests=ulPerfTests,
     ulRowSize = ulRowSize, ulRefreshTime_clk=ulRefreshTime_clk}
     print("Result: ", ulResult)
-    aulTimes = vector_shift0(aulTimes)
-    aulTimes = vector_scale(aulTimes, 0.01)
+    aulTimes = self:vector_shift0(aulTimes)
+    aulTimes = self:vector_scale(aulTimes, 0.01)
     self:performance_test_print_times(aulTimes)
     print()
     aaulTimes[iLoop] = aulTimes
@@ -1434,24 +1434,24 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
     self:performance_test_print_times(aulCalibrationTimes)
     tLog.info('')
     self:performance_test_printf_ul("-", "Times SDRAM - Intram:")
-    aulTimes = vector_subtract(aulTimes, aulCalibrationTimes)
+    aulTimes = self:vector_subtract(aulTimes, aulCalibrationTimes)
     self:performance_test_print_times(aulTimes)
   else
     tLog.info("Start address: 0x%08x", ulAreaStart)
     tLog.info("Area size:     0x%08x", ulAreaSize)
     tLog.info('')
     self:performance_test_printf_ul("-", "Times using SDRAM:")
-    local tmin, tmax, tavg = vector_min_avg_max(aaulTimes)
-    local tdif = vector_subtract(tmax, tmin)
+    local tmin, tmax, tavg = self:vector_min_avg_max(aaulTimes)
+    local tdif = self:vector_subtract(tmax, tmin)
     self:performance_test_print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
     tLog.info('')
     self:performance_test_printf_ul("-", "Times using Intram:")
     self:performance_test_print_times(aulCalibrationTimes)
     tLog.info('')
     self:performance_test_printf_ul("-", "Times SDRAM - Intram:")
-    tmin = vector_subtract(tmin, aulCalibrationTimes)
-    tavg = vector_subtract(tavg, aulCalibrationTimes)
-    tmax = vector_subtract(tmax, aulCalibrationTimes)
+    tmin = self:vector_subtract(tmin, aulCalibrationTimes)
+    tavg = self:vector_subtract(tavg, aulCalibrationTimes)
+    tmax = self:vector_subtract(tmax, aulCalibrationTimes)
     self:performance_test_print_times_min_avg_max_dif(tmin, tavg, tmax, tdif)
 
   end
