@@ -26,6 +26,8 @@ end
 
 
 function ApplyOptions:__check_bootheader(tImage)
+  local bit = self.bit
+
   -- Parse the standalone DDR parameter file.
   local strFormatBootHeader = [[
 ulMagic:u4

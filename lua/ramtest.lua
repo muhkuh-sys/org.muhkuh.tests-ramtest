@@ -295,6 +295,7 @@ end
 
 
 function RamTest:setup_sdram_netx4000(tPlugin, atSdramAttributes)
+  local bit = self.bit
   local tLog = self.tLog
   local tGeom = self:get_sdram_geometry(tPlugin, atSdramAttributes)
   self:print_sdram_geometry(tGeom)
@@ -442,6 +443,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 
 function RamTest:setup_sdram_hif_netx90_mpw(tPlugin, atSdramAttributes)
+  local tester = _G.tester
   local tLog = self.tLog
   local bit = self.bit
   local atAddressLines = {
@@ -499,6 +501,7 @@ end
 
 
 function RamTest:setup_sdram_hif_netx56(tPlugin, atSdramAttributes)
+  local tester = _G.tester
   local tLog = self.tLog
   local bit = self.bit
   local atAddressLines = {
@@ -556,6 +559,8 @@ end
 
 
 function RamTest:setup_sdram_hif_netx10(tPlugin, atSdramAttributes)
+  local bit = self.bit
+
   -- Generate the value for the HIF_IO_CTRL register.
   -- This depends on the data bus width of the SDRAM device.
   local ulGeneralCtrl = atSdramAttributes.general_ctrl
@@ -578,7 +583,11 @@ end
 
 
 function RamTest:setup_ddr_netx4000(tPlugin, atDdrAttributes)
+  local bit = self.bit
+  local romloader = self.romloader
+  local tester = _G.tester
   local tLog = self.tLog
+
   -- Is the RAP system running with 400 or 600MHz?
   local ulSpeed = 400
   local strConfigurationFile = atDdrAttributes['ddr_parameter_400']
@@ -891,6 +900,7 @@ end
 -- Extract the geometry parameters.
 function RamTest:decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
   local bit = self.bit
+  local romloader = self.romloader
 
   local ulBankBits     =            bit.band(ulGeneralCtrl, 0x00000003)
   local ulRowBits      = bit.rshift(bit.band(ulGeneralCtrl, 0x00000070), 4)
@@ -1028,6 +1038,8 @@ end
 
 -- run the ram test
 function RamTest:test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
+  local tester = _G.tester
+
   -- Get the platform attributes for the chip type.
   local tChipType = tPlugin:GetChiptyp()
   local atChipAttributes = self.atPlatformAttributes[tChipType]
@@ -1132,7 +1144,7 @@ function RamTest:test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
           tLog.info(" ")
 
           self:setup_ram(tPlugin, atSdramAttributes)
-          ulResult = self:test_ram_noerror(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
+          local ulResult = self:test_ram_noerror(tPlugin, ulSDRAMStart, ulSDRAMSize, ulChecks, ulLoops)
           aiTestResults[iClockPhase][iSamplePhase] = ulResult
           self:disable_ram(tPlugin, atSdramAttributes)
 
@@ -1182,7 +1194,9 @@ end
 -- ulPerfTests
 -- ulLoops
 function RamTest:performance_test_run_ramtest(par)
+  local tester = _G.tester
   local tLog = self.tLog
+  local tPlugin = par.tPlugin
   -- Get the platform attributes for the chip type.
   local tChipType = tPlugin:GetChiptyp()
   local atChipAttributes = self.atPlatformAttributes[tChipType]
@@ -1365,6 +1379,7 @@ end
 
 -- Run the performance test
 function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, ulAreaSize, ulPerfTests)
+  local bit = self.bit
   local tLog = self.tLog
 
   -- Get the row size
@@ -1411,7 +1426,7 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
     tLog.info("Start address: 0x%08x", ulAreaStart)
     tLog.info("Area size:     0x%08x", ulAreaSize)
     tLog.info('')
-    aulTimes = aaulTimes[1]
+    local aulTimes = aaulTimes[1]
     self:performance_test_printf_ul("-", "Times using SDRAM:")
     self:performance_test_print_times(aulTimes)
     tLog.info('')
