@@ -97,9 +97,7 @@ ulChunkSizeInDW:u4
 strData:s%d
 strHash:s%d
 ]], (tHdr.ulChunkSizeInDW-1)*4, 1*4)
-  print(strFormatOptsChunk)
   local tOpts = self.vstruct.read(strFormatOptsChunk, tImage.strImage)
-  self.pl.pretty.dump(tOpts)
 
   -- TODO: Test the checksum of the chunk.
 
