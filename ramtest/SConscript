@@ -55,7 +55,7 @@ sources_standalone = """
 	src/standalone_parameter.c
 """
 
-sources_standalone_netx4000_cr7 = """
+sources_standalone_netx4000 = """
 	src/netx4000/init_standalone_cr7.S
 	src/main_standalone_netx4000.c
 	src/main_standalone_common.c
@@ -154,26 +154,18 @@ elf_netx4000_cr7_openfirewalls = env_netx4000_cr7_openfirewalls.Elf('targets/net
 txt_netx4000_cr7_openfirewalls = env_netx4000_cr7_openfirewalls.ObjDump('targets/netx4000_openfirewalls/netx4000_cr7_openfirewalls.txt', elf_netx4000_cr7_openfirewalls, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
 
 
-#----------------------------------------------------------------------------
-#  standalone ramtest
-#  CR7: LLRAM
-#  CA9: intram_rap0/1
-#  no cache
-#----------------------------------------------------------------------------
-
-# ramtest for the CR7.
-env_netx4000_s_cr7 = atEnv.NETX4000_RELAXED.Clone()
-env_netx4000_s_cr7.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
-env_netx4000_s_cr7.Append(CPPPATH = aCppPath)
-env_netx4000_s_cr7.Append(CPPDEFINES = [['CPU_CR7', '1']])
-src_netx4000_s_cr7 = env_netx4000_s_cr7.SetBuildPath('targets/netx4000_cr7', 'src', sources_common+sources_arm_assembler+sources_standalone_netx4000_cr7)
-elf_netx4000_s_cr7 = env_netx4000_s_cr7.Elf(         'targets/netx4000_cr7/netx4000_ramtest_cr7.elf', src_netx4000_s_cr7 + env_netx4000_s_cr7['PLATFORM_LIBRARY'])
-txt_netx4000_s_cr7 = env_netx4000_s_cr7.ObjDump(     'targets/netx4000_cr7/netx4000_ramtest_cr7.txt', elf_netx4000_s_cr7, OBJDUMP_FLAGS=['--disassemble', '--source', '--all-headers', '--wide'])
-bin_netx4000_s_cr7 = env_netx4000_s_cr7.ObjCopy(     'targets/netx4000_cr7/netx4000_ramtest_cr7.bin', elf_netx4000_s_cr7)
-
-
 #############################################################################################################
-# netx 500, 50, 10, 51, 52
+# Standalone version
+
+# Build a netX4000 ramtest.
+env_netx4000_s = atEnv.NETX4000.Clone()
+env_netx4000_s.Replace(LDFILE = 'src/netx4000/netx4000_cr7_llram.ld')
+env_netx4000_s.Append(CPPPATH = aCppPath)
+env_netx4000_s.Append(CPPDEFINES = [['CPU_CR7', '1']])
+src_netx4000_s = env_netx4000_s.SetBuildPath('targets/netx4000/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
+elf_netx4000_s = env_netx4000_s.Elf('targets/netx4000/standalone/ramtest_netx4000.elf', src_netx4000_s + env_netx4000_s['PLATFORM_LIBRARY'])
+ramtest_standalone_netx4000 = env_netx4000_s.HBootImage('targets/netx4000/standalone/ramtest_standalone_netx4000.img', 'src/netx4000/CR7_to_INTRAM.xml', HBOOTIMAGE_KNOWN_FILES=dict({'tElfCR7': elf_netx4000_s}))
+
 env_netx500_s = atEnv.NETX500.Clone()
 env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_s.Append(CPPPATH = aCppPath)
@@ -215,7 +207,7 @@ elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest_netx10.elf', 
 ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ramtest_standalone_netx10.img', elf_netx10_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
 
 
-Export('ramtest_standalone_netx500', 'ramtest_standalone_netx90', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
+Export('ramtest_standalone_netx4000', 'ramtest_standalone_netx500', 'ramtest_standalone_netx90', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
 #Export('ramtest_standalone_cifx4000_sdram')
 #Export('ramtest_standalone_nxhx4000_ddr3_400MHz_cr7')
 

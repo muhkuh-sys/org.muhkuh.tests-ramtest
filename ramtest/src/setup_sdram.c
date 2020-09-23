@@ -303,10 +303,110 @@ static int setup_sdram_hif_netx90_mpw(unsigned long ulSdramGeneralCtrl)
 	return iResult;
 }
 #elif ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
-static int setup_sdram_hif_netx4000_relaxed(unsigned long ulSdramGeneralCtrl)
+
+static int setup_sdram_mem_netx4000(unsigned long ulSdramGeneralCtrl)
 {
-	(void) ulSdramGeneralCtrl;
+#if 0
+	/* Enable an SDRAM on the MEM pins. */
+	ulValue |= HOSTMSK(hif_io_cfg_en_mem_sdram_mi);
+	/* Set the bus width from the general control value. */
+	ulValue &= ~HOSTMSK(hif_io_cfg_mem_mi_cfg);
+	if( (ulGeneralCtrl&HOSTMSK(sdram_general_ctrl_dbus32))==0 )
+	{
+		/* The SDRAM general control register selects 16 bits. */
+		ulValue |= 1U << HOSTSRT(hif_io_cfg_mem_mi_cfg);
+	}
+	else
+	{
+		/* The SDRAM general control register selects 32 bits. */
+		ulValue |= 2U << HOSTSRT(hif_io_cfg_mem_mi_cfg);
+	}
+#endif
 	return -1;
+}
+
+
+static int setup_sdram_hif_netx4000(unsigned long ulSdramGeneralCtrl)
+{
+	HOSTDEF(ptAsicCtrlArea);
+	HOSTDEF(ptHifIoCtrlArea);
+	int iResult;
+	unsigned long ulValue;
+	unsigned long ulRowLines;
+	unsigned long ulColumnLines;
+	unsigned long ulAddressLines;
+	unsigned long ulBusWidthBits;
+
+
+	/* Get the number of */
+	ulRowLines  = (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_rows)) >> HOSTSRT(sdram_general_ctrl_rows);
+	ulRowLines += 11U;
+
+	ulColumnLines  = (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_columns)) >> HOSTSRT(sdram_general_ctrl_columns);
+	ulColumnLines += 8U;
+	/* Line A10 is not useable as column address signal. */
+	if( ulColumnLines>=11 )
+	{
+		++ulColumnLines;
+	}
+
+	ulAddressLines = ulRowLines;
+	if( ulAddressLines<ulColumnLines )
+	{
+		ulAddressLines = ulColumnLines;
+	}
+
+	ulBusWidthBits = (ulSdramGeneralCtrl & HOSTMSK(sdram_general_ctrl_dbus32)) >> HOSTSRT(sdram_general_ctrl_dbus32);
+	if( ulBusWidthBits==1 && ulAddressLines>18 )
+	{
+		uprintf("The number address lines is not availble with 32bits: %d\n", ulAddressLines);
+		iResult = -1;
+	}
+	else if( ulAddressLines>25 )
+	{
+		uprintf("The number of address lines exceeds available lines: %d\n", ulAddressLines);
+		iResult = -1;
+	}
+	else
+	{
+		/* Use all data bus lines for the HIF memory interface. */
+		ulValue  = 0U << HOSTSRT(hif_io_cfg_sel_mem_d);
+		/* No additional address pins for the MEM interface. */
+		ulValue |= 0U << HOSTSRT(hif_io_cfg_sel_mem_a_width);
+		/* Disable the MEM interface. */
+		ulValue |= 0U << HOSTSRT(hif_io_cfg_en_mem_sdram_mi);
+		ulValue |= 3U << HOSTSRT(hif_io_cfg_mem_mi_cfg);
+		/* No PIO. */
+		ulValue |= 0U << HOSTSRT(hif_io_cfg_en_hif_rdy_pio_mi);
+		/* Use all unused pins as PIOs. */
+		if( ulAddressLines>11U )
+		{
+			ulValue |= (ulAddressLines-11U) << HOSTSRT(hif_io_cfg_sel_hif_a_width);
+		}
+		else
+		{
+			ulValue |= 0U << HOSTSRT(hif_io_cfg_sel_hif_a_width);
+		}
+
+		/* Enable an SDRAM on the HIF pins. */
+		ulValue |= 1U << HOSTSRT(hif_io_cfg_en_hif_sdram_mi);
+
+		/* 0 (16 bits) -> 01, 1 (32 bits) -> 10 */
+		ulValue |= (ulBusWidthBits+1) << HOSTSRT(hif_io_cfg_hif_mi_cfg);
+
+		ptAsicCtrlArea->ulAsic_ctrl_access_key = ptAsicCtrlArea->ulAsic_ctrl_access_key;  /* @suppress("Assignment to itself") */
+		ptHifIoCtrlArea->ulHif_io_cfg = ulValue;
+
+		/* Activate the DPM clock. */
+		ulValue  = ptAsicCtrlArea->ulClock_enable;
+		ulValue |= HOSTMSK(clock_enable_dpm);
+		ptAsicCtrlArea->ulAsic_ctrl_access_key = ptAsicCtrlArea->ulAsic_ctrl_access_key;  /* @suppress("Assignment to itself") */
+		ptAsicCtrlArea->ulClock_enable = ulValue;
+
+		iResult = 0;
+	}
+
+	return iResult;
 }
 #endif
 
@@ -390,16 +490,38 @@ int sdram_setup(unsigned long ulSdramStart, unsigned long ulSdramGeneralCtrl, un
 	/* Expect success. */
 	iResult = 0;
 
+	uprintf("Parameter:\n");
+	uprintf("  SDRAM start:         0x%08x\n", ulSdramStart);
+	uprintf("  SDRAM general ctrl:  0x%08x\n", ulSdramGeneralCtrl);
+	uprintf("  SDRAM timing ctrl:   0x%08x\n", ulSdramTimingCtrl);
+	uprintf("  SDRAM mr:            0x%08x\n", ulSdramMr);
+
 	ptSdram = get_sdram_controller(ulSdramStart);
-	if( ptSdram!=NULL )
+	if( ptSdram==NULL )
+	{
+		uprintf("No SDRAM controller available for the test area. Skipping SDRAM init.\n");
+	}
+	else
 	{
 		/* Run the device specific initialization. */
 #if ASIC_TYP==ASIC_TYP_NETX4000_RELAXED || ASIC_TYP==ASIC_TYP_NETX4000
+		/* Is the test area inside the MEM SDRAM? */
+		if( ulSdramStart>=HOSTADDR(mem_sdram) && ulSdramStart<=HOSTADR(mem_sdram_sdram_end) )
+		{
+			/* MEM SDRAM needs special preparation. */
+			iResult = setup_sdram_mem_netx4000(ulSdramGeneralCtrl);
+			uprintf("netX4000 SDRAM MEM init: %d\n", iResult);
+		}
 		/* Is the test area inside the HIF SDRAM? */
-		if( ulSdramStart>=HOSTADDR(hif_sdram) && ulSdramStart<=HOSTADR(hif_sdram_sdram_end) )
+		else if( ulSdramStart>=HOSTADDR(hif_sdram) && ulSdramStart<=HOSTADR(hif_sdram_sdram_end) )
 		{
 			/* HIF SDRAM needs special preparation. */
-			iResult = setup_sdram_hif_netx4000_relaxed(ulSdramGeneralCtrl);
+			iResult = setup_sdram_hif_netx4000(ulSdramGeneralCtrl);
+			uprintf("netX4000 SDRAM HIF init: %d\n", iResult);
+		}
+		else
+		{
+			uprintf("No special init needed.\n");
 		}
 #elif ASIC_TYP==ASIC_TYP_NETX90_MPW || ASIC_TYP==ASIC_TYP_NETX90
 		/* Is the test area inside the SDRAM? */
@@ -407,6 +529,11 @@ int sdram_setup(unsigned long ulSdramStart, unsigned long ulSdramGeneralCtrl, un
 		{
 			/* HIF SDRAM needs special preparation. */
 			iResult = setup_sdram_hif_netx90_mpw(ulSdramGeneralCtrl);
+			uprintf("netX90 SDRAM HIF init: %d\n", iResult);
+		}
+		else
+		{
+			uprintf("No special init needed.\n");
 		}
 #elif ASIC_TYP==ASIC_TYP_NETX56
 		/* Is the test area inside the HIF SDRAM? */
@@ -414,6 +541,11 @@ int sdram_setup(unsigned long ulSdramStart, unsigned long ulSdramGeneralCtrl, un
 		{
 			/* HIF SDRAM needs special preparation. */
 			iResult = setup_sdram_hif_netx56(ulSdramGeneralCtrl);
+			uprintf("netX56 SDRAM HIF init: %d\n", iResult);
+		}
+		else
+		{
+			uprintf("No special init needed.\n");
 		}
 #elif ASIC_TYP==ASIC_TYP_NETX10
 		/* Is the test area inside the SDRAM? */
@@ -421,10 +553,19 @@ int sdram_setup(unsigned long ulSdramStart, unsigned long ulSdramGeneralCtrl, un
 		{
 			/* Setup netX10 HIF for SDRAM. */
 			iResult = setup_sdram_hif_netx10(ulSdramGeneralCtrl);
+			uprintf("netX10 SDRAM HIF init: %d\n", iResult);
+		}
+		else
+		{
+			uprintf("No special init needed.\n");
 		}
 #endif
 
-		if( iResult==0 )
+		if( iResult!=0 )
+		{
+			uprintf("The special init failed!\n");
+		}
+		else
 		{
 			/* The MR value is an extension to the boot block. Use the default value if it is 0. */
 			if( ulSdramMr==0 )
