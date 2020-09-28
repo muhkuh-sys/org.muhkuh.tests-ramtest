@@ -108,8 +108,20 @@ void ramtest_main(void)
 	/* No signal when a loop has finished */
 	tTestParams.pfnLoopFinished = NULL;
 
-	/* Setup the SDRAM. */
-	iResult = sdram_setup(tTestParams.ulStart, ulSdramGeneralCtrl, ulSdramTimingCtrl, ulSdramMr);
+	/* The SDRAM should not be setup if all 3 parameters are 0.
+	 * This is important for an environment with a HWC.
+	 */
+	if( (ulSdramGeneralCtrl|ulSdramTimingCtrl|ulSdramMr)==0x00000000 )
+	{
+		uprintf("All SDRAM parameter are 0. Skipping SDRAM setup.\n");
+		iResult = 0;
+	}
+	else
+	{
+		/* Setup the SDRAM. */
+		iResult = sdram_setup(tTestParams.ulStart, ulSdramGeneralCtrl, ulSdramTimingCtrl, ulSdramMr);
+	}
+
 	if( iResult==0 )
 	{
 		/*
