@@ -6,12 +6,17 @@ local TestClassRam = class(TestClass)
 function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
   self:super(strTestName, uiTestCase, tLogWriter, strLogLevel)
 
+  self.json = require 'dkjson'
+
   local cRamTest = require 'ramtest'
   self.ramtest = cRamTest(self.tLog)
 
   local P = self.P
   self:__parameter {
     P:P('plugin', 'A pattern for the plugin to use.'):
+      required(false),
+
+    P:P('plugin_options', 'Plugin options as a JSON object.'):
       required(false),
 
     P:SC('interface', 'This is the interface where the RAM is connected.'):
@@ -74,6 +79,7 @@ end
 
 function TestClassRam:run()
   local atParameter = self.atParameter
+  local json = self.json
   local tLog = self.tLog
   local ramtest = self.ramtest
 
@@ -82,6 +88,7 @@ function TestClassRam:run()
   -- Parse the parameters and collect all options.
   --
   local strPluginPattern = atParameter['plugin']:get()
+  local strPluginOptions = atParameter['plugin_options']:get()
 
   -- Parse the interface option.
   local strValue = atParameter["interface"]:get()
@@ -175,7 +182,16 @@ function TestClassRam:run()
   -- Open the connection to the netX.
   -- (or re-use an existing connection.)
   --
-  local tPlugin = tester:getCommonPlugin(strPluginPattern)
+  local atPluginOptions = {}
+  if strPluginOptions~=nil then
+    local tJson, uiPos, strJsonErr = json.decode(strPluginOptions)
+    if tJson==nil then
+      tLog.warning('Ignoring invalid plugin options. Error parsing the JSON: %d %s', uiPos, strJsonErr)
+    else
+      atPluginOptions = tJson
+    end
+  end
+  local tPlugin = tester:getCommonPlugin(strPluginPattern, atPluginOptions)
   if tPlugin==nil then
     error("No plug-in selected, nothing to do!")
   end
