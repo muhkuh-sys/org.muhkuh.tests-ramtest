@@ -7,6 +7,7 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
   self:super(strTestName, uiTestCase, tLogWriter, strLogLevel)
 
   self.json = require 'dkjson'
+  self.bit = require 'bit'
 
   local cRamTest = require 'ramtest'
   self.ramtest = cRamTest(self.tLog)
@@ -43,7 +44,6 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
       required(false),
 
     P:U32('sdram_size_exponent', 'Only if interface is SDRAM: The size exponent.'):
-      default(23):
       required(true),
 
     P:U32('sram_chip_select', 'Only if interface is SRAM: The chip select of the SRAM device.'):
@@ -82,6 +82,8 @@ function TestClassRam:run()
   local json = self.json
   local tLog = self.tLog
   local ramtest = self.ramtest
+  local bit = self.bit
+  local pl = self.pl
 
   ----------------------------------------------------------------------
   --
@@ -122,7 +124,7 @@ function TestClassRam:run()
     if ulValue==nil then
       error(string.format("Unknown check ID: %s", strElement))
     end
-    ulChecks = ulChecks + ulValue
+    ulChecks = bit.bor(ulChecks,ulValue)
   end
 
   local ulLoops = atParameter["loops"]:get()
@@ -193,7 +195,12 @@ function TestClassRam:run()
   end
   local tPlugin = tester:getCommonPlugin(strPluginPattern, atPluginOptions)
   if tPlugin==nil then
-    error("No plug-in selected, nothing to do!")
+	if strPluginOptions~=nil and #atPluginOptions ~= 0 then
+		local strTablePluginOptions = pl.pretty.write(atPluginOptions,'  ',true)
+		error(string.format("Failed to connect to the netX with plugin pattern '%s' and options:\n %s'\n Possible fixes:\n - Wrong plugin name \n - Check the connection cable \n - Check the power supply of the test board",strPluginPattern,strTablePluginOptions))
+	else
+		error(string.format("Failed to connect to the netX with plugin pattern '%s'!\n Possible fixes:\n - Wrong plugin name \n - Check the connection cable \n - Check the power supply of the test board",strPluginPattern))
+	end
   end
 
 

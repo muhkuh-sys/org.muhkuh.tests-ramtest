@@ -5,6 +5,8 @@ function RamTest:_init(tLog)
   self.bit = require("bit")
   local romloader = require("romloader")
   self.romloader = romloader
+  local pl = require'pl.import_into'()
+  self.pl = pl
 
   self.tLog = tLog
 
@@ -59,6 +61,14 @@ function RamTest:_init(tLog)
   self.INTERFACE_SRAM_MEM       = 4
   self.INTERFACE_DDR            = 5
 
+  self.tInterfaceNames = {
+	[self.INTERFACE_RAM] = "RAM",
+	[self.INTERFACE_SDRAM_HIF] = "SDRAM_HIF",
+	[self.INTERFACE_SDRAM_MEM] = "SDRAM_MEM",
+	[self.INTERFACE_SRAM_HIF] = "SRAM_HIF",
+	[self.INTERFACE_SRAM_MEM] = "SRAM_MEM",
+	[self.INTERFACE_DDR] = "DDR",
+  }
 
   self.atPlatformAttributes = {
     [romloader.ROMLOADER_CHIPTYP_NETX4000_FULL] = {
@@ -636,6 +646,7 @@ end
 
 function RamTest:get_sdram_interface_attributes(tPlugin, tInterface)
   -- Get the platform attributes for the chip type.
+  local pl = self.pl
   local tChipType = tPlugin:GetChiptyp()
   local atPlatform = self.atPlatformAttributes[tChipType]
   if atPlatform==nil then
@@ -647,8 +658,9 @@ function RamTest:get_sdram_interface_attributes(tPlugin, tInterface)
     error("Chiptype has no sdram attributes: ", tChipType)
   end
   local atInterface = atSdram[tInterface]
-  if atInterface==nil then
-    error("Chiptype "..tChipType.." has no SDRAM attributes for interface: ", tInterface)
+
+  if pl.tablex.size(atInterface) == 0 then
+    error("Chiptype "..tChipType.." has no SDRAM attributes for interface: " .. self.tInterfaceNames[tInterface])
   end
   
   return atInterface
@@ -658,6 +670,7 @@ end
 
 function RamTest:get_sram_interface_attributes(tPlugin, tInterface)
   -- Get the platform attributes for the chip type.
+  local pl = self.pl
   local tChipType = tPlugin:GetChiptyp()
   local atPlatform = self.atPlatformAttributes[tChipType]
   if atPlatform==nil then
@@ -669,8 +682,9 @@ function RamTest:get_sram_interface_attributes(tPlugin, tInterface)
     error("Chiptype has no sram attributes: ", tChipType)
   end
   local atInterface = atSram[tInterface]
-  if atInterface==nil then
-    error("Chiptype "..tChipType.." has no SRAM attributes for interface: ", tInterface)
+
+  if pl.tablex.size(atInterface) == 0 then
+    error("Chiptype "..tChipType.." has no SDRAM attributes for interface: " .. self.tInterfaceNames[tInterface])
   end
 
   return atInterface
