@@ -188,7 +188,7 @@ env_netx56_s.Replace(LDFILE = 'src/netx56/netx56.ld')
 env_netx56_s.Append(CPPPATH = aCppPath)
 src_netx56_s = env_netx56_s.SetBuildPath('targets/netx56/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx56_s = env_netx56_s.Elf('targets/netx56/standalone/ramtest_netx56.elf', src_netx56_s + env_netx56_s['PLATFORM_LIBRARY'])
-ramtest_standalone_netx56 = env_netx56_s.BootBlock('targets/netx56/standalone/ramtest_standalone_netx56.img', elf_netx56_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
+ramtest_standalone_netx56 = env_netx56_s.BootBlock('targets/netx56/standalone/ramtest_standalone_netx56.img', elf_netx56_s, BOOTBLOCK_SRC='SPI_GEN_10', BOOTBLOCK_DST='INTRAM')
 
 
 env_netx50_s = atEnv.NETX50.Clone()
@@ -196,7 +196,7 @@ env_netx50_s.Replace(LDFILE = 'src/netx50/netx50.ld')
 env_netx50_s.Append(CPPPATH = aCppPath)
 src_netx50_s = env_netx50_s.SetBuildPath('targets/netx50/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx50_s = env_netx50_s.Elf('targets/netx50/standalone/ramtest_netx50.elf', src_netx50_s + env_netx50_s['PLATFORM_LIBRARY'])
-ramtest_standalone_netx50 = env_netx50_s.BootBlock('targets/netx50/standalone/ramtest_standalone_netx50.img', elf_netx50_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
+ramtest_standalone_netx50 = env_netx50_s.BootBlock('targets/netx50/standalone/ramtest_standalone_netx50.img', elf_netx50_s, BOOTBLOCK_SRC='SPI_GEN_10', BOOTBLOCK_DST='INTRAM')
 
 
 env_netx10_s = atEnv.NETX10.Clone()
@@ -204,7 +204,7 @@ env_netx10_s.Replace(LDFILE = 'src/netx10/netx10.ld')
 env_netx10_s.Append(CPPPATH = aCppPath)
 src_netx10_s = env_netx10_s.SetBuildPath('targets/netx10/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx10_s = env_netx10_s.Elf('targets/netx10/standalone/ramtest_netx10.elf', src_netx10_s + env_netx10_s['PLATFORM_LIBRARY'])
-ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ramtest_standalone_netx10.img', elf_netx10_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
+ramtest_standalone_netx10 = env_netx10_s.BootBlock('targets/netx10/standalone/ramtest_standalone_netx10.img', elf_netx10_s, BOOTBLOCK_SRC='SPI_GEN_10', BOOTBLOCK_DST='INTRAM')
 
 
 Export('ramtest_standalone_netx4000', 'ramtest_standalone_netx500', 'ramtest_standalone_netx90', 'ramtest_standalone_netx56', 'ramtest_standalone_netx50', 'ramtest_standalone_netx10')
