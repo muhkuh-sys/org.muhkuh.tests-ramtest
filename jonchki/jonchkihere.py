@@ -25,7 +25,6 @@ import os
 import platform
 import re
 import shutil
-import string
 import subprocess
 import sys
 import tarfile
@@ -34,12 +33,13 @@ import time
 import zipfile
 
 try:
-    from urllib.request import urlopen, HTTPError
+    from urllib.request import urlopen
+    from urllib.error import HTTPError
 except ImportError:
     from urllib2 import urlopen, HTTPError
 
 
-strDefaultJonchkiVersion = '0.0.3.1'
+strDefaultJonchkiVersion = '0.0.6.1'
 
 
 class ProgressOutput:
@@ -105,7 +105,7 @@ class ProgressOutput:
 
             # Get the end position of the line in bytes.
             sizLineEnd = self.m_uiLinePositionStart
-            sizLineEnd += self.m_uiDotsPerLine * self.m_sizDot
+            sizLineEnd += int((self.m_uiDotsPerLine * self.m_sizDot) + 0.5)
             sizDownloaded = self.m_sizCurrent + sizData
             if sizLineEnd > sizDownloaded:
                 sizLineEnd = sizDownloaded
@@ -114,7 +114,7 @@ class ProgressOutput:
             # Get the number of bytes in this line.
             sizDotBytes = sizLineEnd - self.m_uiLinePositionStart
             # Get the number of new dots in this line.
-            sizDots = int(sizDotBytes / self.m_sizDot)
+            sizDots = int((sizDotBytes / self.m_sizDot) + 0.5)
             sizDots -= self.m_uiDotsPrintedInCurrentLine
             # Print the new dots.
             sys.stdout.write('.' * sizDots)
@@ -161,13 +161,13 @@ class PlatformDetect:
         strEnvProcessorArchitecture = None
         strEnvProcessorArchiteW6432 = None
         if 'PROCESSOR_ARCHITECTURE' in os.environ:
-            strEnvProcessorArchitecture = string.lower(
-                os.environ['PROCESSOR_ARCHITECTURE']
-            )
+            strEnvProcessorArchitecture = os.environ[
+                'PROCESSOR_ARCHITECTURE'
+            ].lower()
         if 'PROCESSOR_ARCHITEW6432' in os.environ:
-            strEnvProcessorArchiteW6432 = string.lower(
-                os.environ['PROCESSOR_ARCHITEW6432']
-            )
+            strEnvProcessorArchiteW6432 = os.environ[
+                'PROCESSOR_ARCHITEW6432'
+            ].lower()
         # See here for details: https://blogs.msdn.microsoft.com/david.wang/
         # 2006/03/27/howto-detect-process-bitness/
         if((strEnvProcessorArchitecture == 'amd64') or
@@ -190,8 +190,11 @@ class PlatformDetect:
         strCpuArchitecture = None
 
         # Try to parse the output of the 'getconf LONG_BIT' command.
-        strOutput = subprocess.check_output(['getconf', 'LONG_BIT'])
-        strOutputStrip = strOutput.decode("utf-8", "replace").strip()
+        strOutput = subprocess.check_output(['getconf', 'LONG_BIT']).decode(
+            "utf-8",
+            "replace"
+        )
+        strOutputStrip = strOutput.strip()
         if strOutputStrip == '32':
             strCpuArchitecture = 'x86'
         elif strOutputStrip == '64':

@@ -1,14 +1,11 @@
-#! /usr/bin/python2.7
+#! /usr/bin/python3
 
 from jonchki import cli_args
-from jonchki import filter
 from jonchki import jonchkihere
-from jonchki import vcs_id
 
 import os
 import subprocess
 import sys
-import xml.etree.ElementTree
 
 
 tPlatform = cli_args.parse()
@@ -52,6 +49,10 @@ strCfg_jonchkiInstallationFolder = os.path.join(
     'targets'
 )
 
+strCfg_jonchkiLog = os.path.join(
+    strCfg_workingFolder,
+    'jonchki.log'
+)
 strCfg_jonchkiSystemConfiguration = os.path.join(
     strCfg_projectFolder,
     'jonchki',
@@ -62,20 +63,26 @@ strCfg_jonchkiProjectConfiguration = os.path.join(
     'jonchki',
     'jonchkicfg.xml'
 )
+strCfg_jonchkiPrepare = os.path.join(
+    strCfg_projectFolder,
+    'prepare.lua'
+)
 strCfg_jonchkiFinalizer = os.path.join(
     strCfg_projectFolder,
     'finalizer.lua'
 )
-# This is the artifact configuration file.
-strCfg_artifactConfiguration = os.path.join(
+strCfg_jonchkiDependencyLog = os.path.join(
     strCfg_projectFolder,
-    'ramtest_cli.xml'
+    'dependency-log.xml'
 )
+# This is the artifact configuration file.
+# NOTE: this file will be created by the Jonchki prepare script.
+strCfg_artifactConfiguration = 'ramtest_cli.xml'
 
 # -
 # --------------------------------------------------------------------------
 
-# Create the testbench folder if it does not exist yet.
+# Create the working folder if it does not exist yet.
 if os.path.exists(strCfg_workingFolder) is not True:
     os.makedirs(strCfg_workingFolder)
 
@@ -92,31 +99,6 @@ strJonchki = jonchkihere.install(
     LOCAL_ARCHIVES=strCfg_jonchkiLocalArchives
 )
 
-# Get the project version from the setup.xml .
-tSetupXml = xml.etree.ElementTree.parse('setup.xml')
-strProjectVersion = tSetupXml.getroot().findtext('project_version')
-
-# Try to get the VCS ID.
-strProjectVersionVcs, strProjectVersionVcsLong = vcs_id.get(
-    strCfg_projectFolder
-)
-
-# Filter the artifact configuration.
-atMapping = dict(
-    PROJECT_VERSION=strProjectVersion,
-    PROJECT_VERSION_VCS=strProjectVersionVcs,
-    PROJECT_VERSION_VCS_LONG=strProjectVersionVcsLong
-)
-strFilteredArtifactConfiguration = os.path.join(
-    strCfg_workingFolder,
-    'testcase.xml'
-)
-filter.file(
-    strCfg_artifactConfiguration,
-    strFilteredArtifactConfiguration,
-    atMapping
-)
-
 # Create the command line options for the selected platform.
 astrJonchkiPlatform = cli_args.to_jonchki_args(tPlatform)
 
@@ -126,9 +108,12 @@ sys.stderr.flush()
 astrArguments = [strJonchki]
 astrArguments.append('install-dependencies')
 astrArguments.extend(['-v', 'debug'])
+astrArguments.extend(['--logfile', strCfg_jonchkiLog])
 astrArguments.extend(['--syscfg', strCfg_jonchkiSystemConfiguration])
 astrArguments.extend(['--prjcfg', strCfg_jonchkiProjectConfiguration])
 astrArguments.extend(['--finalizer', strCfg_jonchkiFinalizer])
+astrArguments.extend(['--dependency-log', strCfg_jonchkiDependencyLog])
+astrArguments.extend(['--prepare', strCfg_jonchkiPrepare])
 astrArguments.extend(astrJonchkiPlatform)
-astrArguments.append(strFilteredArtifactConfiguration)
+astrArguments.append(strCfg_artifactConfiguration)
 sys.exit(subprocess.call(astrArguments, cwd=strCfg_workingFolder))

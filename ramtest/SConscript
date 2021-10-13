@@ -171,7 +171,7 @@ env_netx500_s.Replace(LDFILE = 'src/netx500/netx500.ld')
 env_netx500_s.Append(CPPPATH = aCppPath)
 src_netx500_s = env_netx500_s.SetBuildPath('targets/netx500/standalone', 'src', sources_common+sources_arm_assembler+sources_standalone)
 elf_netx500_s = env_netx500_s.Elf('targets/netx500/standalone/ramtest_netx500.elf', src_netx500_s + env_netx500_s['PLATFORM_LIBRARY'])
-ramtest_standalone_netx500 = env_netx500_s.BootBlock('targets/netx500/standalone/ramtest_standalone_netx500.img', elf_netx500_s, BOOTBLOCK_SRC={}, BOOTBLOCK_DST={})
+ramtest_standalone_netx500 = env_netx500_s.BootBlock('targets/netx500/standalone/ramtest_standalone_netx500.img', elf_netx500_s, BOOTBLOCK_SRC='SPI_GEN_10', BOOTBLOCK_DST='INTRAM')
 
 
 # Build a netX90 standalone RAM test.
