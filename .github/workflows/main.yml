@@ -93,9 +93,7 @@ jobs:
     - name: Build
       run: ./build_artifact.py ${{ matrix.platform.distribution-id }} ${{ matrix.platform.distribution-version }} ${{ matrix.platform.cpu-architecture }}
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v1
       with:
         name: ramtest_cli_${{ matrix.platform.distribution-id }}_${{ matrix.platform.distribution-version }}_${{ matrix.platform.cpu-architecture }}
-        path: |
-          targets/ramtest_cli-*.tar.gz
-          targets/ramtest_cli-*.zip
+        path: targets/ramtest_cli-*
