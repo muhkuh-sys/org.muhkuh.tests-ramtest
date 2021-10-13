@@ -9,6 +9,9 @@ local pl = require'pl.import_into'()
 
 -- Copy all additional files.
 local atScripts = {
+  -- Install the CLI init script.
+  ['local/muhkuh_cli_init.lua'] = '${install_base}/',
+
   -- Copy the complete "templates" folder.
   ['${depack_path_org.muhkuh.tests.ramtest.ramtest}/templates/'] = '${install_base}/templates/',
 
@@ -16,14 +19,6 @@ local atScripts = {
 }
 for strSrc, strDst in pairs(atScripts) do
   t:install(strSrc, strDst)
-end
-
-
--- Install the CLI init script.
-if strDistId=='windows' then
-  t:install('local/windows/muhkuh_cli_init.lua', '${install_base}/')
-elseif strDistId=='ubuntu' then
-  t:install('local/linux/muhkuh_cli_init.lua', '${install_base}/')
 end
 
 
