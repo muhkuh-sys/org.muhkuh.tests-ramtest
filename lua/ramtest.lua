@@ -62,12 +62,12 @@ function RamTest:_init(tLog)
   self.INTERFACE_DDR            = 5
 
   self.tInterfaceNames = {
-	[self.INTERFACE_RAM] = "RAM",
-	[self.INTERFACE_SDRAM_HIF] = "SDRAM_HIF",
-	[self.INTERFACE_SDRAM_MEM] = "SDRAM_MEM",
-	[self.INTERFACE_SRAM_HIF] = "SRAM_HIF",
-	[self.INTERFACE_SRAM_MEM] = "SRAM_MEM",
-	[self.INTERFACE_DDR] = "DDR",
+    [self.INTERFACE_RAM] = "RAM",
+    [self.INTERFACE_SDRAM_HIF] = "SDRAM_HIF",
+    [self.INTERFACE_SDRAM_MEM] = "SDRAM_MEM",
+    [self.INTERFACE_SRAM_HIF] = "SRAM_HIF",
+    [self.INTERFACE_SRAM_MEM] = "SRAM_MEM",
+    [self.INTERFACE_DDR] = "DDR",
   }
 
   self.atPlatformAttributes = {
@@ -115,9 +115,9 @@ function RamTest:_init(tLog)
       strAsic = 'netx4000_relaxed',
       sdram = {
         [self.INTERFACE_SDRAM_MEM] = {
-          ulController = 0xf40c0140, 
+          ulController = 0xf40c0140,
           ulArea_Start = 0x30000000,
-          setup = self.setup_sdram_netx4000 
+          setup = self.setup_sdram_netx4000
         },
         [self.INTERFACE_SDRAM_HIF] = {
           ulController = 0xf40c0240,
@@ -398,9 +398,9 @@ end
 --         10 hif_sdclk
 --
 -- 07:       U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0800 U0800 U0800 U0800 U0800 U0800 U0800
--- 08: U0800 
+-- 08: U0800
 -- 09:       U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600
--- 0a: U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 D0600 
+-- 0a: U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 D0600
 function RamTest:set_hif_portcontrol_nxhxsdrspi(tPlugin)
   self:set_portcontrol(tPlugin, 7,  1,  8,  'PC_U0800') -- P7_1..8   HIF_D0..D7
   self:set_portcontrol(tPlugin, 7,  9,  15, 'PC_U0800') -- P7_9..15  HIF_D8..D14
@@ -416,7 +416,7 @@ end
 -- 07:       U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0800 U0800 U0800 U0800 U0800 U0800 U0800
 -- 08: U0800 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600
 -- 09: D0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600
--- 0a: U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 D0600 
+-- 0a: U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 U0600 D0600
 
 function RamTest:set_hif_portcontrol_romcode(tPlugin)
   self:set_portcontrol(tPlugin, 7,  1,  8,  'PC_U0600') -- P7_1..8   HIF_D0..D7    U0600
@@ -662,7 +662,7 @@ function RamTest:get_sdram_interface_attributes(tPlugin, tInterface)
   if pl.tablex.size(atInterface) == 0 then
     error("Chiptype "..tChipType.." has no SDRAM attributes for interface: " .. self.tInterfaceNames[tInterface])
   end
-  
+
   return atInterface
 end
 
@@ -932,7 +932,7 @@ function RamTest:decode_sdram_geometry(ulGeneralCtrl, tAsicTyp)
   or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000_RELAXED or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4000_FULL or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX4100_SMALL
   then
     ulBusWidth = ulBusWidth * 2
-  elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10 
+  elseif tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX10
   or tAsicTyp==romloader.ROMLOADER_CHIPTYP_NETX90_MPW then
     ulBusWidth = ulBusWidth
   else
@@ -1100,8 +1100,8 @@ end
 -- by running the SDRAM test for all valid combinations.
 --
 -- Initially, the SDRAM test is run once for all combinations.
--- In further rounds, the SDRAM test is re-run for all combinations 
--- which passed the previous tests. 
+-- In further rounds, the SDRAM test is re-run for all combinations
+-- which passed the previous tests.
 -- The number of runs of the SDRAM test is doubled in each round until
 -- it exceeds ulMaxLoops.
 
@@ -1119,7 +1119,7 @@ function RamTest:test_phase_parameters(tPlugin, atSdramAttributes, ulMaxLoops)
   local ulSDRAMStart     = self:get_ram_start(tPlugin, atSdramAttributes)
   local ulSDRAMSize      = self:get_ram_size(tPlugin, atSdramAttributes)
   local ulChecks         = self.CHECK_08BIT + self.CHECK_16BIT + self.CHECK_32BIT + self.CHECK_BURST + self.CHECK_DATABUS + self.CHECK_CHECKERBOARD + self.CHECK_MARCHC + self.CHECK_SEQUENCE + self.CHECK_MEMCPY
-  
+
   -- init the result matrix, define print function
   local aiTestResults = {}
 
@@ -1305,7 +1305,7 @@ end
 
 
 
--- Takes an array of arrays of values and 
+-- Takes an array of arrays of values and
 -- calculates, the min, avg and max across all subtables
 function RamTest:vector_min_avg_max(aVectors)
   local aMin = {}
@@ -1399,7 +1399,7 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
   -- Get the row size
   local tGeometry = self:get_sdram_geometry(tPlugin, atSdramAttributes)
   local ulRowSize = tGeometry.ulRowSize
-  
+
   -- Get the array refresh time
   local ulTimingCtrl = atSdramAttributes.timing_ctrl
   local ult_REFI    = 3.9 * bit.lshift(1, bit.rshift(bit.band(ulTimingCtrl, 0x00030000), 16))
@@ -1409,7 +1409,7 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
   tLog.info("t_REFI: %3.2f microseconds", ult_REFI)
   tLog.info("Array refresh time: %5.2f ms, %d * 10ns clocks", ulArrayRefreshTime_us/1000, ulRefreshTime_clk)
   tLog.info('')
-  
+
   -- Do a calibration run using intram
   local ulCalibrationAreaStart = 0x10000
   local ulResult, aulCalibrationTimes
@@ -1418,7 +1418,7 @@ function RamTest:run_performance_test(tPlugin, atSdramAttributes, ulAreaStart, u
     ulRowSize = ulRowSize, ulRefreshTime_clk=ulRefreshTime_clk}
     aulCalibrationTimes = self:vector_shift0(aulCalibrationTimes)
     aulCalibrationTimes = self:vector_scale(aulCalibrationTimes, 0.01)
-    
+
   end
 
   -- Execute the tests
