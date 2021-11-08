@@ -44,7 +44,7 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
       required(false),
 
     P:U32('sdram_size_exponent', 'Only if interface is SDRAM: The size exponent.'):
-      required(true),
+      required(false),
 
     P:U32('sram_chip_select', 'Only if interface is SRAM: The chip select of the SRAM device.'):
       required(false),
