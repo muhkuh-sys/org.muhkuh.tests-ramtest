@@ -1051,7 +1051,8 @@ end
 
 
 -- run the ram test
-function RamTest:test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
+function RamTest:test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops, uiPatterns)
+  uiPatterns = uiPatterns or 0
   local tester = _G.tester
 
   -- Get the platform attributes for the chip type.
@@ -1070,6 +1071,7 @@ function RamTest:test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ul
     ulAreaSize,
     ulChecks,
     ulLoops,
+    uiPatterns,
     0,
     0,
     0,
@@ -1085,8 +1087,9 @@ end
 
 
 -- wrapper: run ram test and abort on error
-function RamTest:test_ram(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
-  local ulResult = self:test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops)
+function RamTest:test_ram(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops, uiPatterns)
+  uiPatterns = uiPatterns or 0
+  local ulResult = self:test_ram_noerror(tPlugin, ulAreaStart, ulAreaSize, ulChecks, ulLoops, uiPatterns)
   if ulResult~=0 then
     error(string.format("The RAM test returned an error code: 0x%08x", ulResult))
   end

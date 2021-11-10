@@ -1236,7 +1236,8 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 	unsigned long ulCases;
 	unsigned long ulLoopCnt;
 	unsigned long ulLoopMax;
-	unsigned int  uiTestCnt;
+	unsigned int uiPatternCnt;
+	unsigned int uiPatternMax;
 
 
 	/* Show welcome message. */
@@ -1343,17 +1344,28 @@ RAMTEST_RESULT_T ramtest_run(RAMTEST_PARAMETER_T *ptParameter)
 			uprintf("*  Random number test - Loop %08d  *\n", ulLoopCnt);
 			uprintf("*                                      *\n");
 			uprintf("****************************************\n");
-	
-			for(uiTestCnt=0; uiTestCnt<(sizeof(testPairs)/sizeof(RAMTEST_PAIR_T)); ++uiTestCnt )
+
+			uiPatternMax = ptParameter->ulPatterns;
+			/* Zero patterns means all. */
+			if( uiPatternMax==0 )
 			{
-				uprintf(". Start test case %d of %d\n", uiTestCnt+1, sizeof(testPairs)/sizeof(RAMTEST_PAIR_T));
-				tRamTestResult = ramtest_pseudorandom(ptParameter, testPairs+uiTestCnt);
+				uiPatternMax = sizeof(testPairs)/sizeof(RAMTEST_PAIR_T);
+			}
+			/* Limit the number of patterns to the available array. */
+			else if( uiPatternMax>(sizeof(testPairs)/sizeof(RAMTEST_PAIR_T)) )
+			{
+				uiPatternMax = sizeof(testPairs)/sizeof(RAMTEST_PAIR_T);
+			}
+			for(uiPatternCnt=0; uiPatternCnt<uiPatternMax; ++uiPatternCnt )
+			{
+				uprintf(". Start test case %d of %d\n", uiPatternCnt+1, uiPatternMax);
+				tRamTestResult = ramtest_pseudorandom(ptParameter, testPairs+uiPatternCnt);
 				if( tRamTestResult!=RAMTEST_RESULT_OK )
 				{
-					uprintf("! Test case %d failed.\n", uiTestCnt+1);
+					uprintf("! Test case %d failed.\n", uiPatternCnt+1);
 					break;
 				}
-				uprintf(". Test case %d OK.\n", uiTestCnt+1);
+				uprintf(". Test case %d OK.\n", uiPatternCnt+1);
 			}
 		}
 

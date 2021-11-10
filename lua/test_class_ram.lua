@@ -71,6 +71,10 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
 
     P:U32('loops', 'The number of loops to run.'):
       default(1):
+      required(true),
+
+    P:U8('patterns', 'The number of patterns to use for the test cases 08BIT, 16BIT, 32BIT and BURST. A values of "0" selects all tests.'):
+      default(0):
       required(true)
   }
 end
@@ -128,7 +132,7 @@ function TestClassRam:run()
   end
 
   local ulLoops = atParameter["loops"]:get()
-
+  local uiPatterns = atParameter["patterns"]:get()
 
   local atRamAttributes = {
     ["interface"] = ulInterface
@@ -208,7 +212,7 @@ function TestClassRam:run()
   local ulRAMSize  = ramtest:get_ram_size(tPlugin, atRamAttributes)
 
   ramtest:setup_ram(tPlugin, atRamAttributes)
-  ramtest:test_ram(tPlugin, ulRAMStart, ulRAMSize, ulChecks, ulLoops)
+  ramtest:test_ram(tPlugin, ulRAMStart, ulRAMSize, ulChecks, ulLoops, uiPatterns)
   ramtest:disable_ram(tPlugin, atRamAttributes)
 
 

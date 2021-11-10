@@ -72,6 +72,7 @@ typedef struct RAMTEST_PARAMETER_STRUCT
 	unsigned long ulSize;
 	unsigned long ulCases;
 	unsigned long ulLoops;
+	unsigned long ulPatterns;
 	
 	unsigned long ulPerfTestCases;
 	unsigned long ulRowSize;
