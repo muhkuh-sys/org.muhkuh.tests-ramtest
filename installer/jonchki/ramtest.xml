@@ -13,11 +13,11 @@
 		</description>
 	</info>
 	<dependencies>
-		<dependency group="org.muhkuh.tools" module="muhkuh_base_cli" artifact="lua5.4-muhkuh_base_cli" version="2.5"/>
-		<dependency group="de.dkolf" module="dkjson" artifact="dkjson" version="2.5"/>
+		<dependency group="org.muhkuh.tools" module="muhkuh_base_cli" artifact="lua5.4-muhkuh_base_cli" version="2"/>
+		<dependency group="de.dkolf" module="dkjson" artifact="dkjson" version="2"/>
 	</dependencies>
 	<dependencies>
-		<dependency group="org.muhkuh.tools" module="muhkuh_base_cli" artifact="lua5.1-muhkuh_base_cli" version="2.5"/>
-		<dependency group="de.dkolf" module="dkjson" artifact="dkjson" version="2.5"/>
+		<dependency group="org.muhkuh.tools" module="muhkuh_base_cli" artifact="lua5.1-muhkuh_base_cli" version="2"/>
+		<dependency group="de.dkolf" module="dkjson" artifact="dkjson" version="2"/>
 	</dependencies>
 </jonchki-artifact>
