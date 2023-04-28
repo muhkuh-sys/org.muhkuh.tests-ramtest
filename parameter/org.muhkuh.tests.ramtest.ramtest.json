@@ -1,0 +1,105 @@
+{
+  "$schema" : "./schema/parameter.schema.json",
+
+
+  "parameter": [
+    {
+      "name": "plugin",
+      "description": "A pattern for the plugin to use.",
+      "required": "false"
+    },
+    {
+      "name": "plugin_options",
+      "description": "Plugin options as a JSON object.",
+      "required": "false"
+    },
+    {
+      "name": "interface",
+      "description": "This is the interface where the RAM is connected.",
+      "required": "false"
+    },
+    {
+      "name": "ram_start",
+      "description": "Only if interface is RAM: the start of the RAM area.",
+      "required": "false"
+    },
+    {
+      "name": "ram_size",
+      "description": "Only if interface is RAM: The size of the RAM area in bytes.",
+      "required": "false"
+    },
+    {
+      "name": "sdram_netx",
+      "description": "This specifies the chip type for the parameter set.",
+      "required": "false"
+    },
+    {
+      "name": "sdram_general_ctrl",
+      "description": "Only if interface is SDRAM: The complete value for the netX general_ctrl register.",
+      "required": "false"
+    },
+    {
+      "name": "sdram_timing_ctrl",
+      "description": "Only if interface is SDRAM: The complete value for the netX timing_ctrl register.",
+      "required": "false"
+    },
+    {
+      "name": "sdram_mr",
+      "description": "Only if interface is SDRAM: The complete value for the netX mr register.",
+      "required": "false"
+    },
+    {
+      "name": "sdram_size_exponent",
+      "description": "Only if interface is SDRAM: The size exponent.",
+      "required": "false"
+    },
+    {
+      "name": "sram_chip_select",
+      "description": "Only if interface is SRAM: The chip select of the SRAM device.",
+      "required": "false"
+    },
+    {
+      "name": "sram_ctrl",
+      "description": "Only if interface is SRAM: The complete value for the netX extsramX_ctrl register.",
+      "required": "false"
+    },
+    {
+      "name": "sram_size",
+      "description": "Only if interface is SRAM: The size of the SRAM area in bytes.",
+      "required": "false"
+    },
+    {
+      "name": "ddr_parameter_400",
+      "description": "Only if interface is DDR: the DDR parameter file for 400MHz.",
+      "required": "false"
+    },
+    {
+      "name": "ddr_parameter_600",
+      "description": "Only if interface is DDR: the DDR parameter file for 600MHz.",
+      "required": "false"
+    },
+    {
+      "name": "ddr_size_exponent",
+      "description": "Only if interface is DDR: The size exponent.",
+      "required": "false"
+    },
+    {
+      "name": "checks",
+      "description": "This determines which checks to run. Select one or more values from this list and separate them with commata: 08BIT, 16BIT, 32BIT and BURST.",
+      "required": "true",
+      "default": "DATABUS,MARCHC,CHECKERBOARD,32BIT,BURST"
+    },
+    {
+      "name": "loops",
+      "description": "The number of loops to run.",
+      "required": "true",
+      "default":1
+    },
+    {
+      "name": "patterns",
+      "description": "The number of loops to run.",
+      "required": "true",
+      "default":0
+    }
+  ]
+}

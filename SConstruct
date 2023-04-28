@@ -162,8 +162,14 @@ tArcList0.AddFiles('templates/',
 	'lua/ramtest_template.lua',
 	'lua/test.lua',
 	'lua/timing_phase_test_template.lua')
+tArcList0.AddFiles('parameter/',
+  "parameter/org.muhkuh.tests.ramtest.ramtest.json"
+  )
 tArcList0.AddFiles('doc/',
-	tDoc)
+	tDoc,
+  "doc/teststep.mustache.asciidoc",
+  "doc/test_flow.gv"
+  )
 tArcList0.AddFiles('',
 	'installer/jonchki/install.lua',
 	'installer/jonchki/install_testcase.lua')
