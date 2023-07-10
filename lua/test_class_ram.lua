@@ -64,7 +64,9 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
     P:U32('ddr_size_exponent', 'Only if interface is DDR: The size exponent.'):
       required(false),
 
-    P:MC('checks', 'This determines which checks to run. Select one or more values from this list and separate them with commata: 08BIT, 16BIT, 32BIT and BURST.'):
+    P:MC('checks',
+         'This determines which checks to run. Select one or more values from this list and separate ' ..
+         'them with commata: 08BIT, 16BIT, 32BIT and BURST.'):
       default('DATABUS,MARCHC,CHECKERBOARD,32BIT,BURST'):
       required(true):
       constraint('DATABUS,08BIT,16BIT,32BIT,MARCHC,CHECKERBOARD,BURST'),
@@ -73,7 +75,9 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
       default(1):
       required(true),
 
-    P:U8('patterns', 'The number of patterns to use for the test cases 08BIT, 16BIT, 32BIT and BURST. A values of "0" selects all tests.'):
+    P:U8('patterns',
+         'The number of patterns to use for the test cases 08BIT, 16BIT, 32BIT and BURST. ' ..
+         'A values of "0" selects all tests.'):
       default(0):
       required(true)
   }
@@ -123,7 +127,7 @@ function TestClassRam:run()
     ["CHECKERBOARD"] = ramtest.CHECK_CHECKERBOARD,
     ["BURST"]        = ramtest.CHECK_BURST
   }
-  for iCnt,strElement in ipairs(astrElements) do
+  for _, strElement in ipairs(astrElements) do
     local ulValue = atTests[strElement]
     if ulValue==nil then
       error(string.format("Unknown check ID: %s", strElement))
@@ -149,8 +153,15 @@ function TestClassRam:run()
   -- The SDRAM interfaces need sdram_general_ctrl, sdram_timing_ctrl, sdram_mr.
   -- NOTE: The sdram_size_exponent is optional. It can be derived from the sdram_general_ctrl.
   elseif ulInterface==ramtest.INTERFACE_SDRAM_HIF or ulInterface==ramtest.INTERFACE_SDRAM_MEM then
-    if atParameter["sdram_netx"]:get()==nil or atParameter["sdram_general_ctrl"]:get()==nil or atParameter["sdram_timing_ctrl"]:get()==nil or atParameter["sdram_mr"]:get()==nil then
-      error("The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set.")
+    if(
+      atParameter["sdram_netx"]:get()==nil or
+      atParameter["sdram_general_ctrl"]:get()==nil or
+      atParameter["sdram_timing_ctrl"]:get()==nil or
+      atParameter["sdram_mr"]:get()==nil
+    ) then
+      error(
+        "The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set."
+      )
     end
 
     atRamAttributes["netX"]          = atParameter["sdram_netx"]:get()
@@ -160,7 +171,11 @@ function TestClassRam:run()
     atRamAttributes["size_exponent"] = atParameter["sdram_size_exponent"]:get()
   -- The SRAM interface needs sram_chip_select, sram_ctrl and sram_size.
   elseif ulInterface==ramtest.INTERFACE_SRAM_HIF or ulInterface==ramtest.INTERFACE_SRAM_MEM then
-    if atParameter["sram_chip_select"]:get()==nil or atParameter["sram_ctrl"]:get()==nil or atParameter["sram_size"]:get()==nil then
+    if(
+      atParameter["sram_chip_select"]:get()==nil or
+      atParameter["sram_ctrl"]:get()==nil or
+      atParameter["sram_size"]:get()==nil
+    ) then
       error("The SRAM interface needs the sram_chip_select, sram_ctrl and sram_size parameter set.")
     end
 
@@ -170,7 +185,11 @@ function TestClassRam:run()
 
   -- The DDR interface needs the parameter files for 400 and 600MHz and the size exponent.
   elseif ulInterface==ramtest.INTERFACE_DDR then
-    if atParameter['ddr_parameter_400']:get()==nil or atParameter['ddr_parameter_600']:get()==nil or atParameter['ddr_size_exponent']:get()==nil then
+    if(
+      atParameter['ddr_parameter_400']:get()==nil or
+      atParameter['ddr_parameter_600']:get()==nil or
+      atParameter['ddr_size_exponent']:get()==nil
+    ) then
       error('The DDR interface needs the ddr_parameter_400, ddr_parameter_600 and ddr_size_exponent parameter set.')
     end
 
@@ -197,14 +216,38 @@ function TestClassRam:run()
       atPluginOptions = tJson
     end
   end
-  local tPlugin = tester:getCommonPlugin(strPluginPattern, atPluginOptions)
+  local tPlugin = _G.tester:getCommonPlugin(strPluginPattern, atPluginOptions)
   if tPlugin==nil then
-	if strPluginOptions~=nil and #atPluginOptions ~= 0 then
-		local strTablePluginOptions = pl.pretty.write(atPluginOptions,'  ',true)
-		error(string.format("Failed to connect to the netX with plugin pattern '%s' and options:\n %s'\n Possible fixes:\n - Wrong plugin name \n - Check the connection cable \n - Check the power supply of the test board",strPluginPattern,strTablePluginOptions))
-	else
-		error(string.format("Failed to connect to the netX with plugin pattern '%s'!\n Possible fixes:\n - Wrong plugin name \n - Check the connection cable \n - Check the power supply of the test board",strPluginPattern))
-	end
+    if strPluginOptions~=nil and #atPluginOptions ~= 0 then
+      local strTablePluginOptions = pl.pretty.write(atPluginOptions,'  ',true)
+      error(
+        string.format(
+          table.concat({
+            'Failed to connect to the netX with plugin pattern "%s" and options:',
+            ' %s',
+            'Possible fixes:',
+            ' - Wrong plugin name',
+            ' - Check the connection cable',
+            ' - Check the power supply of the test board'
+          }, '\n'),
+          strPluginPattern,
+          strTablePluginOptions
+        )
+      )
+    else
+      error(
+        string.format(
+          table.concat({
+            'Failed to connect to the netX with plugin pattern "%s"!',
+            'Possible fixes:',
+            ' - Wrong plugin name',
+            ' - Check the connection cable',
+            ' - Check the power supply of the test board'
+          }, '\n'),
+          strPluginPattern
+        )
+      )
+    end
   end
 
 
