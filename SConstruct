@@ -29,10 +29,6 @@ import os.path
 SConscript('mbs/SConscript')
 Import('atEnv')
 
-# Add the local builders.
-import ram_test_template
-ram_test_template.ApplyToEnv(atEnv.DEFAULT)
-
 # Create a build environment for the ARM9 based netX chips.
 env_arm9 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.7', 'asciidoc'])
 env_arm9.CreateCompilerEnv('NETX500', ['arch=armv5te'])
@@ -129,122 +125,55 @@ strArtifact0 = 'ramtest'
 
 tArcList0 = atEnv.DEFAULT.ArchiveList('zip')
 tArcList0.AddFiles('netx/',
-	ramtest_netx10,
-	ramtest_netx50,
-	ramtest_netx56,
-	ramtest_netx90_mpw,
-	ramtest_netx90,
-	ramtest_netx500,
-	ramtest_netx4000_relaxed,
-	ramtest_netx4000,
-	setup_netx56,
-	setup_netx90_mpw,
-	apply_options_netx4000_relaxed,
-	apply_options_netx4000,
-	mdup_netx4000_relaxed,
-	mdup_netx4000)
+                   ramtest_netx10,
+                   ramtest_netx50,
+                   ramtest_netx56,
+                   ramtest_netx90_mpw,
+                   ramtest_netx90,
+                   ramtest_netx500,
+                   ramtest_netx4000_relaxed,
+                   ramtest_netx4000,
+                   setup_netx56,
+                   setup_netx90_mpw,
+                   apply_options_netx4000_relaxed,
+                   apply_options_netx4000,
+                   mdup_netx4000_relaxed,
+                   mdup_netx4000
+)
 tArcList0.AddFiles('standalone/',
-	ramtest_standalone_netx4000,
-	ramtest_standalone_netx500,
-	ramtest_standalone_netx90,
-	ramtest_standalone_netx56,
-	ramtest_standalone_netx50,
-	ramtest_standalone_netx10,
-	#ramtest_standalone_cifx4000_sdram,
-	#ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
-	)
+                   ramtest_standalone_netx4000,
+                   ramtest_standalone_netx500,
+                   ramtest_standalone_netx90,
+                   ramtest_standalone_netx56,
+                   ramtest_standalone_netx50,
+                   ramtest_standalone_netx10,
+#                   ramtest_standalone_cifx4000_sdram,
+#                   ramtest_standalone_nxhx4000_ddr3_400MHz_cr7
+)
 tArcList0.AddFiles('lua/',
-	tRamtestLua,
-	'lua/apply_options.lua',
-	'lua/test_class_ram.lua')
+                   tRamtestLua,
+                   'lua/apply_options.lua',
+                   'lua/test_class_ram.lua'
+)
 tArcList0.AddFiles('templates/',
-	'lua/attributes_template.lua',
-	'lua/ramtest_template.lua',
-	'lua/test.lua',
-	'lua/timing_phase_test_template.lua')
+                   'lua/attributes_template.lua',
+                   'lua/ramtest_template.lua',
+                   'lua/test.lua',
+                   'lua/timing_phase_test_template.lua'
+)
 tArcList0.AddFiles('parameter/',
-  "parameter/org.muhkuh.tests.ramtest.ramtest.json"
-  )
+                   'parameter/org.muhkuh.tests.ramtest.ramtest.json'
+)
 tArcList0.AddFiles('doc/',
-	tDoc,
-  "doc/teststep.mustache.asciidoc",
-  "doc/test_flow.gv"
-  )
+                   'doc/teststep.mustache.asciidoc',
+                   'doc/test_flow.gv'
+)
 tArcList0.AddFiles('',
-	'installer/jonchki/install.lua',
-	'installer/jonchki/install_testcase.lua')
+                   'installer/jonchki/install.lua',
+                   'installer/jonchki/install_testcase.lua')
 
 tArtifact0 = atEnv.DEFAULT.Archive(os.path.join(strModulePath, '%s-%s.zip' % (strArtifact0, PROJECT_VERSION)), None, ARCHIVE_CONTENTS = tArcList0)
 tArtifact0Hash = atEnv.DEFAULT.Hash('%s.hash' % tArtifact0[0].get_path(), tArtifact0[0].get_path(), HASH_ALGORITHM='md5,sha1,sha224,sha256,sha384,sha512', HASH_TEMPLATE='${ID_UC}:${HASH}\n')
 tConfiguration0 = atEnv.DEFAULT.Version(os.path.join(strModulePath, '%s-%s.xml' % (strArtifact0, PROJECT_VERSION)), 'installer/jonchki/%s.xml' % strModule)
 tConfiguration0Hash = atEnv.DEFAULT.Hash('%s.hash' % tConfiguration0[0].get_path(), tConfiguration0[0].get_path(), HASH_ALGORITHM='md5,sha1,sha224,sha256,sha384,sha512', HASH_TEMPLATE='${ID_UC}:${HASH}\n')
 tArtifact0Pom = atEnv.DEFAULT.ArtifactVersion(os.path.join(strModulePath, '%s-%s.pom' % (strArtifact0, PROJECT_VERSION)), 'installer/jonchki/pom.xml')
-
-
-#----------------------------------------------------------------------------
-#
-# Make a local demo installation.
-#
-# Copy all binary binaries.
-atCopy = {
-    'targets/testbench/netx/ramtest_netx10.bin':                  ramtest_netx10,
-    'targets/testbench/netx/ramtest_netx50.bin':                  ramtest_netx50,
-    'targets/testbench/netx/ramtest_netx56.bin':                  ramtest_netx56,
-    'targets/testbench/netx/ramtest_netx90_mpw.bin':              ramtest_netx90_mpw,
-    'targets/testbench/netx/ramtest_netx90.bin':                  ramtest_netx90,
-    'targets/testbench/netx/ramtest_netx500.bin':                 ramtest_netx500,
-    'targets/testbench/netx/ramtest_netx4000_relaxed.bin':        ramtest_netx4000_relaxed,
-    'targets/testbench/netx/ramtest_netx4000.bin':                ramtest_netx4000,
-
-    'targets/testbench/netx/setup_netx56.bin':                    setup_netx56,
-    'targets/testbench/netx/setup_netx90_mpw.bin':                setup_netx90_mpw,
-    'targets/testbench/netx/apply_options_netx4000_relaxed.bin':  apply_options_netx4000_relaxed,
-    'targets/testbench/netx/apply_options_netx4000.bin':          apply_options_netx4000,
-    'targets/testbench/netx/mdup_netx4000_relaxed.bin':           mdup_netx4000_relaxed,
-    'targets/testbench/netx/mdup_netx4000.bin':                   mdup_netx4000,
-
-    # Copy all LUA scripts.
-    'targets/testbench/lua/apply_options.lua':                    'lua/apply_options.lua',
-    'targets/testbench/lua/ramtest.lua':                          tRamtestLua
-}
-for strPathDst, strPathSrc in atCopy.items():
-    Command(strPathDst, strPathSrc, Copy("$TARGET", "$SOURCE"))
-
-
-#----------------------------------------------------------------------------
-#
-# Install a demo test.
-# NOTE: Place hexadecimal values in quotes to prevent conversion to decimal.
-#
-aAttr0 = {'CHIP_TYPE':             '"NETX56"',
-         'REGISTER_GENERAL_CTRL': '0x030D0001',
-         'REGISTER_TIMING_CTRL':  '0x00A13251',
-         'REGISTER_MODE':         '0x00000033',
-         'SIZE_EXPONENT':         23,
-         'INTERFACE':             'MEM'}
-tP0 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/attributes_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr0)
-tR0 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/ramtest_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0[0]})
-tT0 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/timing_phase_test_netX56_MEM_MT48LC2M32B2-7IT_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP0[0]})
-
-# IS42S32200L-7I_netX4000_HIF_ONBOARD.xml
-aAttr1 = {'CHIP_TYPE':             '"NETX4000"',
-         'REGISTER_GENERAL_CTRL': '0x030D0001',
-         'REGISTER_TIMING_CTRL':  '0x02A23251',
-         'REGISTER_MODE':         '0x00000033',
-         'SIZE_EXPONENT':         23,
-         'INTERFACE':             'HIF'}
-tP1 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/attributes_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr1)
-tR1 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/ramtest_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1[0]})
-tT1 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/timing_phase_test_netx4000_HIF_IS42S32200L-7I_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP1[0]})
-
-# IS42S32800J-7BLI_netX4000_HIF_ONBOARD.xml
-aAttr1 = {'CHIP_TYPE':             '"NETX4000"',
-         'REGISTER_GENERAL_CTRL': '0x030D0111',
-         'REGISTER_TIMING_CTRL':  '0x01223251',
-         'REGISTER_MODE':         '0x00000022',
-         'SIZE_EXPONENT':         25,
-         'INTERFACE':             'HIF'}
-tP2 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/attributes_netx4000_HIF_IS42S32800J-7BLI_ONBOARD.lua', 'lua/attributes_template.lua', RAMTESTTEMPLATE_ATTRIBUTES=aAttr1)
-tR2 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/ramtest_netx4000_HIF_IS42S32800J-7BLI_ONBOARD.lua', 'lua/ramtest_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP2[0]})
-tT2 = atEnv.DEFAULT.RamTestTemplate('targets/demo_scripts/timing_phase_test_netx4000_HIF_IS42S32800J-7BLI_ONBOARD.lua', 'lua/timing_phase_test_template.lua', RAMTESTTEMPLATE_ATTRIBUTES={'SDRAM_ATTRIBUTES': tP2[0]})
-
