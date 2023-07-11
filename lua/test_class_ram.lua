@@ -46,6 +46,9 @@ function TestClassRam:_init(strTestName, uiTestCase, tLogWriter, strLogLevel)
     P:U32('sdram_size_exponent', 'Only if interface is SDRAM: The size exponent.'):
       required(false),
 
+    P:P('sdram_parameter_dp', 'The data provider item for the SDRAM parameter.'):
+      required(false),
+
     P:U32('sram_chip_select', 'Only if interface is SRAM: The chip select of the SRAM device.'):
       required(false),
 
@@ -144,7 +147,7 @@ function TestClassRam:run()
   -- Check if the required parameters are present. This depends on the interface.
   -- The RAM interface needs ram_start and ram_size.
   if ulInterface==ramtest.INTERFACE_RAM then
-    if atParameter["ram_start"]:get()==nil or atParameter["ram_size"]:get() then
+    if atParameter["ram_start"]:has_value()~=true or atParameter["ram_size"]:has_value()~=true then
       error("The RAM interface needs the ram_start and ram_size parameter set.")
     end
 
@@ -153,28 +156,106 @@ function TestClassRam:run()
   -- The SDRAM interfaces need sdram_general_ctrl, sdram_timing_ctrl, sdram_mr.
   -- NOTE: The sdram_size_exponent is optional. It can be derived from the sdram_general_ctrl.
   elseif ulInterface==ramtest.INTERFACE_SDRAM_HIF or ulInterface==ramtest.INTERFACE_SDRAM_MEM then
+    -- Only the direct parameter or the data provider item can be set, but not both.
     if(
-      atParameter["sdram_netx"]:get()==nil or
-      atParameter["sdram_general_ctrl"]:get()==nil or
-      atParameter["sdram_timing_ctrl"]:get()==nil or
-      atParameter["sdram_mr"]:get()==nil
-    ) then
-      error(
-        "The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set."
+      atParameter['sdram_parameter_dp']:has_value() and
+      (
+        atParameter["sdram_netx"]:has_value() or
+        atParameter["sdram_general_ctrl"]:has_value() or
+        atParameter["sdram_timing_ctrl"]:has_value() or
+        atParameter["sdram_mr"]:has_value()
       )
+    ) then
+      error('Direct SDRAM parameters and a data provider item are set.')
     end
 
-    atRamAttributes["netX"]          = atParameter["sdram_netx"]:get()
-    atRamAttributes["general_ctrl"]  = atParameter["sdram_general_ctrl"]:get()
-    atRamAttributes["timing_ctrl"]   = atParameter["sdram_timing_ctrl"]:get()
-    atRamAttributes["mr"]            = atParameter["sdram_mr"]:get()
-    atRamAttributes["size_exponent"] = atParameter["sdram_size_exponent"]:get()
+    -- Get the data provider item.
+    if atParameter['sdram_parameter_dp']:has_value() then
+      local strDataProviderItem = atParameter.sdram_parameter_dp:get()
+      local tItem = _G.tester:getDataItem(strDataProviderItem)
+      if tItem==nil then
+        local strMsg = string.format('No data provider item found with the name "%s".', strDataProviderItem)
+        tLog.error(strMsg)
+        error(strMsg)
+      end
+
+      -- Compare the selected interface with the setting from the data provider item.
+      local strDpInterface = tostring(tItem.interface)
+      local atExpectedIf = {
+        [ramtest.INTERFACE_SDRAM_HIF] = 'HIF',
+        [ramtest.INTERFACE_SDRAM_MEM] = 'MEM'
+      }
+      local strExpectedIf = atExpectedIf[ulInterface]
+      if strDpInterface~=strExpectedIf then
+        -- The test parameter select a differen interface than the data provider item.
+        local strMsg = string.format(
+          'The test parameter select the %s interface, but the data provider item is for interface "%s".',
+          atExpectedIf,
+          strDpInterface
+        )
+        tLog.error(strMsg)
+        error(strMsg)
+      end
+
+      -- Translate the netX information.
+      local atNetx = {
+        ['4000'] = 'NETX4000',  -- All netX4000 timings are for the released chip.
+                                -- The "relaxed" version and the "4100" variant are not supported yet.
+
+        ['500'] = 'NETX500',
+
+        ['90'] = 'NETX90B',     -- All SDRAM settings are for the new netX90.
+
+        ['51'] = 'NETX56',      -- netX51 and netX52 are both the same silicon inside.
+        ['52'] = 'NETX56',
+
+        ['50'] = 'NETX50'
+      }
+      local strNetxDataItem = tostring(tItem.netx)
+      local strNetxRamTest = atNetx[strNetxDataItem]
+      if strNetxRamTest==nil then
+        local tablex = require 'pl.tablex'
+        local astrItems = tablex.keys()
+        table.sort(astrItems)
+        local strMsg = string.format(
+          'Failed to translate the netX ID "%s" to a ramtest definition. Possible values are: %s',
+          strNetxDataItem,
+          table.concat(astrItems, ',')
+        )
+        tLog.error(strMsg)
+        error(strMsg)
+      end
+
+      atRamAttributes["netX"]          = strNetxRamTest
+      atRamAttributes["general_ctrl"]  = tItem.control_register
+      atRamAttributes["timing_ctrl"]   = tItem.timing_register
+      atRamAttributes["mr"]            = tItem.mode_register
+      atRamAttributes["size_exponent"] = tItem.size_exponent
+    else
+      if(
+        atParameter["sdram_netx"]:has_value()~=true or
+        atParameter["sdram_general_ctrl"]:has_value()~=true or
+        atParameter["sdram_timing_ctrl"]:has_value()~=true or
+        atParameter["sdram_mr"]:has_value()~=true
+      ) then
+        error(
+          "The SDRAM interface needs the sdram_netx, sdram_general_ctrl, sdram_timing_ctrl and sdram_mr parameter set."
+        )
+      end
+
+      atRamAttributes["netX"]          = atParameter["sdram_netx"]:get()
+      atRamAttributes["general_ctrl"]  = atParameter["sdram_general_ctrl"]:get()
+      atRamAttributes["timing_ctrl"]   = atParameter["sdram_timing_ctrl"]:get()
+      atRamAttributes["mr"]            = atParameter["sdram_mr"]:get()
+      atRamAttributes["size_exponent"] = atParameter["sdram_size_exponent"]:get()
+    end
+
   -- The SRAM interface needs sram_chip_select, sram_ctrl and sram_size.
   elseif ulInterface==ramtest.INTERFACE_SRAM_HIF or ulInterface==ramtest.INTERFACE_SRAM_MEM then
     if(
-      atParameter["sram_chip_select"]:get()==nil or
-      atParameter["sram_ctrl"]:get()==nil or
-      atParameter["sram_size"]:get()==nil
+      atParameter["sram_chip_select"]:has_value()~=true or
+      atParameter["sram_ctrl"]:has_value()~=true or
+      atParameter["sram_size"]:has_value()~=true
     ) then
       error("The SRAM interface needs the sram_chip_select, sram_ctrl and sram_size parameter set.")
     end
@@ -186,9 +267,9 @@ function TestClassRam:run()
   -- The DDR interface needs the parameter files for 400 and 600MHz and the size exponent.
   elseif ulInterface==ramtest.INTERFACE_DDR then
     if(
-      atParameter['ddr_parameter_400']:get()==nil or
-      atParameter['ddr_parameter_600']:get()==nil or
-      atParameter['ddr_size_exponent']:get()==nil
+      atParameter['ddr_parameter_400']:has_value()~=true or
+      atParameter['ddr_parameter_600']:has_value()~=true or
+      atParameter['ddr_size_exponent']:has_value()~=true
     ) then
       error('The DDR interface needs the ddr_parameter_400, ddr_parameter_600 and ddr_size_exponent parameter set.')
     end
