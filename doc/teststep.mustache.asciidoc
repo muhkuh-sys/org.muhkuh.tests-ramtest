@@ -117,4 +117,4 @@ It defines the number of bytes stem:[m] as stem:[m=2^text{size_exponent}].
 //   The number of loops to run.
 
 // [TIP]
-// A good source for the parameters +general_ctrl+, +timing_ctrl+ and +mr+ is the +netx.xml+ file distributed with the Hilscher Bootwizard (https://kb.hilscher.com/display/BOOTWIZ/netX+Bootwizard).
+// A good source for the parameters +general_ctrl+, +timing_ctrl+ and +mr+ are the component verification tickets here: https://ticket.hilscher.com/issues/?jql=project%20%3D%20COMPVERIFY%20AND%20text%20~%20%22SDRAM%22
