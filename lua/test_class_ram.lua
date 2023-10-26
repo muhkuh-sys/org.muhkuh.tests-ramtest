@@ -190,7 +190,7 @@ function TestClassRam:run()
         -- The test parameter select a differen interface than the data provider item.
         local strMsg = string.format(
           'The test parameter select the %s interface, but the data provider item is for interface "%s".',
-          atExpectedIf,
+          strExpectedIf,
           strDpInterface
         )
         tLog.error(strMsg)
