@@ -18,6 +18,70 @@
 
 /*-------------------------------------------------------------------------*/
 
+#if ASIC_TYP==ASIC_TYP_NETX50
+void netx50_special_setup(RAMTEST_PARAMETER_T *ptTestParameter)
+{
+	unsigned long ulUartParameter;
+	unsigned int uiMmioMax;
+	unsigned long ulMmioUartRx;
+	unsigned long ulMmioUartTx;
+	unsigned int uiCnt;
+	unsigned long ulValue;
+	HOSTDEF(ptAsicCtrlArea);
+	HOSTDEF(ptMmioCtrlArea);
+
+
+	/* TODO: Evaluate the progress parameter.
+	 *       For now this is fixed to RDY/RUN.
+	 */
+	ptTestParameter->pfnProgress = progress_rdyrun;
+	ptTestParameter->ulProgress = 0;
+
+	ulUartParameter = s_tRamtestParameterBlock.ulUartParameter;
+	uiMmioMax = sizeof(ptMmioCtrlArea->aulMmio_cfg) / sizeof(unsigned long);
+	ulMmioUartRx = (ulUartParameter & 0x00ff0000U) >> 16U;
+	ulMmioUartTx = (ulUartParameter & 0xff000000U) >> 24U;
+//	uprintf("*** MMIO max=%d, RX=%d, TX=%d\n", uiMmioMax, ulMmioUartRx, ulMmioUartTx);
+	/* The pin numbers must not be the same and within the valid range of MMIO pins. */
+	if( ulMmioUartRx!=ulMmioUartTx && ulMmioUartRx<uiMmioMax && ulMmioUartTx<uiMmioMax )
+	{
+		/* Re-configure the MMIO pins.
+		 * It is important that a function is mapped to only one pin. Strange things
+		 * will happen otherwise for input signals.
+		 *
+		 * Loop over all MMIOs and remove the UART RX and TX.
+		 */
+		for(uiCnt=0; uiCnt<(sizeof(ptMmioCtrlArea->aulMmio_cfg)/sizeof(unsigned long)); ++uiCnt)
+		{
+			ulValue   = ptMmioCtrlArea->aulMmio_cfg[uiCnt];
+			ulValue  &= HOSTMSK(mmio0_cfg_mmio0_sel);
+			ulValue >>= HOSTSRT(mmio0_cfg_mmio0_sel);
+			if( (ulValue==NX50_MMIO_CFG_uart0_rxd) || (ulValue==NX50_MMIO_CFG_uart0_txd) )
+			{
+				/* Remove the UART function from the MMIO pin. */
+				ptAsicCtrlArea->ulAsic_ctrl_access_key = ptAsicCtrlArea->ulAsic_ctrl_access_key;
+				ptMmioCtrlArea->aulMmio_cfg[uiCnt] = 0xffU;
+//				uprintf("*** Set MMIO %d from 0x%08x -> 0x%08x\n", uiCnt, ptMmioCtrlArea->aulMmio_cfg[uiCnt], 0xff);
+			}
+		}
+
+		/* Extract the MMIOs for the UART pins from the parameter DWORD. */
+
+		/* Set the new MMIO pins to the UART RX and TX function. */
+		ptAsicCtrlArea->ulAsic_ctrl_access_key = ptAsicCtrlArea->ulAsic_ctrl_access_key;
+		ptMmioCtrlArea->aulMmio_cfg[ulMmioUartRx] = NX50_MMIO_CFG_uart0_rxd;
+//		uprintf("*** Set MMIO %d from 0x%08x -> 0x%08x\n", ulMmioUartRx, ptMmioCtrlArea->aulMmio_cfg[ulMmioUartRx], NX50_MMIO_CFG_uart0_rxd);
+
+		ptAsicCtrlArea->ulAsic_ctrl_access_key = ptAsicCtrlArea->ulAsic_ctrl_access_key;
+		ptMmioCtrlArea->aulMmio_cfg[ulMmioUartTx] = NX50_MMIO_CFG_uart0_txd;
+//		uprintf("*** Set MMIO %d from 0x%08x -> 0x%08x\n", ulMmioUartTx, ptMmioCtrlArea->aulMmio_cfg[ulMmioUartTx], NX50_MMIO_CFG_uart0_txd);
+	}
+}
+#endif
+
+
+/*-------------------------------------------------------------------------*/
+
 void ramtest_main(void) __attribute__ ((noreturn));
 void ramtest_main(void)
 {
@@ -100,6 +164,8 @@ void ramtest_main(void)
 		tTestParams.pfnProgress = progress_rdyrun;
 		tTestParams.ulProgress = 0;
 	}
+#elif ASIC_TYP==ASIC_TYP_NETX50
+	netx50_special_setup(&tTestParams);
 #else
 	tTestParams.pfnProgress = progress_rdyrun;
 	tTestParams.ulProgress = 0;

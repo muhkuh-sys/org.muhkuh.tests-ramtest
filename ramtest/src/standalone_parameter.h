@@ -6,7 +6,7 @@
 
 
 #define RAMTEST_PARAMETER_BLOCK_MAGIC 0x41504152
-#define RAMTEST_PARAMETER_BLOCK_VERSION 0x00010000
+#define RAMTEST_PARAMETER_BLOCK_VERSION 0x00010001
 
 
 typedef struct RAMTEST_PARAMETER_BLOCK_STRUCT
@@ -18,6 +18,8 @@ typedef struct RAMTEST_PARAMETER_BLOCK_STRUCT
 	uint32_t ulSDRAMGeneralCtrl;
 	uint32_t ulSDRAMTimingCtrl;
 	uint32_t ulSDRAMModeRegister;
+	uint32_t ulUartParameter;
+	uint32_t ulProgressParameter;
 } RAMTEST_PARAMETER_BLOCK_T;
 
 extern const RAMTEST_PARAMETER_BLOCK_T s_tRamtestParameterBlock;
